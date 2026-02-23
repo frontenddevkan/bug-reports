@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bug Reports Platform — Создание отчётов об ошибках</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 
+    УРОК: Структура HTML страницы
+    - header: шапка сайта
+    - main: основной контент
+    - footer: подвал
+    Каждый блок — это "семантический" тег, он помогает поисковикам и скринридерам понять структуру
+    -->
+    <header class="header">
+        <h1>Bug Reports Platform</h1>
+        <p class="subtitle">Инструмент для тестировщиков — создание и экспорт багрепортов</p>
+    </header>
+
+    <main class="main">
+        <!-- 
+        УРОК: Кнопка с id — мы сможем "поймать" её в JavaScript по этому id
+        class="btn" — стиль кнопки из CSS
+        -->
+        <button id="createBugReportBtn" class="btn btn-primary">
+            Создать багрепорт
+        </button>
+
+        <!-- Список созданных багрепортов (пока пустой) -->
+        <section id="bugReportsList" class="bug-list">
+            <h2>Мои багрепорты</h2>
+            <p class="empty-state">Пока нет созданных отчётов. Нажмите кнопку выше.</p>
+        </section>
+
+        <!-- 
+        ЗОНА ЛОГА ПРОЦЕССА
+        Здесь мы будем серым текстом показывать все шаги:
+        - что нажали
+        - что сейчас делает система
+        - какие проверки запущены (позже)
+        -->
+        <section class="process-log-wrapper">
+            <h2>Лог процесса</h2>
+            <div id="processLog" class="process-log">
+                <!-- Первое сообщение добавляется из app.js -->
+            </div>
+        </section>
+    </main>
+
+    <!-- 
+    УРОК: Модальное окно — это окно поверх страницы
+    Скрыто по умолчанию (display: none в CSS)
+    Появится когда нажмём "Создать багрепорт"
+    -->
+    <div id="bugReportModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Новый багрепорт</h2>
+                <button id="closeModalBtn" class="btn-close">&times;</button>
+            </div>
+            <form id="bugReportForm" class="bug-form">
+                <!-- 
+                УРОК: Структура багрепорта в форме
+                Мы повторяем стандартные поля:
+                - Краткое название
+                - Шаги воспроизведения
+                - Ожидаемый результат
+                - Фактический результат
+                - Окружение
+                - Приоритет и серьёзность
+                -->
+
+                <div class="form-group">
+                    <label for="title">Краткое описание (Title) <span class="required">*</span></label>
+                    <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        required
+                        placeholder="Например: Кнопка «Отправить» не реагирует на клик"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="steps">Шаги воспроизведения <span class="required">*</span></label>
+                    <textarea
+                        id="steps"
+                        name="steps"
+                        required
+                        rows="4"
+                        placeholder="1. Открыть страницу...\n2. Нажать...\n3. ..."
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="expected">Ожидаемый результат <span class="required">*</span></label>
+                    <textarea
+                        id="expected"
+                        name="expected"
+                        required
+                        rows="3"
+                        placeholder="Например: Появляется сообщение об успешной отправке."
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="actual">Фактический результат <span class="required">*</span></label>
+                    <textarea
+                        id="actual"
+                        name="actual"
+                        required
+                        rows="3"
+                        placeholder="Например: Ничего не происходит, ошибок нет."
+                    ></textarea>
+                </div>
+
+                <!-- Окружение: разбиваем на отдельные поля, чтобы подсказки не пропадали -->
+                <div class="form-group">
+                    <label for="browser">Браузер</label>
+                    <input
+                        type="text"
+                        id="browser"
+                        name="browser"
+                        placeholder="Например: Chrome 120, Firefox 122..."
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="os">Операционная система</label>
+                    <input
+                        type="text"
+                        id="os"
+                        name="os"
+                        placeholder="Например: Windows 11, Ubuntu 22.04, Android 14..."
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="resolution">Разрешение экрана</label>
+                    <input
+                        type="text"
+                        id="resolution"
+                        name="resolution"
+                        placeholder="Например: 1920x1080, 1366x768..."
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="appVersion">Версия приложения / билда</label>
+                    <input
+                        type="text"
+                        id="appVersion"
+                        name="appVersion"
+                        placeholder="Например: v1.2.3, build 4567..."
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="environmentExtra">Дополнительная информация об окружении</label>
+                    <textarea
+                        id="environmentExtra"
+                        name="environmentExtra"
+                        rows="2"
+                        placeholder="Например: VPN включён, медленное соединение, специфические настройки браузера..."
+                    ></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="priority">Приоритет</label>
+                        <select id="priority" name="priority">
+                            <option value="Medium" selected>Medium</option>
+                            <option value="High">High</option>
+                            <option value="Critical">Critical</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="severity">Серьёзность</label>
+                        <select id="severity" name="severity">
+                            <option value="Major" selected>Major</option>
+                            <option value="Critical">Critical</option>
+                            <option value="Blocker">Blocker</option>
+                            <option value="Minor">Minor</option>
+                            <option value="Trivial">Trivial</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Кнопки формы -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        Сохранить багрепорт
+                    </button>
+                    <button type="button" id="cancelFormBtn" class="btn btn-secondary">
+                        Отмена
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Bug Reports Platform — обучение + практика</p>
+    </footer>
+
+    <!-- 
+    УРОК: Скрипт в конце body — страница уже загружена, 
+    все элементы (кнопки, формы) уже существуют в DOM
+    -->
+    <script src="app.js"></script>
+</body>
+</html>
+
