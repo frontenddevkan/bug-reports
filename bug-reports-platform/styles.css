@@ -23,6 +23,14 @@ body {
     color: #333;
 }
 
+.layout {
+    max-width: 1100px;
+    margin: 2rem auto;
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
 .header {
     background: rgba(255, 255, 255, 0.95);
     padding: 2rem;
@@ -41,8 +49,7 @@ body {
 }
 
 .main {
-    max-width: 800px;
-    margin: 2rem auto;
+    flex: 1;
     padding: 2rem;
     background: white;
     border-radius: 12px;
@@ -88,30 +95,6 @@ body {
 .empty-state {
     color: #999;
     font-style: italic;
-}
-
-/* Лог процесса (серый текст) */
-.process-log-wrapper {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px dashed #ddd;
-}
-
-.process-log-wrapper h2 {
-    font-size: 1.1rem;
-    margin-bottom: 0.75rem;
-}
-
-.process-log {
-    font-family: Consolas, 'Courier New', monospace;
-    font-size: 0.85rem;
-    background: #f7f7f9;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    padding: 0.75rem 1rem;
-    color: #666;
-    max-height: 200px;
-    overflow-y: auto;
 }
 
 /* Модальное окно */
@@ -186,6 +169,11 @@ body {
 
 .required {
     color: #e53e3e;
+}
+
+.hint {
+    font-size: 0.8rem;
+    color: #888;
 }
 
 .bug-form input[type=\"text\"],
@@ -266,6 +254,61 @@ body {
     border: 1px solid #eee;
     padding: 0.5rem;
     white-space: pre-wrap;
+}
+
+/* Правый сайдбар с теорией */
+.theory-sidebar {
+    width: 300px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    padding: 1.25rem 1.5rem;
+    font-size: 0.85rem;
+    position: sticky;
+    top: 1.5rem;
+    max-height: calc(100vh - 3rem);
+    display: flex;
+    flex-direction: column;
+}
+
+.theory-sidebar h2 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    color: #444;
+}
+
+.theory-ticker {
+    overflow: hidden;
+    flex: 1;
+}
+
+.theory-ticker-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    animation: theory-scroll 40s linear infinite;
+}
+
+.theory-block-title {
+    font-weight: 600;
+    color: #555;
+}
+
+.theory-ticker ul {
+    padding-left: 1rem;
+}
+
+.theory-ticker li {
+    margin-bottom: 0.25rem;
+}
+
+@keyframes theory-scroll {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-50%);
+    }
 }
 
 .footer {

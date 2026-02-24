@@ -15,25 +15,20 @@
 const createBugReportBtn = document.getElementById('createBugReportBtn');
 const bugReportModal = document.getElementById('bugReportModal');
 const closeModalBtn = document.getElementById('closeModalBtn');
-const processLog = document.getElementById('processLog'); // зона для текстового лога
 const bugReportForm = document.getElementById('bugReportForm');
 const bugReportsList = document.getElementById('bugReportsList');
 const cancelFormBtn = document.getElementById('cancelFormBtn');
 
+// Локальное хранилище багрепортов (память + localStorage)
+let bugReports = [];
+
 /**
- * Добавление записи в лог
- * Мы будем вызывать эту функцию на каждом важном шаге.
+ * Логирование в консоль (раньше показывали в отдельном блоке на странице)
  */
 function logStep(message) {
-    if (!processLog) return;
-
-    const time = new Date().toLocaleTimeString();
-    const line = document.createElement('div');
-    line.textContent = `[${time}] ${message}`;
-    processLog.appendChild(line);
-
-    // Автопрокрутка вниз, если лог длинный
-    processLog.scrollTop = processLog.scrollHeight;
+    // Можно отключить совсем, если мешает:
+    // return;
+    console.log('[LOG]', message);
 }
 
 /**
@@ -93,9 +88,6 @@ document.addEventListener('keydown', function (event) {
     }
 });
 
-// Первое сообщение в лог при загрузке страницы
-logStep('Страница загружена, интерфейс инициализирован.');
-
 /**
  * Утилита: экранирование HTML, чтобы пользовательский ввод
  * не превратился в HTML/скрипт на странице.
@@ -147,9 +139,89 @@ function renderBugReport(report) {
             <summary>Окружение</summary>
             <pre>${escapeHtml(report.environment)}</pre>
         </details>
+        <button type="button" class="btn btn-secondary btn-download">
+            Скачать TXT
+        </button>
     `;
 
     bugReportsList.appendChild(card);
+
+    // Вешаем обработчик на кнопку скачивания TXT
+    const downloadBtn = card.querySelector('.btn-download');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', () => {
+            logStep(`Нажата кнопка "Скачать TXT" для багрепорта "${report.title}".`);
+            downloadReportAsTxt(report);
+        });
+    }
+}
+
+/**
+ * Сохранение массива багрепортов в localStorage
+ */
+function saveReportsToStorage() {
+    try {
+        localStorage.setItem('bugReports', JSON.stringify(bugReports));
+        logStep('Список багрепортов сохранён в localStorage.');
+    } catch (e) {
+        logStep('Ошибка сохранения багрепортов в localStorage: ' + e.message);
+    }
+}
+
+/**
+ * Загрузка багрепортов из localStorage при старте
+ */
+function loadReportsFromStorage() {
+    try {
+        const raw = localStorage.getItem('bugReports');
+        if (!raw) {
+            logStep('В localStorage нет сохранённых багрепортов.');
+            return;
+        }
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+            bugReports = parsed;
+            logStep(`Загружено багрепортов из localStorage: ${bugReports.length}.`);
+            bugReports.forEach(r => renderBugReport(r));
+        }
+    } catch (e) {
+        logStep('Ошибка загрузки багрепортов из localStorage: ' + e.message);
+    }
+}
+
+/**
+ * Скачивание багрепорта как TXT-файл
+ */
+function downloadReportAsTxt(report) {
+    const lines = [];
+    lines.push(`Title: ${report.title}`);
+    lines.push('');
+    lines.push('Steps:');
+    lines.push(report.steps || '');
+    lines.push('');
+    lines.push('Expected:');
+    lines.push(report.expected || '');
+    lines.push('');
+    lines.push('Actual:');
+    lines.push(report.actual || '');
+    lines.push('');
+    lines.push('Environment:');
+    lines.push(report.environment || '');
+    lines.push('');
+    lines.push(`Priority: ${report.priority}`);
+    lines.push(`Severity: ${report.severity}`);
+    lines.push(`Created at: ${report.createdAt}`);
+
+    const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const safeTitle = report.title.replace(/[^a-z0-9а-яё]+/gi, '_').slice(0, 50);
+    a.href = url;
+    a.download = `bug-report-${safeTitle || 'report'}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
 }
 
 /**
@@ -200,6 +272,8 @@ if (bugReportForm) {
         };
 
         logStep('Форма багрепорта заполнена. Создаём карточку в списке.');
+        bugReports.push(report);
+        saveReportsToStorage();
         renderBugReport(report);
 
         bugReportForm.reset();
@@ -215,4 +289,8 @@ if (cancelFormBtn) {
         closeModal();
     });
 }
+
+// Инициализация при загрузке страницы
+logStep('Страница загружена, интерфейс инициализирован.');
+loadReportsFromStorage();
 

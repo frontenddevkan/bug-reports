@@ -4,16 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bug Reports Platform — Создание отчётов об ошибках</title>
-    <link rel="stylesheet" href="styles.css">
+    <!-- Подключаем стили и скрипты из папки bug-reports-platform -->
+    <link rel="stylesheet" href="bug-reports-platform/styles.css">
 </head>
 <body>
-    <!-- 
-    УРОК: Структура HTML страницы
-    - header: шапка сайта
-    - main: основной контент
-    - footer: подвал
-    Каждый блок — это "семантический" тег, он помогает поисковикам и скринридерам понять структуру
-    -->
     <header class="header">
         <h1>Bug Reports Platform</h1>
         <p class="subtitle">Инструмент для тестировщиков — создание и экспорт багрепортов</p>
@@ -21,22 +15,16 @@
 
     <div class="layout">
         <main class="main">
-            <!-- 
-            УРОК: Кнопка с id — мы сможем "поймать" её в JavaScript по этому id
-            class="btn" — стиль кнопки из CSS
-            -->
             <button id="createBugReportBtn" class="btn btn-primary">
                 Создать багрепорт
             </button>
 
-            <!-- Список созданных багрепортов (пока пустой) -->
             <section id="bugReportsList" class="bug-list">
                 <h2>Мои багрепорты</h2>
                 <p class="empty-state">Пока нет созданных отчётов. Нажмите кнопку выше.</p>
             </section>
         </main>
 
-        <!-- Правый сайдбар с "барабаном" теории -->
         <aside class="theory-sidebar">
             <h2>Теория тестирования</h2>
             <div class="theory-ticker">
@@ -73,7 +61,6 @@
                         <li>Каждый статус отражает этап жизни дефекта от заведения до закрытия.</li>
                     </ul>
 
-                    <!-- Дублируем блоки, чтобы анимация шла по кругу -->
                     <p class="theory-block-title">Модель качества ПО: 6 характеристик</p>
                     <ul>
                         <li><strong>Функциональность</strong>, <strong>Надёжность</strong>, <strong>Удобство использования</strong>, <strong>Удобство сопровождения</strong>, <strong>Эффективность</strong>, <strong>Портативность</strong>.</li>
@@ -83,11 +70,6 @@
         </aside>
     </div>
 
-    <!-- 
-    УРОК: Модальное окно — это окно поверх страницы
-    Скрыто по умолчанию (display: none в CSS)
-    Появится когда нажмём "Создать багрепорт"
-    -->
     <div id="bugReportModal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
@@ -95,17 +77,6 @@
                 <button id="closeModalBtn" class="btn-close">&times;</button>
             </div>
             <form id="bugReportForm" class="bug-form">
-                <!-- 
-                УРОК: Структура багрепорта в форме
-                Мы повторяем стандартные поля:
-                - Краткое название
-                - Шаги воспроизведения
-                - Ожидаемый результат
-                - Фактический результат
-                - Окружение
-                - Приоритет и серьёзность
-                -->
-
                 <div class="form-group">
                     <label for="title">Краткое описание (Title) <span class="required">*</span></label>
                     <input
@@ -150,7 +121,6 @@
                     ></textarea>
                 </div>
 
-                <!-- Окружение: разбиваем на отдельные поля, чтобы подсказки не пропадали -->
                 <div class="form-group">
                     <label for="browser">Браузер</label>
                     <input
@@ -236,7 +206,6 @@
                     </div>
                 </div>
 
-                <!-- Кнопки формы -->
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
                         Сохранить багрепорт
@@ -253,11 +222,9 @@
         <p>Bug Reports Platform — обучение + практика</p>
     </footer>
 
-    <!-- 
-    УРОК: Скрипт в конце body — страница уже загружена, 
-    все элементы (кнопки, формы) уже существуют в DOM
-    -->
-    <script src="app.js"></script>
+    <!-- Скрипт берём из подпапки -->
+    <script src="bug-reports-platform/app.js"></script>
 </body>
 </html>
+
 
