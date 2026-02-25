@@ -46,42 +46,86 @@
     <section class="roadmap-banner">
         <label class="roadmap-toggle">
             <input type="checkbox" checked />
-            <span class="roadmap-title">Роадмап тестировщика: Trainee → Junior → Middle → Senior</span>
+            <span class="roadmap-title">Роадмап тестировщика: путь от Trainee до Senior и Auto QA</span>
         </label>
         <div class="roadmap-content">
             <div class="roadmap-column">
-                <h3>Trainee / Intern</h3>
-                <ul>
-                    <li>Базовые термины: что такое баг, тест‑кейс, чек‑лист, регрессия, smoke/sanity.</li>
-                    <li>Понимание веба: браузер, URL, запрос/ответ, статусы 2xx/4xx/5xx.</li>
-                    <li>Навыки: работа с DevTools (Network, Console), скриншоты, запись шагов.</li>
+                <h3>Ручное тестирование</h3>
+                <ul class="roadmap-levels" data-roadmap-track="manual">
+                    <li>
+                        <label class="roadmap-level">
+                            <input type="checkbox" data-level-id="manual-trainee">
+                            <span class="roadmap-level-label">Trainee / Intern</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="roadmap-level">
+                            <input type="checkbox" data-level-id="manual-junior">
+                            <span class="roadmap-level-label">Junior</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="roadmap-level">
+                            <input type="checkbox" data-level-id="manual-junior-plus">
+                            <span class="roadmap-level-label">Junior+</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="roadmap-level">
+                            <input type="checkbox" data-level-id="manual-middle">
+                            <span class="roadmap-level-label">Middle</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="roadmap-level">
+                            <input type="checkbox" data-level-id="manual-middle-plus">
+                            <span class="roadmap-level-label">Middle+</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="roadmap-level">
+                            <input type="checkbox" data-level-id="manual-senior">
+                            <span class="roadmap-level-label">Senior</span>
+                        </label>
+                    </li>
                 </ul>
             </div>
             <div class="roadmap-column">
-                <h3>Junior</h3>
-                <ul>
-                    <li>Умение писать понятные багрепорты и чек‑листы.</li>
-                    <li>Типы тестирования: функциональное, интеграционное, регрессионное и др.</li>
-                    <li>Практика: работа с REST API через Postman/Insomnia, чтение логов.</li>
-                </ul>
-            </div>
-            <div class="roadmap-column">
-                <h3>Middle</h3>
-                <ul>
-                    <li>Планирование тестирования, оценка рисков и приоритетов.</li>
-                    <li>Понимание архитектуры (клиент–сервер, базы данных, очереди и т.п.).</li>
-                    <li>Процессы: bug lifecycle, SDLC, взаимодействие с аналитиками и разработчиками.</li>
-                </ul>
-            </div>
-            <div class="roadmap-column">
-                <h3>Senior / Middle+</h3>
-                <ul>
-                    <li>Построение стратегии тестирования и менторство младших коллег.</li>
-                    <li>Внедрение инструментов: CI, тестовая документация, улучшение процессов.</li>
-                    <li>Шире смотреть на продукт: метрики качества, влияние на бизнес.</li>
+                <h3>Автоматизация тестирования</h3>
+                <ul class="roadmap-levels" data-roadmap-track="auto">
+                    <li>
+                        <label class="roadmap-level">
+                            <input type="checkbox" data-level-id="auto-trainee">
+                            <span class="roadmap-level-label">Auto QA Trainee</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="roadmap-level">
+                            <input type="checkbox" data-level-id="auto-junior">
+                            <span class="roadmap-level-label">Auto QA Junior</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="roadmap-level">
+                            <input type="checkbox" data-level-id="auto-middle">
+                            <span class="roadmap-level-label">Auto QA Middle</span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="roadmap-level">
+                            <input type="checkbox" data-level-id="auto-senior">
+                            <span class="roadmap-level-label">Auto QA Senior</span>
+                        </label>
+                    </li>
                 </ul>
             </div>
         </div>
+        <div class="roadmap-progress-bar" aria-label="Прогресс по роадмапу тестировщика">
+            <div class="roadmap-progress-fill" id="roadmapProgressFill"></div>
+        </div>
+        <p class="roadmap-note">
+            Отмечай галочками достигнутые уровни: зелёное облако покажет, что уже пройдено, а прогресс‑бар отразит путь от стажёра до Auto QA.
+        </p>
     </section>
 
     <div class="layout">

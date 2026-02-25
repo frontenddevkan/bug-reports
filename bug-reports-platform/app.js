@@ -60,6 +60,84 @@ function initSdlcHighlight() {
 }
 
 /**
+ * Роадмап по грейдам (ручной + Auto QA):
+ * - чекбоксы по уровням
+ * - зелёные облака для завершённых
+ * - особая подсветка текущего уровня
+ * - прогресс‑бар по общему количеству отмеченных уровней
+ */
+function initRoadmap() {
+    const levelInputs = Array.from(document.querySelectorAll('.roadmap-level input[data-level-id]'));
+    const progressFill = document.getElementById('roadmapProgressFill');
+    if (!levelInputs.length || !progressFill) return;
+
+    const storageKey = 'simulator.roadmap.levels';
+    let completed = {};
+
+    try {
+        const raw = localStorage.getItem(storageKey);
+        const parsed = raw ? JSON.parse(raw) : {};
+        if (parsed && typeof parsed === 'object') {
+            completed = parsed;
+        }
+    } catch (_) {
+        // ignore
+    }
+
+    function applyState() {
+        const byTrack = {};
+        levelInputs.forEach((input) => {
+            const id = input.getAttribute('data-level-id');
+            const li = input.closest('.roadmap-level');
+            const trackWrapper = input.closest('.roadmap-levels');
+            const track = trackWrapper ? trackWrapper.getAttribute('data-roadmap-track') : 'manual';
+
+            if (!byTrack[track]) byTrack[track] = [];
+            byTrack[track].push({ input, li });
+
+            const isDone = !!completed[id];
+            input.checked = isDone;
+            if (li) {
+                li.classList.toggle('roadmap-level--completed', isDone);
+                li.classList.remove('roadmap-level--current');
+            }
+        });
+
+        Object.values(byTrack).forEach((arr) => {
+            let lastCompletedIndex = -1;
+            arr.forEach((item, index) => {
+                if (item.input.checked) lastCompletedIndex = index;
+            });
+            if (lastCompletedIndex >= 0) {
+                const li = arr[lastCompletedIndex].li;
+                if (li) li.classList.add('roadmap-level--current');
+            }
+        });
+
+        const total = levelInputs.length;
+        const doneCount = levelInputs.filter((input) => completed[input.getAttribute('data-level-id')]).length;
+        const percent = total ? Math.round((doneCount / total) * 100) : 0;
+        progressFill.style.width = `${percent}%`;
+        progressFill.title = `Прогресс по грейдам: ${percent}% (${doneCount} из ${total})`;
+    }
+
+    levelInputs.forEach((input) => {
+        input.addEventListener('change', () => {
+            const id = input.getAttribute('data-level-id');
+            completed[id] = input.checked;
+            try {
+                localStorage.setItem(storageKey, JSON.stringify(completed));
+            } catch (_) {
+                // ignore
+            }
+            applyState();
+        });
+    });
+
+    applyState();
+}
+
+/**
  * Тесты (первые вопросы по SDLC)
  */
 function initQuiz() {
@@ -234,6 +312,7 @@ document.addEventListener('keydown', function (event) {
 
 // Инициализация симулятора (визуализации + тесты)
 initSdlcHighlight();
+initRoadmap();
 initQuiz();
 
 /**
