@@ -348,16 +348,21 @@ body {
 }
 
 .roadmap-content {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
     font-size: 0.86rem;
 }
 
+.roadmap-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
 .roadmap-column h3 {
-    font-size: 0.96rem;
+    font-size: 0.9rem;
     color: #4a4a8a;
-    margin-bottom: 0.35rem;
 }
 
 .roadmap-column ul {
@@ -367,14 +372,15 @@ body {
 }
 
 .roadmap-column li + li {
-    margin-top: 0.3rem;
+    margin-top: 0;
 }
 
 .roadmap-level {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
+    gap: 0.3rem;
     cursor: pointer;
+    flex: 1;
 }
 
 .roadmap-level input[type="checkbox"] {
@@ -384,12 +390,15 @@ body {
 }
 
 .roadmap-level-label {
-    padding: 0.18rem 0.55rem;
+    width: 100%;
+    padding: 0.18rem 0.4rem;
     border-radius: 999px;
     background: rgba(245, 247, 255, 0.95);
     border: 1px solid rgba(222, 229, 255, 0.9);
     color: #334;
     font-size: 0.82rem;
+    text-align: center;
+    white-space: nowrap;
 }
 
 .roadmap-level--completed .roadmap-level-label {
@@ -406,9 +415,9 @@ body {
 }
 
 .roadmap-progress-bar {
-    margin-top: 1rem;
+    margin-top: 0.75rem;
     width: 100%;
-    height: 8px;
+    height: 14px;
     border-radius: 999px;
     background: rgba(238, 241, 255, 0.95);
     overflow: hidden;
@@ -429,9 +438,7 @@ body {
 }
 
 .roadmap-level-desc {
-    margin-top: 0.1rem;
-    font-size: 0.78rem;
-    color: #666;
+    display: none;
 }
 
 .main {
