@@ -332,7 +332,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    animation: theory-scroll 40s linear infinite;
+    animation: theory-scroll 80s linear infinite;
 }
 
 .theory-block-title {
@@ -345,7 +345,8 @@ body {
 }
 
 .theory-ticker li {
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.4rem;
+    line-height: 1.4;
 }
 
 @keyframes theory-scroll {
