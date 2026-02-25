@@ -44,10 +44,9 @@
     </header>
 
     <section class="roadmap-banner">
-        <label class="roadmap-toggle">
-            <input type="checkbox" checked />
+        <div class="roadmap-toggle">
             <span class="roadmap-title">Роадмап тестировщика: путь от Trainee до Senior и Auto QA</span>
-        </label>
+        </div>
         <div class="roadmap-content">
             <div class="roadmap-column">
                 <h3>Ручное тестирование</h3>
@@ -57,36 +56,42 @@
                             <input type="checkbox" data-level-id="manual-trainee">
                             <span class="roadmap-level-label">Trainee / Intern</span>
                         </label>
+                        <p class="roadmap-level-desc">Базовые термины (ПО, баг, дефект, тест‑кейс, чек‑лист), скриншоты и логи, первые шаги в DevTools и HTTP‑статусах.</p>
                     </li>
                     <li>
                         <label class="roadmap-level">
                             <input type="checkbox" data-level-id="manual-junior">
                             <span class="roadmap-level-label">Junior</span>
                         </label>
+                        <p class="roadmap-level-desc">Грамотные багрепорты, чек‑листы, понимание типов тестирования, уверенная работа с браузером и простыми API через Postman/Insomnia.</p>
                     </li>
                     <li>
                         <label class="roadmap-level">
                             <input type="checkbox" data-level-id="manual-junior-plus">
                             <span class="roadmap-level-label">Junior+</span>
                         </label>
+                        <p class="roadmap-level-desc">Покрытие фич комплексными сценариями, работа с приоритетами и серьёзностью, участие в планировании тестирования и регрессе.</p>
                     </li>
                     <li>
                         <label class="roadmap-level">
                             <input type="checkbox" data-level-id="manual-middle">
                             <span class="roadmap-level-label">Middle</span>
                         </label>
+                        <p class="roadmap-level-desc">Планирование тестирования, анализ требований, работа с архитектурой (клиент–сервер, БД), владение bug lifecycle и SDLC.</p>
                     </li>
                     <li>
                         <label class="roadmap-level">
                             <input type="checkbox" data-level-id="manual-middle-plus">
                             <span class="roadmap-level-label">Middle+</span>
                         </label>
+                        <p class="roadmap-level-desc">Оптимизация процессов QA, постановка метрик качества, менторство джунов, участие в выборе инструментов и практик.</p>
                     </li>
                     <li>
                         <label class="roadmap-level">
                             <input type="checkbox" data-level-id="manual-senior">
                             <span class="roadmap-level-label">Senior</span>
                         </label>
+                        <p class="roadmap-level-desc">Тест‑стратегия и тест‑план на уровне продукта, влияние на продуктовую и техническую архитектуру, ответственность за качество целиком.</p>
                     </li>
                 </ul>
             </div>
@@ -98,24 +103,28 @@
                             <input type="checkbox" data-level-id="auto-trainee">
                             <span class="roadmap-level-label">Auto QA Trainee</span>
                         </label>
+                        <p class="roadmap-level-desc">Основы языка программирования для автотестов, базовые концепции тест‑фреймворков, запуск готовых тестов.</p>
                     </li>
                     <li>
                         <label class="roadmap-level">
                             <input type="checkbox" data-level-id="auto-junior">
                             <span class="roadmap-level-label">Auto QA Junior</span>
                         </label>
+                        <p class="roadmap-level-desc">Написание простых UI/API автотестов, работа с Git и CI, анализ падений и поддержка тестового набора.</p>
                     </li>
                     <li>
                         <label class="roadmap-level">
                             <input type="checkbox" data-level-id="auto-middle">
                             <span class="roadmap-level-label">Auto QA Middle</span>
                         </label>
+                        <p class="roadmap-level-desc">Проектирование архитектуры автотестов, покрытие критических бизнес‑сценариев, оптимизация скорости прогона и стабильности.</p>
                     </li>
                     <li>
                         <label class="roadmap-level">
                             <input type="checkbox" data-level-id="auto-senior">
                             <span class="roadmap-level-label">Auto QA Senior</span>
                         </label>
+                        <p class="roadmap-level-desc">Стратегия автоматизации на уровне продукта/компании, выбор стека, интеграция автотестов в процессы разработки и релизов.</p>
                     </li>
                 </ul>
             </div>
@@ -146,12 +155,12 @@
             <section class="sdlc-visual">
                 <h2>Процесс дня (SDLC)</h2>
                 <ol class="sdlc-steps" aria-label="Этапы жизненного цикла ПО">
-                    <li class="sdlc-step" data-sdlc-step="idea">1. Идея</li>
-                    <li class="sdlc-step" data-sdlc-step="requirements">2. Требования</li>
-                    <li class="sdlc-step" data-sdlc-step="design">3. Архитектура и дизайн</li>
-                    <li class="sdlc-step" data-sdlc-step="dev">4. Разработка (билд)</li>
-                    <li class="sdlc-step" data-sdlc-step="qa">5. Тестирование</li>
-                    <li class="sdlc-step" data-sdlc-step="fix">6. Исправление дефектов</li>
+                    <li class="sdlc-step" data-sdlc-step="idea">Идея</li>
+                    <li class="sdlc-step" data-sdlc-step="requirements">Требования</li>
+                    <li class="sdlc-step" data-sdlc-step="design">Архитектура и дизайн</li>
+                    <li class="sdlc-step" data-sdlc-step="dev">Разработка (билд)</li>
+                    <li class="sdlc-step" data-sdlc-step="qa">Тестирование</li>
+                    <li class="sdlc-step" data-sdlc-step="fix">Исправление дефектов</li>
                 </ol>
                 <p class="sdlc-hint">Подсказка: симулятор подсвечивает текущий этап и помогает “прожить” день QA — от требований до баг‑фиксов.</p>
             </section>
@@ -240,6 +249,15 @@
                         <li><strong>Этап 5 — Тестирование</strong>: QA/QC проверяют соответствие билда требованиям, ищут дефекты, оценивают качество. <em>Результат: баг‑репорты и понимание состояния сборки.</em></li>
                         <li><strong>Этап 6 — Исправление дефектов</strong>: разработчики исправляют найденные ошибки (баг‑фиксинг), QA перепроверяет. <em>Результат: исправлены все критические дефекты на текущем этапе.</em></li>
                         <li><strong>Этап 7 — Верификация и RC Build</strong>: тестировщики перепроверяют исправленные дефекты. Возможны две ситуации: (1) все критические дефекты действительно исправлены и мы получаем RC‑билд (Release Candidate), (2) находятся новые или не до конца исправленные проблемы, и цикл “баг‑фиксинг → верификация” повторяется до получения стабильного RC‑билда. <em>Итог: получен RC Build, готовый к релизу.</em></li>
+                    </ul>
+
+                    <p class="theory-block-title">QA vs QC — в чём разница</p>
+                    <ul>
+                        <li><strong>QA (Quality Assurance)</strong> — обеспечение качества: процедуры и практики, которые охватывают весь жизненный цикл ПО (от идей и требований до релиза и поддержки), чтобы процесс разработки в целом был качественным.</li>
+                        <li><strong>Главная цель QA</strong> — выстроить такой процесс, при котором дефектов возникает меньше, а продукт стабилен и предсказуем по качеству.</li>
+                        <li><strong>QC (Quality Control)</strong> — контроль качества: часть QA, сосредоточенная на проверке конкретного продукта (билда) — анализ результатов тестирования, поиск ошибок, сравнение с требованиями.</li>
+                        <li><strong>Примеры QC‑задач</strong>: проверить соответствие требованиям и уровню качества, оценить готовность к релизу, найти и описать критические дефекты.</li>
+                        <li><strong>Главная цель QC</strong> — убедиться, что конкретный билд соответствует заявленным требованиям и уровню качества заказчика.</li>
                     </ul>
 
                     <!-- Дублируем блоки, чтобы анимация шла по кругу -->

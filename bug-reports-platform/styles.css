@@ -428,6 +428,12 @@ body {
     color: #666;
 }
 
+.roadmap-level-desc {
+    margin-top: 0.1rem;
+    font-size: 0.78rem;
+    color: #666;
+}
+
 .main {
     flex: 1;
     padding: 2rem;
