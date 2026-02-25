@@ -23,6 +23,10 @@ body {
     color: #333;
 }
 
+.hidden {
+    display: none !important;
+}
+
 .layout {
     max-width: 1100px;
     margin: 2rem auto;
@@ -39,6 +43,56 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 1.5rem;
+}
+
+.header-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.header-donate {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    text-decoration: none;
+    background: rgba(255, 241, 224, 0.95);
+    box-shadow: 0 0 0 1px rgba(255, 213, 164, 0.9), 0 2px 6px rgba(0,0,0,0.12);
+    color: #8a4b00;
+    font-size: 0.85rem;
+}
+
+.header-donate:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+}
+
+.money-icon {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ffe5a6, #ffb24a);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.9);
+}
+
+.money-icon::before {
+    content: '$';
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: rgba(77, 36, 0, 0.9);
+}
+
+.donate-label {
+    font-weight: 600;
 }
 
 .header-left h1 {
@@ -92,6 +146,174 @@ body {
 
 .tg-label {
     font-weight: 500;
+}
+
+.simulator-day {
+    margin-bottom: 1.25rem;
+    padding: 1rem 1.1rem;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(240, 246, 255, 0.9), rgba(255,255,255,1));
+    border: 1px solid rgba(213, 226, 255, 0.9);
+}
+
+.simulator-greeting {
+    font-weight: 700;
+    color: #334;
+    margin-bottom: 0.75rem;
+}
+
+.today-board-title {
+    font-size: 0.85rem;
+    color: #556;
+    margin-bottom: 0.5rem;
+}
+
+.today-tasks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.task-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    border: 1px solid rgba(220, 220, 220, 0.9);
+    background: rgba(255,255,255,0.95);
+    color: #333;
+}
+
+.task-chip.status-todo {
+    border-color: rgba(200, 210, 255, 1);
+    background: rgba(232, 238, 255, 0.9);
+    color: #2f3f8a;
+}
+
+.task-chip.status-inprogress {
+    border-color: rgba(255, 210, 140, 1);
+    background: rgba(255, 244, 223, 0.95);
+    color: #7a4a00;
+}
+
+.task-chip.status-done {
+    border-color: rgba(165, 232, 188, 1);
+    background: rgba(226, 255, 237, 0.95);
+    color: #1f6b3a;
+}
+
+.sdlc-visual {
+    margin: 1.25rem 0 1.5rem;
+    padding: 1rem 1.1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(230, 236, 255, 0.9);
+    background: rgba(255,255,255,0.95);
+}
+
+.sdlc-visual h2 {
+    font-size: 1.05rem;
+    margin-bottom: 0.75rem;
+    color: #444;
+}
+
+.sdlc-steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    padding-left: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.sdlc-step {
+    list-style: decimal;
+    padding: 0.5rem 0.6rem;
+    border-radius: 10px;
+    background: rgba(245, 247, 255, 0.95);
+    border: 1px solid rgba(220, 226, 255, 0.9);
+    color: #2f3f8a;
+    font-size: 0.85rem;
+}
+
+.sdlc-step.active {
+    background: rgba(226, 255, 237, 0.95);
+    border-color: rgba(165, 232, 188, 1);
+    color: #1f6b3a;
+}
+
+.sdlc-hint {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.tests-panel {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed #eee;
+}
+
+.tests-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.quiz-area {
+    margin-top: 0.9rem;
+    padding: 1rem 1.1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(230, 236, 255, 0.9);
+    background: rgba(255,255,255,0.95);
+}
+
+.quiz-progress {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.quiz-question {
+    font-weight: 700;
+    color: #334;
+    margin-bottom: 0.75rem;
+}
+
+.quiz-options {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.quiz-options .btn {
+    text-align: left;
+    width: 100%;
+}
+
+.quiz-feedback {
+    margin-top: 0.8rem;
+}
+
+.quiz-feedback .ok {
+    border: 1px solid rgba(165, 232, 188, 1);
+    background: rgba(226, 255, 237, 0.95);
+    color: #1f6b3a;
+    padding: 0.75rem 0.85rem;
+    border-radius: 12px;
+}
+
+.quiz-feedback .bad {
+    border: 1px solid rgba(255, 182, 193, 1);
+    background: rgba(255, 240, 245, 0.95);
+    color: #8b2340;
+    padding: 0.75rem 0.85rem;
+    border-radius: 12px;
+    margin-bottom: 0.6rem;
+}
+
+.quiz-actions {
+    margin-top: 0.75rem;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .roadmap-banner {

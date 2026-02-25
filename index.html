@@ -13,16 +13,28 @@
             <h1>Bug Reports Platform</h1>
             <p class="subtitle">Инструмент для тестировщиков — создание и экспорт багрепортов</p>
         </div>
-        <a
-            class="header-telegram"
-            href="https://t.me/tgworkspace_bot"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Трекер рабочего времени в Telegram"
-        >
-            <span class="tg-icon"></span>
-            <span class="tg-label">Трекер рабочего времени</span>
-        </a>
+        <div class="header-actions">
+            <a
+                class="header-donate"
+                href="https://boosty.to/eliksir/donate"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Поддержать развитие симулятора"
+            >
+                <span class="money-icon"></span>
+                <span class="donate-label">Задонатить</span>
+            </a>
+            <a
+                class="header-telegram"
+                href="https://t.me/tgworkspace_bot"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Трекер рабочего времени в Telegram"
+            >
+                <span class="tg-icon"></span>
+                <span class="tg-label">Трекер рабочего времени</span>
+            </a>
+        </div>
     </header>
 
     <section class="roadmap-banner">
@@ -68,6 +80,32 @@
 
     <div class="layout">
         <main class="main">
+            <section class="simulator-day">
+                <p class="simulator-greeting">Доброе утро, мистер тестировщик! Тебя сегодня ждут великие дела.</p>
+                <div class="today-board">
+                    <div class="today-board-title">Задачи на сегодня (симуляция Jira)</div>
+                    <div class="today-tasks">
+                        <span class="task-chip status-todo">QA-101 • Проверить новый релиз (Smoke)</span>
+                        <span class="task-chip status-inprogress">QA-102 • Ретест фикса бага (Sanity)</span>
+                        <span class="task-chip status-todo">QA-103 • Протестировать API эндпоинт (GET /users)</span>
+                        <span class="task-chip status-done">QA-099 • Завести багрепорт по найденному дефекту</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="sdlc-visual">
+                <h2>Процесс дня (SDLC)</h2>
+                <ol class="sdlc-steps" aria-label="Этапы жизненного цикла ПО">
+                    <li class="sdlc-step" data-sdlc-step="idea">1. Идея</li>
+                    <li class="sdlc-step" data-sdlc-step="requirements">2. Требования</li>
+                    <li class="sdlc-step" data-sdlc-step="design">3. Архитектура и дизайн</li>
+                    <li class="sdlc-step" data-sdlc-step="dev">4. Разработка (билд)</li>
+                    <li class="sdlc-step" data-sdlc-step="qa">5. Тестирование</li>
+                    <li class="sdlc-step" data-sdlc-step="fix">6. Исправление дефектов</li>
+                </ol>
+                <p class="sdlc-hint">Подсказка: симулятор подсвечивает текущий этап и помогает “прожить” день QA — от требований до баг‑фиксов.</p>
+            </section>
+
             <button id="createBugReportBtn" class="btn btn-primary">
                 Создать багрепорт
             </button>
@@ -75,6 +113,22 @@
             <section id="bugReportsList" class="bug-list">
                 <h2>Мои багрепорты</h2>
                 <p class="empty-state">Пока нет созданных отчётов. Нажмите кнопку выше.</p>
+            </section>
+
+            <section id="testsPanel" class="tests-panel">
+                <div class="tests-header">
+                    <h2>Тесты (тренажёр)</h2>
+                    <button id="startQuizBtn" class="btn btn-secondary" type="button">Начать</button>
+                </div>
+                <div id="quizArea" class="quiz-area hidden" aria-live="polite">
+                    <div class="quiz-progress" id="quizProgress"></div>
+                    <div class="quiz-question" id="quizQuestion"></div>
+                    <div class="quiz-options" id="quizOptions"></div>
+                    <div class="quiz-feedback" id="quizFeedback"></div>
+                    <div class="quiz-actions">
+                        <button id="nextQuizBtn" class="btn btn-primary hidden" type="button">Следующий вопрос</button>
+                    </div>
+                </div>
             </section>
         </main>
 

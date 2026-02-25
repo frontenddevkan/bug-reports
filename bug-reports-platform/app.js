@@ -23,6 +23,142 @@ const cancelFormBtn = document.getElementById('cancelFormBtn');
 let bugReports = [];
 
 /**
+ * Симулятор: подсветка текущего этапа SDLC (визуализация процесса дня)
+ * Мы циклично подсвечиваем этапы и сохраняем индекс в localStorage,
+ * чтобы при обновлении страницы продолжать примерно "с того же места".
+ */
+function initSdlcHighlight() {
+    const steps = Array.from(document.querySelectorAll('.sdlc-step'));
+    if (!steps.length) return;
+
+    const storageKey = 'simulator.sdlcStepIndex';
+    let idx = 0;
+    try {
+        const raw = localStorage.getItem(storageKey);
+        const parsed = raw ? Number(raw) : 0;
+        if (Number.isFinite(parsed) && parsed >= 0) idx = parsed % steps.length;
+    } catch (_) {
+        // ignore
+    }
+
+    function render() {
+        steps.forEach((el, i) => el.classList.toggle('active', i === idx));
+    }
+
+    function tick() {
+        idx = (idx + 1) % steps.length;
+        try {
+            localStorage.setItem(storageKey, String(idx));
+        } catch (_) {
+            // ignore
+        }
+        render();
+    }
+
+    render();
+    setInterval(tick, 9000);
+}
+
+/**
+ * Тесты (первые вопросы по SDLC)
+ */
+function initQuiz() {
+    const startBtn = document.getElementById('startQuizBtn');
+    const quizArea = document.getElementById('quizArea');
+    const progressEl = document.getElementById('quizProgress');
+    const questionEl = document.getElementById('quizQuestion');
+    const optionsEl = document.getElementById('quizOptions');
+    const feedbackEl = document.getElementById('quizFeedback');
+    const nextBtn = document.getElementById('nextQuizBtn');
+
+    if (!startBtn || !quizArea || !progressEl || !questionEl || !optionsEl || !feedbackEl || !nextBtn) return;
+
+    const questions = [
+        {
+            q: 'Что такое Acceptance criteria (приёмочные критерии)?',
+            options: [
+                { t: 'Набор условий, при выполнении которых заказчик считает фичу/продукт готовыми', ok: true, why: 'Приёмочные критерии — это условия “готовности”, согласованные с заказчиком/PO.' },
+                { t: 'Список всех возможных багов в системе', ok: false, why: 'Нет. Приёмочные критерии — это условия готовности, а не список багов.' },
+                { t: 'Список задач для разработчиков на спринт', ok: false, why: 'Нет. Это ближе к планированию спринта, а не к критериям приёмки.' },
+            ],
+        },
+        {
+            q: 'На каком этапе появляется “билд”, пригодный для тестирования?',
+            options: [
+                { t: 'Этап 4 — Разработка', ok: true, why: 'На этапе разработки создаётся рабочая сборка (билд), которую можно начинать тестировать.' },
+                { t: 'Этап 1 — Идея', ok: false, why: 'На этапе идеи кода и сборки ещё нет.' },
+                { t: 'Этап 2 — Сбор требований', ok: false, why: 'На этапе требований формируются требования и критерии, но билда ещё нет.' },
+            ],
+        },
+        {
+            q: 'Какая основная цель этапа тестирования (Этап 5)?',
+            options: [
+                { t: 'Проверить, что билд соответствует требованиям и нуждам клиента, и оценить качество', ok: true, why: 'QA проверяет соответствие требованиям и качество, оформляет баг‑репорты.' },
+                { t: 'Выбрать языки программирования и базу данных', ok: false, why: 'Это относится к архитектуре/дизайну (Этап 3), а не к тестированию.' },
+                { t: 'Сформулировать идею продукта', ok: false, why: 'Это Этап 1 (Идея).' },
+            ],
+        },
+    ];
+
+    let current = 0;
+    let locked = false;
+
+    function showQuestion() {
+        locked = false;
+        nextBtn.classList.add('hidden');
+        feedbackEl.innerHTML = '';
+        optionsEl.innerHTML = '';
+        const item = questions[current];
+        progressEl.textContent = `Вопрос ${current + 1} из ${questions.length}`;
+        questionEl.textContent = item.q;
+
+        item.options.forEach((opt) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-secondary';
+            btn.textContent = opt.t;
+            btn.addEventListener('click', () => {
+                if (locked) return;
+                locked = true;
+
+                if (opt.ok) {
+                    feedbackEl.innerHTML = `<div class="ok"><strong>Верно!</strong> ${escapeHtml(opt.why)}</div>`;
+                } else {
+                    const correct = item.options.find(o => o.ok);
+                    feedbackEl.innerHTML =
+                        `<div class="bad"><strong>Неверно.</strong> ${escapeHtml(opt.why)}</div>` +
+                        `<div class="ok"><strong>Как правильно:</strong> ${escapeHtml(correct ? correct.why : '')}</div>`;
+                }
+
+                nextBtn.classList.remove('hidden');
+            });
+            optionsEl.appendChild(btn);
+        });
+    }
+
+    startBtn.addEventListener('click', () => {
+        quizArea.classList.remove('hidden');
+        current = 0;
+        showQuestion();
+        startBtn.textContent = 'Перезапустить';
+        logStep('Открыт раздел тестов (квиз).');
+    });
+
+    nextBtn.addEventListener('click', () => {
+        current += 1;
+        if (current >= questions.length) {
+            progressEl.textContent = `Готово: ${questions.length} вопросов`;
+            questionEl.textContent = 'Тест завершён. Отличная работа!';
+            optionsEl.innerHTML = '';
+            feedbackEl.innerHTML = `<div class="ok"><strong>Результат:</strong> ты прошла мини‑тест по SDLC. Дальше добавим вопросы по HTTP, баг‑репортам, типам тестирования и собесу.</div>`;
+            nextBtn.classList.add('hidden');
+            return;
+        }
+        showQuestion();
+    });
+}
+
+/**
  * Логирование в консоль (раньше показывали в отдельном блоке на странице)
  */
 function logStep(message) {
@@ -87,6 +223,10 @@ document.addEventListener('keydown', function (event) {
         closeModal();
     }
 });
+
+// Инициализация симулятора (визуализации + тесты)
+initSdlcHighlight();
+initQuiz();
 
 /**
  * Утилита: экранирование HTML, чтобы пользовательский ввод
