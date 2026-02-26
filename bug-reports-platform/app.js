@@ -146,7 +146,45 @@ function initRoadmap() {
 }
 
 /**
- * Тесты (первые вопросы по SDLC)
+ * Банк вопросов для теоретических тестов (основной раздел + всплывающий попап)
+ */
+const QUIZ_QUESTIONS = [
+    {
+        q: 'Что такое Acceptance criteria (приёмочные критерии)?',
+        options: [
+            { t: 'Набор условий, при выполнении которых заказчик считает фичу/продукт готовыми', ok: true, why: 'Приёмочные критерии — это условия “готовности”, согласованные с заказчиком/PO.' },
+            { t: 'Список всех возможных багов в системе', ok: false, why: 'Нет. Приёмочные критерии — это условия готовности, а не список багов.' },
+            { t: 'Список задач для разработчиков на спринт', ok: false, why: 'Нет. Это ближе к планированию спринта, а не к критериям приёмки.' },
+        ],
+    },
+    {
+        q: 'На каком этапе появляется “билд”, пригодный для тестирования?',
+        options: [
+            { t: 'Этап 4 — Разработка', ok: true, why: 'На этапе разработки создаётся рабочая сборка (билд), которую можно начинать тестировать.' },
+            { t: 'Этап 1 — Идея', ok: false, why: 'На этапе идеи кода и сборки ещё нет.' },
+            { t: 'Этап 2 — Сбор требований', ok: false, why: 'На этапе требований формируются требования и критерии, но билда ещё нет.' },
+        ],
+    },
+    {
+        q: 'Какая основная цель этапа тестирования (Этап 5)?',
+        options: [
+            { t: 'Проверить, что билд соответствует требованиям и нуждам клиента, и оценить качество', ok: true, why: 'QA проверяет соответствие требованиям и качество, оформляет баг‑репорты.' },
+            { t: 'Выбрать языки программирования и базу данных', ok: false, why: 'Это относится к архитектуре/дизайну (Этап 3), а не к тестированию.' },
+            { t: 'Сформулировать идею продукта', ok: false, why: 'Это Этап 1 (Идея).' },
+        ],
+    },
+    {
+        q: 'Что происходит на этапе верификации и что такое RC Build?',
+        options: [
+            { t: 'QA перепроверяют исправленные дефекты; при успешной верификации получаем RC‑билд — кандидат в релиз', ok: true, why: 'Этап 7 — верификация фиксов. Если все критические дефекты исправлены — сборка становится RC Build (release candidate).' },
+            { t: 'Выбираются инструменты разработки и проектируется архитектура', ok: false, why: 'Это про архитектуру и дизайн (Этап 3), а не про верификацию.' },
+            { t: 'Пишутся бизнес‑требования и приёмочные критерии', ok: false, why: 'Это делается на этапе сбора требований (Этап 2), до разработки и тестирования.' },
+        ],
+    },
+];
+
+/**
+ * Тесты (основной раздел “Тесты” внизу страницы)
  */
 function initQuiz() {
     const startBtn = document.getElementById('startQuizBtn');
@@ -159,41 +197,6 @@ function initQuiz() {
 
     if (!startBtn || !quizArea || !progressEl || !questionEl || !optionsEl || !feedbackEl || !nextBtn) return;
 
-    const questions = [
-        {
-            q: 'Что такое Acceptance criteria (приёмочные критерии)?',
-            options: [
-                { t: 'Набор условий, при выполнении которых заказчик считает фичу/продукт готовыми', ok: true, why: 'Приёмочные критерии — это условия “готовности”, согласованные с заказчиком/PO.' },
-                { t: 'Список всех возможных багов в системе', ok: false, why: 'Нет. Приёмочные критерии — это условия готовности, а не список багов.' },
-                { t: 'Список задач для разработчиков на спринт', ok: false, why: 'Нет. Это ближе к планированию спринта, а не к критериям приёмки.' },
-            ],
-        },
-        {
-            q: 'На каком этапе появляется “билд”, пригодный для тестирования?',
-            options: [
-                { t: 'Этап 4 — Разработка', ok: true, why: 'На этапе разработки создаётся рабочая сборка (билд), которую можно начинать тестировать.' },
-                { t: 'Этап 1 — Идея', ok: false, why: 'На этапе идеи кода и сборки ещё нет.' },
-                { t: 'Этап 2 — Сбор требований', ok: false, why: 'На этапе требований формируются требования и критерии, но билда ещё нет.' },
-            ],
-        },
-        {
-            q: 'Какая основная цель этапа тестирования (Этап 5)?',
-            options: [
-                { t: 'Проверить, что билд соответствует требованиям и нуждам клиента, и оценить качество', ok: true, why: 'QA проверяет соответствие требованиям и качество, оформляет баг‑репорты.' },
-                { t: 'Выбрать языки программирования и базу данных', ok: false, why: 'Это относится к архитектуре/дизайну (Этап 3), а не к тестированию.' },
-                { t: 'Сформулировать идею продукта', ok: false, why: 'Это Этап 1 (Идея).' },
-            ],
-        },
-        {
-            q: 'Что происходит на этапе верификации и что такое RC Build?',
-            options: [
-                { t: 'QA перепроверяют исправленные дефекты; при успешной верификации получаем RC‑билд — кандидат в релиз', ok: true, why: 'Этап 7 — верификация фиксов. Если все критические дефекты исправлены — сборка становится RC Build (release candidate).' },
-                { t: 'Выбираются инструменты разработки и проектируется архитектура', ok: false, why: 'Это про архитектуру и дизайн (Этап 3), а не про верификацию.' },
-                { t: 'Пишутся бизнес‑требования и приёмочные критерии', ok: false, why: 'Это делается на этапе сбора требований (Этап 2), до разработки и тестирования.' },
-            ],
-        },
-    ];
-
     let current = 0;
     let locked = false;
 
@@ -202,8 +205,8 @@ function initQuiz() {
         nextBtn.classList.add('hidden');
         feedbackEl.innerHTML = '';
         optionsEl.innerHTML = '';
-        const item = questions[current];
-        progressEl.textContent = `Вопрос ${current + 1} из ${questions.length}`;
+        const item = QUIZ_QUESTIONS[current];
+        progressEl.textContent = `Вопрос ${current + 1} из ${QUIZ_QUESTIONS.length}`;
         questionEl.textContent = item.q;
 
         item.options.forEach((opt) => {
@@ -240,8 +243,8 @@ function initQuiz() {
 
     nextBtn.addEventListener('click', () => {
         current += 1;
-        if (current >= questions.length) {
-            progressEl.textContent = `Готово: ${questions.length} вопросов`;
+        if (current >= QUIZ_QUESTIONS.length) {
+            progressEl.textContent = `Готово: ${QUIZ_QUESTIONS.length} вопросов`;
             questionEl.textContent = 'Тест завершён. Отличная работа!';
             optionsEl.innerHTML = '';
             feedbackEl.innerHTML = `<div class="ok"><strong>Результат:</strong> ты прошла мини‑тест по SDLC. Дальше добавим вопросы по HTTP, баг‑репортам, типам тестирования и собесу.</div>`;
@@ -250,6 +253,133 @@ function initQuiz() {
         }
         showQuestion();
     });
+}
+
+/**
+ * Всплывающий мини‑квиз: каждые N минут показывает 4 рандомных вопроса
+ */
+function initQuizPopup() {
+    const popup = document.getElementById('quizPopup');
+    const progressEl = document.getElementById('quizPopupProgress');
+    const questionEl = document.getElementById('quizPopupQuestion');
+    const optionsEl = document.getElementById('quizPopupOptions');
+    const feedbackEl = document.getElementById('quizPopupFeedback');
+    const nextBtn = document.getElementById('quizPopupNextBtn');
+    const closeBtn = document.getElementById('quizPopupCloseBtn');
+
+    if (!popup || !progressEl || !questionEl || !optionsEl || !feedbackEl || !nextBtn || !closeBtn) return;
+
+    const POPUP_INTERVAL_MS = 30 * 60 * 1000; // 30 минут
+    const QUESTIONS_PER_POPUP = 4;
+    const storageKey = 'simulator.quiz.usedIndices';
+
+    let used = [];
+    try {
+        const raw = localStorage.getItem(storageKey);
+        const parsed = raw ? JSON.parse(raw) : [];
+        if (Array.isArray(parsed)) used = parsed;
+    } catch (_) {
+        // ignore
+    }
+
+    let sessionQuestions = [];
+    let currentIndex = 0;
+    let locked = false;
+    let timerId = null;
+
+    function saveUsed() {
+        try {
+            localStorage.setItem(storageKey, JSON.stringify(used));
+        } catch (_) {
+            // ignore
+        }
+    }
+
+    function pickSessionQuestions() {
+        const availableIndices = QUIZ_QUESTIONS.map((_, idx) => idx).filter(idx => !used.includes(idx));
+        if (availableIndices.length < QUESTIONS_PER_POPUP) {
+            used = [];
+        }
+        const pool = QUIZ_QUESTIONS.map((_, idx) => idx).filter(idx => !used.includes(idx));
+        const picked = [];
+        while (picked.length < QUESTIONS_PER_POPUP && pool.length) {
+            const rndIdx = Math.floor(Math.random() * pool.length);
+            const [val] = pool.splice(rndIdx, 1);
+            picked.push(val);
+            used.push(val);
+        }
+        saveUsed();
+        sessionQuestions = picked;
+        currentIndex = 0;
+    }
+
+    function showQuestion() {
+        locked = false;
+        nextBtn.classList.add('hidden');
+        feedbackEl.innerHTML = '';
+        optionsEl.innerHTML = '';
+
+        const globalIndex = sessionQuestions[currentIndex];
+        const item = QUIZ_QUESTIONS[globalIndex];
+        progressEl.textContent = `Вопрос ${currentIndex + 1} из ${sessionQuestions.length}`;
+        questionEl.textContent = item.q;
+
+        item.options.forEach((opt) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-secondary';
+            btn.textContent = opt.t;
+            btn.addEventListener('click', () => {
+                if (locked) return;
+                locked = true;
+
+                if (opt.ok) {
+                    feedbackEl.innerHTML = `<div class="ok"><strong>Верно!</strong> ${escapeHtml(opt.why)}</div>`;
+                } else {
+                    const correct = item.options.find(o => o.ok);
+                    feedbackEl.innerHTML =
+                        `<div class="bad"><strong>Неверно.</strong> ${escapeHtml(opt.why)}</div>` +
+                        `<div class="ok"><strong>Как правильно:</strong> ${escapeHtml(correct ? correct.why : '')}</div>`;
+                }
+
+                nextBtn.classList.remove('hidden');
+            });
+            optionsEl.appendChild(btn);
+        });
+    }
+
+    function closePopup() {
+        popup.classList.add('hidden');
+        schedule();
+    }
+
+    function startSession() {
+        pickSessionQuestions();
+        popup.classList.remove('hidden');
+        showQuestion();
+    }
+
+    function schedule() {
+        if (timerId) {
+            clearTimeout(timerId);
+        }
+        timerId = setTimeout(startSession, POPUP_INTERVAL_MS);
+    }
+
+    nextBtn.addEventListener('click', () => {
+        currentIndex += 1;
+        if (currentIndex >= sessionQuestions.length) {
+            closePopup();
+            return;
+        }
+        showQuestion();
+    });
+
+    closeBtn.addEventListener('click', () => {
+        closePopup();
+    });
+
+    schedule();
 }
 
 /**
@@ -493,6 +623,7 @@ initSdlcHighlight();
 initRoadmap();
 initQuiz();
 initChecklists();
+initQuizPopup();
 
 /**
  * Утилита: экранирование HTML, чтобы пользовательский ввод

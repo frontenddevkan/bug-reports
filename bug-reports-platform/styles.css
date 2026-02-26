@@ -828,3 +828,140 @@ body {
     color: rgba(255,255,255,0.8);
 }
 
+/* Левый сайдбар-навигация по разделам симулятора */
+.main-layout-columns {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.left-sidebar-nav {
+    width: 180px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: #f5f7ff;
+    border: 1px solid rgba(220, 226, 255, 0.9);
+    padding: 0.75rem 0.75rem 0.9rem;
+    position: sticky;
+    top: 1.5rem;
+}
+
+.left-sidebar-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.left-nav-link {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.35rem 0.55rem;
+    border-radius: 8px;
+    border: none;
+    background: #ffffff;
+    color: #334155;
+    font-size: 0.82rem;
+    cursor: pointer;
+    margin-bottom: 0.3rem;
+    box-shadow: 0 1px 3px rgba(15,23,42,0.12);
+}
+
+.left-nav-link:hover {
+    background: #e0ecff;
+}
+
+.main-content {
+    flex: 1;
+}
+
+.section-hint {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+/* Попап‑квиз каждые N минут */
+.quiz-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1500;
+}
+
+.quiz-popup.hidden {
+    display: none;
+}
+
+.quiz-popup-window {
+    background: #ffffff;
+    border-radius: 14px;
+    max-width: 520px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(15,23,42,0.35);
+    padding: 1.25rem 1.4rem 1.4rem;
+}
+
+.quiz-popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.quiz-popup-title {
+    font-weight: 600;
+    color: #111827;
+    font-size: 0.95rem;
+}
+
+.quiz-popup-close {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #9ca3af;
+}
+
+.quiz-popup-close:hover {
+    color: #4b5563;
+}
+
+.quiz-popup-progress {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-bottom: 0.4rem;
+}
+
+.quiz-popup-question {
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.6rem;
+}
+
+.quiz-popup-options {
+    display: grid;
+    gap: 0.4rem;
+}
+
+.quiz-popup-options .btn {
+    width: 100%;
+    text-align: left;
+}
+
+.quiz-popup-feedback {
+    margin-top: 0.7rem;
+}
+
+.quiz-popup-actions {
+    margin-top: 0.8rem;
+    display: flex;
+    justify-content: flex-end;
+}
+

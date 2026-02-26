@@ -133,89 +133,110 @@
 
     <div class="layout">
         <main class="main">
-            <section class="simulator-day">
-                <p class="simulator-greeting">Доброе утро, мистер тестировщик! Тебя сегодня ждут великие дела.</p>
-                <div class="today-board">
-                    <div class="today-board-title">Задачи на сегодня (симуляция Jira)</div>
-                    <div class="today-tasks">
-                        <span class="task-chip status-todo">QA-101 • Проверить новый релиз (Smoke)</span>
-                        <span class="task-chip status-inprogress">QA-102 • Ретест фикса бага (Sanity)</span>
-                        <span class="task-chip status-todo">QA-103 • Протестировать API эндпоинт (GET /users)</span>
-                        <span class="task-chip status-done">QA-099 • Завести багрепорт по найденному дефекту</span>
+            <div class="main-layout-columns">
+                <nav class="left-sidebar-nav">
+                    <div class="left-sidebar-title">Навигация</div>
+                    <button class="left-nav-link" type="button" onclick="document.getElementById('bugReportsList').scrollIntoView({behavior:'smooth'});">
+                        Багрепорты
+                    </button>
+                    <button class="left-nav-link" type="button" onclick="document.getElementById('testsPanel').scrollIntoView({behavior:'smooth'});">
+                        Тесты
+                    </button>
+                    <button class="left-nav-link" type="button" onclick="document.getElementById('checklistsPanel').scrollIntoView({behavior:'smooth'});">
+                        Чек‑листы
+                    </button>
+                    <button class="left-nav-link" type="button" onclick="document.getElementById('sdlcSection').scrollIntoView({behavior:'smooth'});">
+                        Процесс дня (SDLC)
+                    </button>
+                </nav>
+
+                <div class="main-content">
+                    <section class="simulator-day">
+                        <p class="simulator-greeting">Доброе утро, мистер тестировщик! Тебя сегодня ждут великие дела.</p>
+                        <div class="today-board">
+                            <div class="today-board-title">Задачи на сегодня (симуляция Jira)</div>
+                            <div class="today-tasks">
+                                <span class="task-chip status-todo">QA-101 • Проверить новый релиз (Smoke)</span>
+                                <span class="task-chip status-inprogress">QA-102 • Ретест фикса бага (Sanity)</span>
+                                <span class="task-chip status-todo">QA-103 • Протестировать API эндпоинт (GET /users)</span>
+                                <span class="task-chip status-done">QA-099 • Завести багрепорт по найденному дефекту</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="sdlcSection" class="sdlc-visual">
+                        <h2>Процесс дня (SDLC)</h2>
+                        <ol class="sdlc-steps" aria-label="Этапы жизненного цикла ПО">
+                            <li class="sdlc-step" data-sdlc-step="idea">Идея</li>
+                            <li class="sdlc-step" data-sdlc-step="requirements">Требования</li>
+                            <li class="sdlc-step" data-sdlc-step="design">Архитектура и дизайн</li>
+                            <li class="sdlc-step" data-sdlc-step="dev">Разработка (билд)</li>
+                            <li class="sdlc-step" data-sdlc-step="qa">Тестирование</li>
+                            <li class="sdlc-step" data-sdlc-step="fix">Исправление дефектов</li>
+                        </ol>
+                        <p class="sdlc-hint">Подсказка: симулятор подсвечивает текущий этап и помогает “прожить” день QA — от требований до баг‑фиксов.</p>
                     </div>
-                </div>
-            </section>
+                    </section>
 
-            <section class="sdlc-visual">
-                <h2>Процесс дня (SDLC)</h2>
-                <ol class="sdlc-steps" aria-label="Этапы жизненного цикла ПО">
-                    <li class="sdlc-step" data-sdlc-step="idea">Идея</li>
-                    <li class="sdlc-step" data-sdlc-step="requirements">Требования</li>
-                    <li class="sdlc-step" data-sdlc-step="design">Архитектура и дизайн</li>
-                    <li class="sdlc-step" data-sdlc-step="dev">Разработка (билд)</li>
-                    <li class="sdlc-step" data-sdlc-step="qa">Тестирование</li>
-                    <li class="sdlc-step" data-sdlc-step="fix">Исправление дефектов</li>
-                </ol>
-                <p class="sdlc-hint">Подсказка: симулятор подсвечивает текущий этап и помогает “прожить” день QA — от требований до баг‑фиксов.</p>
-            </section>
+                    <button id="createBugReportBtn" class="btn btn-primary">
+                        Создать багрепорт
+                    </button>
 
-            <button id="createBugReportBtn" class="btn btn-primary">
-                Создать багрепорт
-            </button>
+                    <section id="bugReportsList" class="bug-list">
+                        <h2>Мои багрепорты</h2>
+                        <p class="empty-state">Пока нет созданных отчётов. Нажмите кнопку выше.</p>
+                    </section>
 
-            <section id="bugReportsList" class="bug-list">
-                <h2>Мои багрепорты</h2>
-                <p class="empty-state">Пока нет созданных отчётов. Нажмите кнопку выше.</p>
-            </section>
+                    <section id="testsPanel" class="tests-panel">
+                        <div class="tests-header">
+                            <h2>Тесты (тренажёр)</h2>
+                            <button id="startQuizBtn" class="btn btn-secondary" type="button">Начать</button>
+                        </div>
+                        <p class="section-hint">
+                            Короткие теоретические вопросы по SDLC и базовой теории тестирования. Выбирай один из вариантов,
+                            сразу получаешь разбор, а прогресс помогает “раскачивать” мышление тестировщика небольшими порциями.
+                        </p>
+                        <div id="quizArea" class="quiz-area hidden" aria-live="polite">
+                            <div class="quiz-progress" id="quizProgress"></div>
+                            <div class="quiz-question" id="quizQuestion"></div>
+                            <div class="quiz-options" id="quizOptions"></div>
+                            <div class="quiz-feedback" id="quizFeedback"></div>
+                            <div class="quiz-actions">
+                                <button id="nextQuizBtn" class="btn btn-primary hidden" type="button">Следующий вопрос</button>
+                            </div>
+                        </div>
+                    </section>
 
-            <section id="testsPanel" class="tests-panel">
-                <div class="tests-header">
-                    <h2>Тесты (тренажёр)</h2>
-                    <button id="startQuizBtn" class="btn btn-secondary" type="button">Начать</button>
+                    <section id="checklistsPanel" class="checklists-panel">
+                        <div class="checklists-header">
+                            <h2>Чек‑листы</h2>
+                        </div>
+                        <p class="section-hint">
+                            Здесь ты тренируешься работать с чек‑листами как в реальной задаче: можно просто проходить список
+                            проверок по фиче или регрессу, а можно отрабатывать правильный порядок шагов в режиме “Тренировка порядка”.
+                        </p>
+                        <div class="checklists-controls">
+                            <div class="checklists-types">
+                                <button type="button" class="btn btn-secondary checklists-type-btn" data-checklist-id="web-smoke">
+                                    Web: Smoke‑чек‑лист
+                                </button>
+                            </div>
+                            <div class="checklists-modes">
+                                <button type="button" class="btn btn-secondary checklists-mode-btn" data-checklist-mode="run">
+                                    Проходить чек‑лист
+                                </button>
+                                <button type="button" class="btn btn-secondary checklists-mode-btn" data-checklist-mode="order">
+                                    Тренировка порядка
+                                </button>
+                            </div>
+                        </div>
+                        <div class="checklists-content">
+                            <div id="checklistRunArea" class="checklist-run-area"></div>
+                            <div id="checklistOrderArea" class="checklist-order-area hidden"></div>
+                        </div>
+                    </section>
                 </div>
-                <p class="section-hint">
-                    Короткие теоретические вопросы по SDLC и базовой теории тестирования. Выбирай один из вариантов,
-                    сразу получаешь разбор, а прогресс помогает “раскачивать” мышление тестировщика небольшими порциями.
-                </p>
-                <div id="quizArea" class="quiz-area hidden" aria-live="polite">
-                    <div class="quiz-progress" id="quizProgress"></div>
-                    <div class="quiz-question" id="quizQuestion"></div>
-                    <div class="quiz-options" id="quizOptions"></div>
-                    <div class="quiz-feedback" id="quizFeedback"></div>
-                    <div class="quiz-actions">
-                        <button id="nextQuizBtn" class="btn btn-primary hidden" type="button">Следующий вопрос</button>
-                    </div>
-                </div>
-            </section>
-
-            <section id="checklistsPanel" class="checklists-panel">
-                <div class="checklists-header">
-                    <h2>Чек‑листы</h2>
-                </div>
-                <p class="section-hint">
-                    Здесь ты тренируешься работать с чек‑листами как в реальной задаче: можно просто проходить список
-                    проверок по фиче или регрессу, а можно отрабатывать правильный порядок шагов в режиме “Тренировка порядка”.
-                </p>
-                <div class="checklists-controls">
-                    <div class="checklists-types">
-                        <button type="button" class="btn btn-secondary checklists-type-btn" data-checklist-id="web-smoke">
-                            Web: Smoke‑чек‑лист
-                        </button>
-                    </div>
-                    <div class="checklists-modes">
-                        <button type="button" class="btn btn-secondary checklists-mode-btn" data-checklist-mode="run">
-                            Проходить чек‑лист
-                        </button>
-                        <button type="button" class="btn btn-secondary checklists-mode-btn" data-checklist-mode="order">
-                            Тренировка порядка
-                        </button>
-                    </div>
-                </div>
-                <div class="checklists-content">
-                    <div id="checklistRunArea" class="checklist-run-area"></div>
-                    <div id="checklistOrderArea" class="checklist-order-area hidden"></div>
-                </div>
-            </section>
+            </div>
         </main>
 
         <aside class="theory-sidebar">
@@ -470,6 +491,25 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Всплывающий мини‑тест, который периодически напоминает теорию -->
+    <div id="quizPopup" class="quiz-popup hidden" aria-live="polite">
+        <div class="quiz-popup-window">
+            <div class="quiz-popup-header">
+                <span class="quiz-popup-title">Мини‑тест по теории тестирования</span>
+                <button type="button" id="quizPopupCloseBtn" class="quiz-popup-close">&times;</button>
+            </div>
+            <div class="quiz-popup-body">
+                <div id="quizPopupProgress" class="quiz-popup-progress"></div>
+                <div id="quizPopupQuestion" class="quiz-popup-question"></div>
+                <div id="quizPopupOptions" class="quiz-popup-options"></div>
+                <div id="quizPopupFeedback" class="quiz-popup-feedback"></div>
+                <div class="quiz-popup-actions">
+                    <button type="button" id="quizPopupNextBtn" class="btn btn-primary hidden">Следующий вопрос</button>
+                </div>
+            </div>
         </div>
     </div>
 
