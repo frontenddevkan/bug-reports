@@ -18,9 +18,13 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background:
+        radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(129, 140, 248, 0.18), transparent 55%),
+        radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.12), transparent 55%),
+        #020617;
     min-height: 100vh;
-    color: #333;
+    color: #e5e7eb;
 }
 
 .hidden {
@@ -28,7 +32,7 @@ body {
 }
 
 .layout {
-    max-width: 1100px;
+    max-width: 1180px;
     margin: 2rem auto;
     display: flex;
     gap: 1.5rem;
@@ -36,9 +40,13 @@ body {
 }
 
 .header {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(15, 23, 42, 0.82);
     padding: 1.5rem 2rem;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 20px 60px rgba(15,23,42,0.8);
+    border-radius: 18px;
+    border: 1px solid rgba(148, 163, 184, 0.5);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -97,12 +105,12 @@ body {
 
 .header-left h1 {
     font-size: 2rem;
-    color: #667eea;
+    color: #bfdbfe;
 }
 
 .subtitle {
     margin-top: 0.5rem;
-    color: #666;
+    color: #9ca3af;
 }
 
 .header-telegram {
@@ -151,27 +159,30 @@ body {
 .simulator-day {
     margin-bottom: 1.25rem;
     padding: 1rem 1.1rem;
-    border-radius: 12px;
-    background: linear-gradient(180deg, rgba(240, 246, 255, 0.9), rgba(255,255,255,1));
-    border: 1px solid rgba(213, 226, 255, 0.9);
+    border-radius: 16px;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 }
 
 .simulator-greeting {
     font-weight: 700;
-    color: #334;
+    color: #e5e7eb;
     margin-bottom: 0.75rem;
 }
 
 .today-board-title {
     font-size: 0.85rem;
-    color: #556;
+    color: #9ca3af;
     margin-bottom: 0.5rem;
 }
 
 .today-tasks {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 0.5rem;
+    overflow-x: auto;
 }
 
 .task-chip {
@@ -180,41 +191,43 @@ body {
     padding: 0.35rem 0.6rem;
     border-radius: 999px;
     font-size: 0.8rem;
-    border: 1px solid rgba(220, 220, 220, 0.9);
-    background: rgba(255,255,255,0.95);
-    color: #333;
+    border: 1px solid rgba(37, 99, 235, 0.6);
+    background: rgba(15, 23, 42, 0.96);
+    color: #e5e7eb;
 }
 
 .task-chip.status-todo {
-    border-color: rgba(200, 210, 255, 1);
-    background: rgba(232, 238, 255, 0.9);
-    color: #2f3f8a;
+    border-color: rgba(59, 130, 246, 0.9);
+    background: radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.4), rgba(15,23,42,0.98));
+    color: #dbeafe;
 }
 
 .task-chip.status-inprogress {
-    border-color: rgba(255, 210, 140, 1);
-    background: rgba(255, 244, 223, 0.95);
-    color: #7a4a00;
+    border-color: rgba(251, 191, 36, 0.9);
+    background: radial-gradient(circle at 0% 0%, rgba(251, 191, 36, 0.35), rgba(15,23,42,0.98));
+    color: #fef9c3;
 }
 
 .task-chip.status-done {
-    border-color: rgba(165, 232, 188, 1);
-    background: rgba(226, 255, 237, 0.95);
-    color: #1f6b3a;
+    border-color: rgba(34, 197, 94, 0.9);
+    background: radial-gradient(circle at 0% 0%, rgba(34, 197, 94, 0.35), rgba(15,23,42,0.98));
+    color: #bbf7d0;
 }
 
 .sdlc-visual {
     margin: 1.25rem 0 1.5rem;
     padding: 1rem 1.1rem;
-    border-radius: 12px;
-    border: 1px solid rgba(230, 236, 255, 0.9);
-    background: rgba(255,255,255,0.95);
+    border-radius: 16px;
+    border: 1px solid rgba(148, 163, 184, 0.5);
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 }
 
 .sdlc-visual h2 {
     font-size: 1.05rem;
     margin-bottom: 0.75rem;
-    color: #444;
+    color: #e5e7eb;
 }
 
 .sdlc-steps {
@@ -229,21 +242,21 @@ body {
     list-style: none;
     padding: 0.5rem 0.6rem;
     border-radius: 10px;
-    background: rgba(245, 247, 255, 0.95);
-    border: 1px solid rgba(220, 226, 255, 0.9);
-    color: #2f3f8a;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(59, 130, 246, 0.65);
+    color: #dbeafe;
     font-size: 0.85rem;
 }
 
 .sdlc-step.active {
-    background: rgba(226, 255, 237, 0.95);
-    border-color: rgba(165, 232, 188, 1);
-    color: #1f6b3a;
+    background: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.35), rgba(15, 23, 42, 0.98));
+    border-color: rgba(56, 189, 248, 0.9);
+    color: #f9fafb;
 }
 
 .sdlc-hint {
     font-size: 0.85rem;
-    color: #666;
+    color: #9ca3af;
 }
 
 .tests-panel {
@@ -262,9 +275,11 @@ body {
 .quiz-area {
     margin-top: 0.9rem;
     padding: 1rem 1.1rem;
-    border-radius: 12px;
-    border: 1px solid rgba(230, 236, 255, 0.9);
-    background: rgba(255,255,255,0.95);
+    border-radius: 16px;
+    border: 1px solid rgba(148, 163, 184, 0.5);
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 }
 
 .quiz-progress {
@@ -356,9 +371,11 @@ body {
 .checklist-run-area,
 .checklist-order-area {
     padding: 0.85rem 0.9rem;
-    border-radius: 10px;
-    border: 1px solid rgba(230, 236, 255, 0.9);
-    background: rgba(255,255,255,0.95);
+    border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 }
 
 .checklist-run-area ul,
@@ -408,11 +425,13 @@ body {
 .roadmap-banner {
     margin: 1rem auto 0;
     max-width: 1100px;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 3px 14px rgba(0,0,0,0.06);
+    background: rgba(15, 23, 42, 0.9);
+    border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(15,23,42,0.8);
     padding: 0.7rem 1rem 0.9rem;
-    border: 1px solid rgba(230, 236, 255, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.6);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
 }
 
 .roadmap-toggle {
@@ -433,7 +452,7 @@ body {
 
 .roadmap-title {
     font-weight: 500;
-    color: #334;
+    color: #e5e7eb;
 }
 
 .roadmap-content {
@@ -449,8 +468,8 @@ body {
     position: relative;
     display: flex;
     align-items: flex-start;
-    gap: 2.5rem;
-    padding: 0.8rem 0.4rem 0.4rem;
+    gap: 2.2rem;
+    padding: 0.7rem 0.4rem 0.4rem;
     min-width: 650px;
 }
 
@@ -459,8 +478,8 @@ body {
     position: absolute;
     left: 0;
     right: 0;
-    top: 1.25rem;
-    height: 4px;
+    top: 1.2rem;
+    height: 3px;
     border-radius: 999px;
     background: rgba(226, 232, 255, 0.9);
 }
@@ -468,8 +487,8 @@ body {
 .roadmap-timeline-progress {
     position: absolute;
     left: 0;
-    top: 1.25rem;
-    height: 4px;
+    top: 1.2rem;
+    height: 3px;
     border-radius: 999px;
     background: linear-gradient(90deg, #3b82f6, #0ea5e9);
     width: 0;
@@ -560,9 +579,12 @@ body {
 .main {
     flex: 1;
     padding: 2rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    background: rgba(15, 23, 42, 0.9);
+    border-radius: 18px;
+    box-shadow: 0 24px 80px rgba(15,23,42,0.9);
+    border: 1px solid rgba(148, 163, 184, 0.6);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
 }
 
 /* Кнопка */
@@ -727,22 +749,22 @@ body {
 
 /* Карточка багрепорта в списке */
 .bug-card {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.5);
+    border-radius: 14px;
     padding: 1rem 1.25rem;
     margin-top: 1rem;
-    background: #fafafa;
+    background: rgba(15, 23, 42, 0.95);
 }
 
 .bug-card h3 {
     margin-bottom: 0.25rem;
     font-size: 1rem;
-    color: #333;
+    color: #f9fafb;
 }
 
 .bug-meta {
     font-size: 0.8rem;
-    color: #777;
+    color: #9ca3af;
     margin-bottom: 0.5rem;
 }
 
@@ -769,9 +791,9 @@ body {
 /* Правый сайдбар с теорией */
 .theory-sidebar {
     width: 300px;
-    background: rgba(255,255,255,0.95);
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    background: rgba(15, 23, 42, 0.92);
+    border-radius: 18px;
+    box-shadow: 0 24px 80px rgba(15,23,42,0.9);
     padding: 1.25rem 1.5rem;
     font-size: 0.85rem;
     position: sticky;
@@ -784,7 +806,7 @@ body {
 .theory-sidebar h2 {
     font-size: 1rem;
     margin-bottom: 0.75rem;
-    color: #444;
+    color: #e5e7eb;
 }
 
 .theory-ticker {
@@ -826,6 +848,42 @@ body {
     text-align: center;
     padding: 1rem;
     color: rgba(255,255,255,0.8);
+}
+
+/* Адаптив: планшеты и мобильные */
+@media (max-width: 960px) {
+    .layout {
+        flex-direction: column;
+        max-width: 100%;
+        padding: 0 1rem 1.5rem;
+    }
+
+    .main {
+        padding: 1.25rem 1rem;
+    }
+
+    .main-layout-columns {
+        flex-direction: column;
+    }
+
+    .left-sidebar-nav {
+        position: static;
+        width: 100%;
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+
+    .left-nav-link {
+        white-space: nowrap;
+    }
+
+    .theory-sidebar {
+        position: static;
+        width: 100%;
+        max-height: none;
+        margin-top: 1rem;
+    }
 }
 
 /* Левый сайдбар-навигация по разделам симулятора */
