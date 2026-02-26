@@ -636,10 +636,28 @@ function initGreetingPopup() {
 
     setTimeout(() => {
         popup.classList.add('hidden');
-    }, 2500);
+    }, 2000);
 }
 
 initGreetingPopup();
+
+/**
+ * Левое меню: плавный скролл к секциям
+ */
+(function initLeftNavScroll() {
+    const links = Array.from(document.querySelectorAll('.left-nav-link[data-scroll-target]'));
+    if (!links.length) return;
+
+    links.forEach((btn) => {
+        const targetSelector = btn.getAttribute('data-scroll-target');
+        if (!targetSelector) return;
+        btn.addEventListener('click', () => {
+            const target = document.querySelector(targetSelector);
+            if (!target) return;
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+})();
 
 /**
  * Утилита: экранирование HTML, чтобы пользовательский ввод

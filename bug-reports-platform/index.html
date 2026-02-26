@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bug Reports Platform — Создание отчётов об ошибках</title>
+    <title>ТРЕНАЖЕР ТЕСТИРОВЩИКА — симулятор рабочего дня QA</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div class="page-shell">
     <!-- 
     УРОК: Структура HTML страницы
     - header: шапка сайта
@@ -16,8 +17,8 @@
     -->
     <header class="header">
         <div class="header-left">
-            <h1>Bug Reports Platform</h1>
-            <p class="subtitle">Инструмент для тестировщиков — создание и экспорт багрепортов</p>
+            <h1>ТРЕНАЖЕР ТЕСТИРОВЩИКА</h1>
+            <p class="subtitle">Футуристичный симулятор рабочего дня QA: теория, практика, багрепорты и автотесты</p>
         </div>
         <div class="header-actions">
             <a
@@ -138,9 +139,17 @@
     </section>
 
     <div class="layout">
-        <main class="main">
+        <div class="main-layout-columns">
+            <nav class="left-sidebar-nav">
+                <div class="left-sidebar-title">Навигация по симулятору</div>
+                <button type="button" class="left-nav-link" data-scroll-target="#simulatorDay">Рабочий день (SDLC)</button>
+                <button type="button" class="left-nav-link" data-scroll-target="#bugReportsList">Багрепорты</button>
+                <button type="button" class="left-nav-link" data-scroll-target="#testsPanel">Тесты</button>
+                <button type="button" class="left-nav-link" data-scroll-target="#checklistsPanel">Чек‑листы</button>
+            </nav>
+            <main class="main main-content" id="simulatorDay">
             <section class="simulator-day">
-                <p class="simulator-greeting">Доброе утро, мистер тестировщик! Тебя сегодня ждут великие дела.</p>
+                <p class="simulator-greeting">Сегодня ты — главный по качеству. Смотри задачи, проходи чек‑листы и тренируйся находить баги.</p>
                 <div class="today-board">
                     <div class="today-board-title">Задачи на сегодня (симуляция Jira)</div>
                     <div class="today-tasks">
@@ -219,7 +228,8 @@
                     <div id="checklistOrderArea" class="checklist-order-area hidden"></div>
                 </div>
             </section>
-        </main>
+            </main>
+        </div>
 
         <!-- Правый сайдбар с "барабаном" теории -->
         <aside class="theory-sidebar">
@@ -496,8 +506,14 @@
         </div>
     </div>
 
+    <div id="greetingPopup" class="greeting-popup hidden">
+        <div class="greeting-popup-window">
+            <p class="greeting-popup-text">Привет, мистер тестировщик. Добро пожаловать в тренажёр тестировщика.</p>
+        </div>
+    </div>
+
     <footer class="footer">
-        <p>Bug Reports Platform — обучение + практика</p>
+        <p>ТРЕНАЖЕР ТЕСТИРОВЩИКА — обучение + практика</p>
     </footer>
 
     <!-- 
@@ -505,6 +521,7 @@
     все элементы (кнопки, формы) уже существуют в DOM
     -->
     <script src="app.js"></script>
+    </div>
 </body>
 </html>
 
