@@ -82,74 +82,67 @@ function initSdlcHighlight() {
  * - прогресс‑бар по общему количеству отмеченных уровней
  */
 function initRoadmap() {
-    const levelInputs = Array.from(document.querySelectorAll('.roadmap-level input[data-level-id]'));
-    const progressFill = document.getElementById('roadmapProgressFill');
-    if (!levelInputs.length || !progressFill) return;
+    const steps = Array.from(document.querySelectorAll('.roadmap-step'));
+    const progressEl = document.getElementById('roadmapTimelineProgress');
+    if (!steps.length || !progressEl) return;
 
-    const storageKey = 'simulator.roadmap.levels';
-    let completed = {};
+    const storageKey = 'simulator.roadmap.v2';
+    let state = {};
 
     try {
         const raw = localStorage.getItem(storageKey);
         const parsed = raw ? JSON.parse(raw) : {};
         if (parsed && typeof parsed === 'object') {
-            completed = parsed;
+            state = parsed;
         }
     } catch (_) {
         // ignore
     }
 
-    function applyState() {
-        const byTrack = {};
-        levelInputs.forEach((input) => {
-            const id = input.getAttribute('data-level-id');
-            const li = input.closest('.roadmap-level');
-            const trackWrapper = input.closest('.roadmap-levels');
-            const track = trackWrapper ? trackWrapper.getAttribute('data-roadmap-track') : 'manual';
+    function apply() {
+        const total = steps.length;
+        let lastDoneIndex = -1;
 
-            if (!byTrack[track]) byTrack[track] = [];
-            byTrack[track].push({ input, li });
-
-            const isDone = !!completed[id];
-            input.checked = isDone;
-            if (li) {
-                li.classList.toggle('roadmap-level--completed', isDone);
-                li.classList.remove('roadmap-level--current');
-            }
+        steps.forEach((step, index) => {
+            const id = step.getAttribute('data-step-id');
+            const done = !!state[id];
+            step.classList.toggle('roadmap-step--done', done);
+            step.classList.remove('roadmap-step--current');
+            if (done) lastDoneIndex = index;
         });
 
-        Object.values(byTrack).forEach((arr) => {
-            let lastCompletedIndex = -1;
-            arr.forEach((item, index) => {
-                if (item.input.checked) lastCompletedIndex = index;
-            });
-            if (lastCompletedIndex >= 0) {
-                const li = arr[lastCompletedIndex].li;
-                if (li) li.classList.add('roadmap-level--current');
-            }
-        });
+        // Текущий шаг — следующий после последнего завершённого
+        const currentIndex = Math.min(lastDoneIndex + 1, steps.length - 1);
+        if (currentIndex >= 0) {
+            steps[currentIndex].classList.add('roadmap-step--current');
+        }
 
-        const total = levelInputs.length;
-        const doneCount = levelInputs.filter((input) => completed[input.getAttribute('data-level-id')]).length;
-        const percent = total ? Math.round((doneCount / total) * 100) : 0;
-        progressFill.style.width = `${percent}%`;
-        progressFill.title = `Прогресс по грейдам: ${percent}% (${doneCount} из ${total})`;
+        // Прогресс по линии
+        let percent = 0;
+        if (total > 1 && lastDoneIndex >= 0) {
+            percent = (lastDoneIndex / (total - 1)) * 100;
+        }
+        progressEl.style.width = `${percent}%`;
+        progressEl.title = `Прогресс по роадмапу: ${Math.round(percent)}%`;
     }
 
-    levelInputs.forEach((input) => {
-        input.addEventListener('change', () => {
-            const id = input.getAttribute('data-level-id');
-            completed[id] = input.checked;
+    steps.forEach((step) => {
+        const id = step.getAttribute('data-step-id');
+        const circle = step.querySelector('.roadmap-circle');
+        if (!circle) return;
+        circle.addEventListener('click', () => {
+            const currentlyDone = !!state[id];
+            state[id] = !currentlyDone;
             try {
-                localStorage.setItem(storageKey, JSON.stringify(completed));
+                localStorage.setItem(storageKey, JSON.stringify(state));
             } catch (_) {
                 // ignore
             }
-            applyState();
+            apply();
         });
     });
 
-    applyState();
+    apply();
 }
 
 /**

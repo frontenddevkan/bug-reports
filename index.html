@@ -41,93 +41,93 @@
         <div class="roadmap-toggle">
             <span class="roadmap-title">Роадмап тестировщика: путь от Trainee до Senior и Auto QA</span>
         </div>
-        <div class="roadmap-content">
-            <div class="roadmap-column">
-                <h3>Ручное тестирование</h3>
-                <ul class="roadmap-levels" data-roadmap-track="manual">
-                    <li>
-                        <label class="roadmap-level">
-                            <input type="checkbox" data-level-id="manual-trainee">
-                            <span class="roadmap-level-label">Trainee / Intern</span>
-                        </label>
-                        <p class="roadmap-level-desc">Базовые термины (ПО, баг, дефект, тест‑кейс, чек‑лист), скриншоты и логи, первые шаги в DevTools и HTTP‑статусах.</p>
-                    </li>
-                    <li>
-                        <label class="roadmap-level">
-                            <input type="checkbox" data-level-id="manual-junior">
-                            <span class="roadmap-level-label">Junior</span>
-                        </label>
-                        <p class="roadmap-level-desc">Грамотные багрепорты, чек‑листы, понимание типов тестирования, уверенная работа с браузером и простыми API через Postman/Insomnia.</p>
-                    </li>
-                    <li>
-                        <label class="roadmap-level">
-                            <input type="checkbox" data-level-id="manual-junior-plus">
-                            <span class="roadmap-level-label">Junior+</span>
-                        </label>
-                        <p class="roadmap-level-desc">Покрытие фич комплексными сценариями, работа с приоритетами и серьёзностью, участие в планировании тестирования и регрессе.</p>
-                    </li>
-                    <li>
-                        <label class="roadmap-level">
-                            <input type="checkbox" data-level-id="manual-middle">
-                            <span class="roadmap-level-label">Middle</span>
-                        </label>
-                        <p class="roadmap-level-desc">Планирование тестирования, анализ требований, работа с архитектурой (клиент–сервер, БД), владение bug lifecycle и SDLC.</p>
-                    </li>
-                    <li>
-                        <label class="roadmap-level">
-                            <input type="checkbox" data-level-id="manual-middle-plus">
-                            <span class="roadmap-level-label">Middle+</span>
-                        </label>
-                        <p class="roadmap-level-desc">Оптимизация процессов QA, постановка метрик качества, менторство джунов, участие в выборе инструментов и практик.</p>
-                    </li>
-                    <li>
-                        <label class="roadmap-level">
-                            <input type="checkbox" data-level-id="manual-senior">
-                            <span class="roadmap-level-label">Senior</span>
-                        </label>
-                        <p class="roadmap-level-desc">Тест‑стратегия и тест‑план на уровне продукта, влияние на продуктовую и техническую архитектуру, ответственность за качество целиком.</p>
-                    </li>
-                </ul>
+        <div class="roadmap-scroll">
+            <div class="roadmap-timeline" id="roadmapTimeline">
+                <div class="roadmap-timeline-progress" id="roadmapTimelineProgress"></div>
+
+                <div class="roadmap-step" data-step-id="trainee-theory">
+                    <button type="button" class="roadmap-circle">
+                        <span class="roadmap-circle-index">1</span>
+                    </button>
+                    <div class="roadmap-step-labels">
+                        <div class="roadmap-step-grade">Trainee</div>
+                        <div class="roadmap-step-skill">База теории тестирования, уровни и виды</div>
+                    </div>
+                </div>
+
+                <div class="roadmap-step" data-step-id="trainee-docs">
+                    <button type="button" class="roadmap-circle">
+                        <span class="roadmap-circle-index">2</span>
+                    </button>
+                    <div class="roadmap-step-labels">
+                        <div class="roadmap-step-grade">Trainee</div>
+                        <div class="roadmap-step-skill">Чек‑листы, тест‑кейсы, баг‑репорты</div>
+                    </div>
+                </div>
+
+                <div class="roadmap-step" data-step-id="junior-basics">
+                    <button type="button" class="roadmap-circle">
+                        <span class="roadmap-circle-index">3</span>
+                    </button>
+                    <div class="roadmap-step-labels">
+                        <div class="roadmap-step-grade">Junior</div>
+                        <div class="roadmap-step-skill">База Junior QA: цели тестирования, этапы, типы</div>
+                    </div>
+                </div>
+
+                <div class="roadmap-step" data-step-id="junior-tools">
+                    <button type="button" class="roadmap-circle">
+                        <span class="roadmap-circle-index">4</span>
+                    </button>
+                    <div class="roadmap-step-labels">
+                        <div class="roadmap-step-grade">Junior</div>
+                        <div class="roadmap-step-skill">DevTools, Postman, SQL, баг‑трекеры</div>
+                    </div>
+                </div>
+
+                <div class="roadmap-step" data-step-id="junior-interview">
+                    <button type="button" class="roadmap-circle">
+                        <span class="roadmap-circle-index">5</span>
+                    </button>
+                    <div class="roadmap-step-labels">
+                        <div class="roadmap-step-grade">Junior</div>
+                        <div class="roadmap-step-skill">Подготовка к собесам: вопросы, задачи, кейсы</div>
+                    </div>
+                </div>
+
+                <div class="roadmap-step" data-step-id="middle-ownership">
+                    <button type="button" class="roadmap-circle">
+                        <span class="roadmap-circle-index">6</span>
+                    </button>
+                    <div class="roadmap-step-labels">
+                        <div class="roadmap-step-grade">Middle</div>
+                        <div class="roadmap-step-skill">Планирование, стратегия, работа с рисками</div>
+                    </div>
+                </div>
+
+                <div class="roadmap-step" data-step-id="auto-qa">
+                    <button type="button" class="roadmap-circle">
+                        <span class="roadmap-circle-index">7</span>
+                    </button>
+                    <div class="roadmap-step-labels">
+                        <div class="roadmap-step-grade">Auto QA</div>
+                        <div class="roadmap-step-skill">Автотесты, CI/CD, API/UI‑фреймворки</div>
+                    </div>
+                </div>
+
+                <div class="roadmap-step" data-step-id="senior-qa">
+                    <button type="button" class="roadmap-circle">
+                        <span class="roadmap-circle-index">8</span>
+                    </button>
+                    <div class="roadmap-step-labels">
+                        <div class="roadmap-step-grade">Senior / Lead</div>
+                        <div class="roadmap-step-skill">Стратегия качества, процессы, менторство</div>
+                    </div>
+                </div>
             </div>
-            <div class="roadmap-column">
-                <h3>Автоматизация тестирования</h3>
-                <ul class="roadmap-levels" data-roadmap-track="auto">
-                    <li>
-                        <label class="roadmap-level">
-                            <input type="checkbox" data-level-id="auto-trainee">
-                            <span class="roadmap-level-label">Auto QA Trainee</span>
-                        </label>
-                        <p class="roadmap-level-desc">Основы языка программирования для автотестов, базовые концепции тест‑фреймворков, запуск готовых тестов.</p>
-                    </li>
-                    <li>
-                        <label class="roadmap-level">
-                            <input type="checkbox" data-level-id="auto-junior">
-                            <span class="roadmap-level-label">Auto QA Junior</span>
-                        </label>
-                        <p class="roadmap-level-desc">Написание простых UI/API автотестов, работа с Git и CI, анализ падений и поддержка тестового набора.</p>
-                    </li>
-                    <li>
-                        <label class="roadmap-level">
-                            <input type="checkbox" data-level-id="auto-middle">
-                            <span class="roadmap-level-label">Auto QA Middle</span>
-                        </label>
-                        <p class="roadmap-level-desc">Проектирование архитектуры автотестов, покрытие критических бизнес‑сценариев, оптимизация скорости прогона и стабильности.</p>
-                    </li>
-                    <li>
-                        <label class="roadmap-level">
-                            <input type="checkbox" data-level-id="auto-senior">
-                            <span class="roadmap-level-label">Auto QA Senior</span>
-                        </label>
-                        <p class="roadmap-level-desc">Стратегия автоматизации на уровне продукта/компании, выбор стека, интеграция автотестов в процессы разработки и релизов.</p>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="roadmap-progress-bar" aria-label="Прогресс по роадмапу тестировщика">
-            <div class="roadmap-progress-fill" id="roadmapProgressFill"></div>
         </div>
         <p class="roadmap-note">
-            Отмечай галочками достигнутые уровни: зелёное облако покажет, что уже пройдено, а прогресс‑бар отразит путь от стажёра до Auto QA.
+            Кликайте по кружкам, чтобы отмечать пройденные этапы. Текущий шаг мягко подсвечивается, прогресс сохраняется в браузере.
         </p>
     </section>
 
