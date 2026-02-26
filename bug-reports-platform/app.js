@@ -22,6 +22,21 @@ const cancelFormBtn = document.getElementById('cancelFormBtn');
 // Локальное хранилище багрепортов (память + localStorage)
 let bugReports = [];
 
+// Базовые чек‑листы (можно расширять)
+const CHECKLISTS = {
+    'web-smoke': {
+        id: 'web-smoke',
+        title: 'Web: Smoke‑чек‑лист',
+        items: [
+            'Страница открывается без ошибок HTTP (статусы 2xx/3xx, нет 4xx/5xx).',
+            'Основные элементы интерфейса отображаются (шапка, меню, контент).',
+            'Ключевые кнопки и ссылки кликабельны и ведут на ожидаемые страницы.',
+            'Форма (если есть) отправляется без критических ошибок валидации/скриптов.',
+            'После базовых действий нет явных ошибок в консоли браузера.'
+        ]
+    }
+};
+
 /**
  * Симулятор: подсветка текущего этапа SDLC (визуализация процесса дня)
  * Мы циклично подсвечиваем этапы и сохраняем индекс в localStorage,
@@ -245,6 +260,176 @@ function initQuiz() {
 }
 
 /**
+ * Чек‑листы: рабочий режим + тренировка порядка
+ */
+function initChecklists() {
+    const panel = document.getElementById('checklistsPanel');
+    if (!panel) return;
+
+    const typeButtons = Array.from(panel.querySelectorAll('.checklists-type-btn'));
+    const modeButtons = Array.from(panel.querySelectorAll('.checklists-mode-btn'));
+    const runArea = document.getElementById('checklistRunArea');
+    const orderArea = document.getElementById('checklistOrderArea');
+
+    if (!typeButtons.length || !modeButtons.length || !runArea || !orderArea) return;
+
+    let currentId = typeButtons[0].getAttribute('data-checklist-id');
+    let currentMode = 'run';
+
+    const storageKeyRun = 'simulator.checklists.run';
+    let runState = {};
+    try {
+        const raw = localStorage.getItem(storageKeyRun);
+        const parsed = raw ? JSON.parse(raw) : {};
+        if (parsed && typeof parsed === 'object') runState = parsed;
+    } catch (_) {
+        // ignore
+    }
+
+    function renderRun() {
+        const cfg = CHECKLISTS[currentId];
+        if (!cfg) return;
+        const stateForList = runState[currentId] || {};
+        runArea.innerHTML = '';
+        const ul = document.createElement('ul');
+        cfg.items.forEach((text, index) => {
+            const li = document.createElement('li');
+            li.className = 'checklist-item';
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.checked = !!stateForList[index];
+            input.addEventListener('change', () => {
+                if (!runState[currentId]) runState[currentId] = {};
+                runState[currentId][index] = input.checked;
+                try {
+                    localStorage.setItem(storageKeyRun, JSON.stringify(runState));
+                } catch (_) {
+                    // ignore
+                }
+            });
+            const label = document.createElement('span');
+            label.textContent = text;
+            li.appendChild(input);
+            li.appendChild(label);
+            ul.appendChild(li);
+        });
+        runArea.appendChild(ul);
+    }
+
+    function renderOrder() {
+        const cfg = CHECKLISTS[currentId];
+        if (!cfg) return;
+        orderArea.innerHTML = '';
+
+        const ul = document.createElement('ul');
+        cfg.items.forEach((text, index) => {
+            const li = document.createElement('li');
+            li.className = 'checklist-order-item';
+            li.textContent = text;
+            li.draggable = true;
+            li.dataset.index = String(index);
+            ul.appendChild(li);
+        });
+
+        orderArea.appendChild(ul);
+
+        const footer = document.createElement('div');
+        footer.className = 'checklist-order-footer';
+        const checkBtn = document.createElement('button');
+        checkBtn.type = 'button';
+        checkBtn.className = 'btn btn-primary';
+        checkBtn.textContent = 'Проверить порядок';
+        footer.appendChild(checkBtn);
+        orderArea.appendChild(footer);
+
+        const result = document.createElement('div');
+        result.className = 'checklist-order-result';
+        orderArea.appendChild(result);
+
+        let dragged = null;
+
+        ul.addEventListener('dragstart', (e) => {
+            const target = e.target;
+            if (target && target.classList.contains('checklist-order-item')) {
+                dragged = target;
+                target.classList.add('dragging');
+            }
+        });
+
+        ul.addEventListener('dragend', (e) => {
+            const target = e.target;
+            if (target && target.classList.contains('checklist-order-item')) {
+                target.classList.remove('dragging');
+            }
+            dragged = null;
+        });
+
+        ul.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            if (!dragged) return;
+            const afterElement = Array.from(ul.querySelectorAll('.checklist-order-item'))
+                .filter(el => el !== dragged)
+                .find(el => {
+                    const box = el.getBoundingClientRect();
+                    return e.clientY < box.top + box.height / 2;
+                });
+            if (!afterElement) {
+                ul.appendChild(dragged);
+            } else {
+                ul.insertBefore(dragged, afterElement);
+            }
+        });
+
+        checkBtn.addEventListener('click', () => {
+            const currentOrder = Array.from(ul.querySelectorAll('.checklist-order-item')).map(li =>
+                Number(li.dataset.index)
+            );
+            const correct = cfg.items.every((_, idx) => currentOrder[idx] === idx);
+            if (correct) {
+                result.innerHTML = '<span style="color:#16a34a;font-weight:600;">Порядок верный — ты выстроила чек‑лист как нужно.</span>';
+            } else {
+                result.innerHTML = '<span style="color:#b91c1c;font-weight:600;">Порядок пока некорректный. Попробуй вспомнить, что логично проверить сначала, а что — после.</span>';
+            }
+        });
+    }
+
+    function applyMode() {
+        if (currentMode === 'run') {
+            runArea.classList.remove('hidden');
+            orderArea.classList.add('hidden');
+            renderRun();
+        } else {
+            runArea.classList.add('hidden');
+            orderArea.classList.remove('hidden');
+            renderOrder();
+        }
+    }
+
+    typeButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            currentId = btn.getAttribute('data-checklist-id');
+            typeButtons.forEach(b => b.classList.remove('btn-primary'));
+            btn.classList.add('btn-primary');
+            applyMode();
+        });
+    });
+
+    modeButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            currentMode = btn.getAttribute('data-checklist-mode') || 'run';
+            modeButtons.forEach(b => b.classList.remove('btn-primary'));
+            btn.classList.add('btn-primary');
+            applyMode();
+        });
+    });
+
+    // Инициализация по умолчанию
+    typeButtons[0].classList.add('btn-primary');
+    modeButtons[0].classList.add('btn-primary');
+    applyMode();
+}
+
+/**
  * Логирование в консоль (раньше показывали в отдельном блоке на странице)
  */
 function logStep(message) {
@@ -314,6 +499,7 @@ document.addEventListener('keydown', function (event) {
 initSdlcHighlight();
 initRoadmap();
 initQuiz();
+initChecklists();
 
 /**
  * Утилита: экранирование HTML, чтобы пользовательский ввод

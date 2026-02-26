@@ -183,6 +183,31 @@
                     </div>
                 </div>
             </section>
+
+            <section id="checklistsPanel" class="checklists-panel">
+                <div class="checklists-header">
+                    <h2>Чек‑листы</h2>
+                </div>
+                <div class="checklists-controls">
+                    <div class="checklists-types">
+                        <button type="button" class="btn btn-secondary checklists-type-btn" data-checklist-id="web-smoke">
+                            Web: Smoke‑чек‑лист
+                        </button>
+                    </div>
+                    <div class="checklists-modes">
+                        <button type="button" class="btn btn-secondary checklists-mode-btn" data-checklist-mode="run">
+                            Проходить чек‑лист
+                        </button>
+                        <button type="button" class="btn btn-secondary checklists-mode-btn" data-checklist-mode="order">
+                            Тренировка порядка
+                        </button>
+                    </div>
+                </div>
+                <div class="checklists-content">
+                    <div id="checklistRunArea" class="checklist-run-area"></div>
+                    <div id="checklistOrderArea" class="checklist-order-area hidden"></div>
+                </div>
+            </section>
         </main>
 
         <aside class="theory-sidebar">
@@ -268,6 +293,19 @@
                         <li><strong>QC Engineer (Quality Control Engineer)</strong> — тест‑лид, работающий в рамках QC‑процесса: следит за уровнем качества продукта на этапе тестирования, сравнивает фактическое качество с требованиями и целями, принимает участие в решении “готово ли к релизу”.</li>
                         <li><strong>Главная цель QC Engineer</strong> — выявить недостатки продукта после завершения разработки, но до релиза, и дать честную картину готовности продукта.</li>
                         <li><em>Особенность:</em> QC Engineer ориентирован на оценку уже реализованного продукта, а не только на написание тест‑кейсов.</li>
+                    </ul>
+
+                    <p class="theory-block-title">Чек‑листы</p>
+                    <ul>
+                        <li><strong>Чек‑лист</strong> — это список действий/проверок, которые нужно выполнить во время тестирования, чтобы ничего не забыть.</li>
+                        <li><strong>Цель чек‑листа</strong> — структурировать проверку и снизить риск пропустить важные шаги, особенно в рутине (регресс, smoke, базовые проверки форм и т.п.).</li>
+                        <li>Чек‑лист обычно проще и короче, чем формальный тест‑кейс: он не всегда содержит детальные шаги, но охватывает ключевые аспекты, которые нужно пройти.</li>
+                        <li>В симуляторе чек‑листы используются как:
+                            <ul>
+                                <li>рабочий инструмент (отмечаешь выполненные проверки по фиче или регрессу);</li>
+                                <li>тренажёр — нужно выстроить шаги в правильном порядке и понять, что и зачем проверяется.</li>
+                            </ul>
+                        </li>
                     </ul>
 
                     <p class="theory-block-title">Модель качества ПО: 6 характеристик</p>

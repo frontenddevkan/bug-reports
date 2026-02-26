@@ -316,6 +316,95 @@ body {
     justify-content: flex-end;
 }
 
+.checklists-panel {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed #eee;
+}
+
+.checklists-header h2 {
+    font-size: 1.05rem;
+    margin-bottom: 0.75rem;
+}
+
+.checklists-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.checklists-types,
+.checklists-modes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.checklists-type-btn,
+.checklists-mode-btn {
+    font-size: 0.82rem;
+    padding: 0.35rem 0.8rem;
+}
+
+.checklists-content {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.checklist-run-area,
+.checklist-order-area {
+    padding: 0.85rem 0.9rem;
+    border-radius: 10px;
+    border: 1px solid rgba(230, 236, 255, 0.9);
+    background: rgba(255,255,255,0.95);
+}
+
+.checklist-run-area ul,
+.checklist-order-area ul {
+    list-style: none;
+    padding-left: 0;
+    display: grid;
+    gap: 0.35rem;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    font-size: 0.86rem;
+}
+
+.checklist-item input[type="checkbox"] {
+    margin-top: 0.15rem;
+}
+
+.checklist-order-item {
+    padding: 0.35rem 0.45rem;
+    border-radius: 6px;
+    border: 1px dashed rgba(200, 210, 255, 0.9);
+    background: rgba(245, 247, 255, 0.9);
+    cursor: grab;
+    font-size: 0.86rem;
+}
+
+.checklist-order-item.dragging {
+    opacity: 0.7;
+    border-style: solid;
+}
+
+.checklist-order-footer {
+    margin-top: 0.6rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.checklist-order-result {
+    margin-top: 0.5rem;
+    font-size: 0.84rem;
+}
+
 .roadmap-banner {
     margin: 1rem auto 0;
     max-width: 1100px;
