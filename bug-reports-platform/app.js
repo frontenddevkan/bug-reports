@@ -636,7 +636,7 @@ function initGreetingPopup() {
 
     setTimeout(() => {
         popup.classList.add('hidden');
-    }, 2000);
+    }, 3000);
 }
 
 initGreetingPopup();
