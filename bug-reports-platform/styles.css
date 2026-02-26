@@ -981,21 +981,24 @@ body {
 }
 
 .greeting-popup-window {
-    background: radial-gradient(circle at 30% 0%, #ffffff, #f3f4ff);
-    border-radius: 18px;
-    padding: 2rem 2.5rem;
-    max-width: 600px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 22px;
+    padding: 2.2rem 2.8rem;
+    max-width: 620px;
     width: 90%;
-    box-shadow: 0 24px 80px rgba(17, 24, 39, 0.6);
+    box-shadow:
+        0 0 0 3px rgba(255, 255, 255, 0.85),
+        0 22px 70px rgba(17, 24, 39, 0.7);
     animation: greeting-pop 0.6s ease-out forwards;
 }
 
 .greeting-popup-text {
-    font-size: 1.6rem;
+    font-size: 1.7rem;
     line-height: 1.4;
     font-weight: 800;
     text-align: center;
-    color: #1f2937;
+    color: #ffffff;
+    text-shadow: 0 2px 6px rgba(15, 23, 42, 0.45);
 }
 
 @keyframes greeting-pop {
