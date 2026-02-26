@@ -581,18 +581,19 @@ body {
 }
 
 .btn-primary {
-    background: #667eea;
-    color: white;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(58, 12, 163, 0.35);
 }
 
 .btn-secondary {
-    background: #e0e0e0;
-    color: #333;
+    background: #fff7d6;
+    color: #7a4a00;
     margin-left: 0.75rem;
 }
 
 .btn-secondary:hover {
-    background: #d0d0d0;
+    background: #ffeeb0;
 }
 
 .bug-list {
@@ -795,7 +796,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    animation: theory-scroll 80s linear infinite;
+    animation: theory-scroll 120s linear infinite;
 }
 
 .theory-block-title {
