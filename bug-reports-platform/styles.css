@@ -965,3 +965,47 @@ body {
     justify-content: flex-end;
 }
 
+/* Приветственная анимашка "Доброе утро, мистер тестировщик" */
+.greeting-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1600;
+}
+
+.greeting-popup.hidden {
+    display: none;
+}
+
+.greeting-popup-window {
+    background: radial-gradient(circle at 30% 0%, #ffffff, #f3f4ff);
+    border-radius: 18px;
+    padding: 2rem 2.5rem;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 24px 80px rgba(17, 24, 39, 0.6);
+    animation: greeting-pop 0.6s ease-out forwards;
+}
+
+.greeting-popup-text {
+    font-size: 1.6rem;
+    line-height: 1.4;
+    font-weight: 800;
+    text-align: center;
+    color: #1f2937;
+}
+
+@keyframes greeting-pop {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+

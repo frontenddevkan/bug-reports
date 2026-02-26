@@ -626,6 +626,22 @@ initChecklists();
 initQuizPopup();
 
 /**
+ * Приветственное всплывающее окно при открытии симулятора
+ */
+function initGreetingPopup() {
+    const popup = document.getElementById('greetingPopup');
+    if (!popup) return;
+
+    popup.classList.remove('hidden');
+
+    setTimeout(() => {
+        popup.classList.add('hidden');
+    }, 3500);
+}
+
+initGreetingPopup();
+
+/**
  * Утилита: экранирование HTML, чтобы пользовательский ввод
  * не превратился в HTML/скрипт на странице.
  */
