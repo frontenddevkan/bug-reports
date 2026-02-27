@@ -371,6 +371,8 @@ body::after {
     border-radius: 18px;
     background: rgba(15, 23, 42, 0.72);
     border: 0.5px solid rgba(56, 189, 248, 0.6);
+    border-left: none;
+    border-right: none; /* только верх/низ, чтобы не давать вертикальные линии в секции second */
     box-shadow:
         0 0 0 0.5px rgba(15, 23, 42, 0.95),
         0 0 0 1.5px rgba(148, 163, 184, 0.35),
@@ -432,6 +434,8 @@ body::after {
     padding: 1rem 1.1rem;
     border-radius: 18px;
     border: 0.5px solid rgba(56, 189, 248, 0.6);
+    border-left: none;
+    border-right: none; /* убираем вертикальные линии у блока процесса дня */
     background: rgba(15, 23, 42, 0.72);
     box-shadow:
         0 0 0 0.5px rgba(15, 23, 42, 0.95),
