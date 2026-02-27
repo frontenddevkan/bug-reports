@@ -837,9 +837,9 @@ body::after {
     width: 100%;
     /* вернуть "красивый" синий градиентный фон */
     background:
-        radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.18), transparent 55%),
-        radial-gradient(circle at 100% 0%, rgba(30, 64, 175, 0.18), transparent 60%),
-        linear-gradient(135deg, rgba(14, 25, 64, 0.12), rgba(30, 64, 175, 0.08), rgba(15, 23, 42, 0.10));
+        radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.16), transparent 55%),
+        radial-gradient(circle at 100% 0%, rgba(30, 64, 175, 0.16), transparent 60%),
+        linear-gradient(135deg, rgba(14, 25, 64, 0.08), rgba(30, 64, 175, 0.06), rgba(15, 23, 42, 0.06));
     border-radius: 0;
     box-shadow:
         0 0 0 0.5px rgba(255, 255, 255, 0.18),
@@ -847,7 +847,7 @@ body::after {
         18px 18px 18px rgba(255, 255, 255, 0.08),
         0 30px 90px rgba(15, 23, 42, 0.98);
     padding: 0.8rem 1.2rem 1rem;
-    border: 0.5px solid rgba(255, 255, 255, 0.18);
+    border: 0.5px solid transparent; /* оставляем только внешний бордер ::before */
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     position: relative;
@@ -857,7 +857,7 @@ body::after {
     content: '';
     position: absolute;
     inset: 0;
-    border: 0.5px solid rgba(56, 189, 248, 0.38);
+    border: 0.5px solid rgba(56, 189, 248, 0.32);
     transform: translate(1px, 1px);
     pointer-events: none;
 }
