@@ -202,6 +202,7 @@ body::after {
         "Courier New",
         monospace;
     letter-spacing: 0.06em;
+    transform: translateY(-1px); /* чуть приподнимаем, чтобы совпало по линии с кнопками в шапке */
 }
 
 /* Глитч-заголовок: лёгкий "сигнал рвётся" */
@@ -1366,11 +1367,11 @@ body::after {
     font-size: 0.85rem;
     position: sticky;
     top: 1.5rem;
-    max-height: calc(100vh - 3rem);
+    max-height: 100vh;
     display: flex;
     flex-direction: column;
     align-self: stretch;
-    min-height: calc(100vh - 3rem);
+    min-height: 100vh; /* во всю высоту экрана */
     overflow: hidden;
     margin-right: 0;
     grid-column: 3;
@@ -1486,7 +1487,7 @@ body::after {
     position: sticky;
     top: 1.5rem;
     align-self: stretch;
-    min-height: calc(100vh - 3rem);
+    min-height: 100vh; /* во всю высоту экрана */
     overflow: hidden;
     margin-left: 0; /* вплотную к левому краю */
     grid-column: 1;
