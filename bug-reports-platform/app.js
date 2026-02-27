@@ -174,7 +174,7 @@ function initBgChargeCanvas() {
                 fade = 1;
             } else {
                 const local = (t - 0.4) / 0.6; // 0..1 для правых 60% экрана
-                fade = 1 - 0.7 * local;        // от 1 до 0.3
+                fade = 1 - 0.74 * local;       // от 1 до 0.26 (~на 4% прозрачнее к правому краю)
             }
             gridCtx.strokeStyle = makeGradient(true, l.pos, 0, len, vBoost, fade);
             gridCtx.beginPath();
@@ -195,7 +195,7 @@ function initBgChargeCanvas() {
                 fade = 1;
             } else {
                 const local = (t - 0.4) / 0.6; // 0..1 для нижних 60% экрана
-                fade = 1 - 0.7 * local;        // от 1 до 0.3
+                fade = 1 - 0.74 * local;       // от 1 до 0.26 (~на 4% прозрачнее к нижнему краю)
             }
             gridCtx.strokeStyle = makeGradient(false, 0, l.pos, len, hBoost, fade);
             gridCtx.beginPath();

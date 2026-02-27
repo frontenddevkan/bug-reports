@@ -1228,10 +1228,14 @@ body::after {
 
 .bug-list {
     margin-top: 2rem;
-    padding-top: 2rem;
+    padding: 1.5rem 1.1rem 0 1.1rem;
     border-top: 1px solid rgba(56, 189, 248, 0.25);
     border-left: none;
     border-right: none;
+    background: rgba(15, 23, 42, 0.86); /* делаем блок менее прозрачным на ~14% */
+    box-shadow: 0 22px 70px rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 }
 
 .empty-state {
