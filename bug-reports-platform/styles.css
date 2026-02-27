@@ -115,7 +115,7 @@ body::after {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     display: flex;
-    align-items: center;
+    align-items: flex-start; /* кнопки по линии заголовка */
     justify-content: space-between;
     gap: 1.5rem;
 }
@@ -123,9 +123,10 @@ body::after {
 .header-actions {
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.875rem; /* +~2px */
     flex-wrap: wrap;
     justify-content: flex-end;
+    padding-top: 0.1rem; /* чуть выше, ближе к h1 */
 }
 
 .header-actions a {
@@ -136,7 +137,7 @@ body::after {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.42rem 0.82rem; /* +~2px */
+    padding: 0.5rem 0.95rem; /* +пару пикселей воздуха */
     border-radius: 0 !important;
     text-decoration: none;
     background: rgba(15, 23, 42, 0.08);
@@ -284,7 +285,7 @@ body::after {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.42rem 0.82rem; /* +~2px */
+    padding: 0.5rem 0.95rem; /* +пару пикселей воздуха */
     border-radius: 0 !important;
     text-decoration: none;
     background: rgba(15, 23, 42, 0.08);
@@ -878,7 +879,7 @@ body::after {
     cursor: pointer;
     font-size: 0.9rem;
     color: var(--text-soft);
-    margin-bottom: 0.45rem;
+    margin-bottom: 0.7rem; /* чуть выше от пульсации */
 }
 
 .roadmap-toggle input[type="checkbox"] {
@@ -897,12 +898,24 @@ body::after {
 }
 
 .roadmap-scroll {
-    overflow-x: auto;
-    padding-bottom: 0.3rem;
+    overflow: visible; /* вертикальный glow не режем */
+    padding-bottom: 0;
     scrollbar-width: none; /* Firefox */
 }
 
 .roadmap-scroll::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+.roadmap-scroll-inner {
+    overflow-x: auto; /* горизонтальный скролл оставляем тут */
+    overflow-y: visible;
+    padding: 4px 0 8px; /* +4px пространства от подписи/границ, чтобы glow не резался */
+    scrollbar-width: none;
+}
+
+.roadmap-scroll-inner::-webkit-scrollbar {
     width: 0;
     height: 0;
 }
@@ -912,7 +925,7 @@ body::after {
     display: flex;
     align-items: flex-start;
     gap: 2.2rem;
-    padding: 0.7rem 0.4rem 0.4rem;
+    padding: 0.95rem 0.85rem 0.7rem; /* марджин внутри панели для пульсации */
     min-width: 650px;
 }
 
@@ -1029,7 +1042,7 @@ body::after {
 .roadmap-step--current .roadmap-circle::before {
     content: '';
     position: absolute;
-    inset: -8px;
+    inset: -6px; /* пульсация на пару пикселей меньше */
     border-radius: 999px;
     border: 1.2px solid rgba(56, 189, 248, 0.42);
     box-shadow:
@@ -1084,7 +1097,7 @@ body::after {
 }
 
 .roadmap-note {
-    margin-top: 0.75rem;
+    margin-top: 0.55rem;
     font-size: 0.75rem;
     color: var(--text-soft);
 }
@@ -1486,6 +1499,9 @@ body::after {
         0 0 0 1.5px rgba(56, 189, 248, 0.12),
         0 26px 80px rgba(15,23,42,0.9);
     padding: 1.1rem 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px; /* +2px воздуха между кнопками */
     position: sticky;
     top: 1.5rem;
     align-self: stretch;
@@ -1514,7 +1530,7 @@ body::after {
     display: block;
     width: 100%;
     text-align: left;
-    padding: 0.4rem 0.65rem;
+    padding: 0.52rem 0.78rem; /* +пару пикселей воздуха внутри */
     border-radius: 0;
     border: none;
     background: rgba(15, 23, 42, 0.2);
@@ -1523,7 +1539,7 @@ body::after {
     color: #e5e7eb;
     font-size: 0.82rem;
     cursor: pointer;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0;
     box-shadow:
         0 0 0 0.5px rgba(56, 189, 248, 0.38), /* бордер виден всегда */
         4px 4px 14px rgba(15, 23, 42, 0.55);
