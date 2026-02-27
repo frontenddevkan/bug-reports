@@ -147,9 +147,8 @@ function initBgChargeCanvas() {
         let idx = 0;
         while (pos <= max + 1) {
             const spacing = SPACING_PATTERN[idx % SPACING_PATTERN.length];
-            const half = idx % 4 === 3; // каждая 4-я линия — только 50%
-            const doubled = idx % 3 === 2; // каждая 3-я линия двоится
-            lines.push({ idx, pos, half, doubled });
+            const quarter = idx % 4 === 3; // каждая 4-я линия — только 25% длины
+            lines.push({ idx, pos, quarter });
             pos += spacing;
             idx++;
         }
@@ -164,42 +163,24 @@ function initBgChargeCanvas() {
 
         // вертикали
         vLines.forEach((l) => {
-            const len = l.half ? viewportH * 0.5 : viewportH;
+            const len = l.quarter ? viewportH * 0.25 : viewportH;
             const vBoost = (l.idx + 1) % 8 === 0 ? 1.35 : 1; // каждую 8-ю вертикаль делаем чуть белее
             gridCtx.strokeStyle = makeGradient(true, l.pos, 0, len, vBoost);
             gridCtx.beginPath();
             gridCtx.moveTo(l.pos + 0.5, 0);
             gridCtx.lineTo(l.pos + 0.5, len);
             gridCtx.stroke();
-
-            if (l.doubled) {
-                // дубль: смещение 1px вправо и вниз (для вертикали "вниз" визуально — это просто сдвиг по y старта)
-                gridCtx.strokeStyle = makeGradient(true, l.pos + 1, 1, len, vBoost);
-                gridCtx.beginPath();
-                gridCtx.moveTo(l.pos + 1.5, 1);
-                gridCtx.lineTo(l.pos + 1.5, len);
-                gridCtx.stroke();
-            }
         });
 
         // горизонтали
         hLines.forEach((l) => {
-            const len = l.half ? viewportW * 0.5 : viewportW;
+            const len = l.quarter ? viewportW * 0.25 : viewportW;
             const hBoost = (l.idx + 1) % 4 === 0 ? 1.35 : 1; // каждую 4-ю горизонталь делаем чуть белее
             gridCtx.strokeStyle = makeGradient(false, 0, l.pos, len, hBoost);
             gridCtx.beginPath();
             gridCtx.moveTo(0, l.pos + 0.5);
             gridCtx.lineTo(len, l.pos + 0.5);
             gridCtx.stroke();
-
-            if (l.doubled) {
-                // дубль: смещение 1px вправо и вниз
-                gridCtx.strokeStyle = makeGradient(false, 1, l.pos + 1, len);
-                gridCtx.beginPath();
-                gridCtx.moveTo(1, l.pos + 1.5);
-                gridCtx.lineTo(len, l.pos + 1.5);
-                gridCtx.stroke();
-            }
         });
     }
 
