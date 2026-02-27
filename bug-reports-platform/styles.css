@@ -1335,6 +1335,7 @@ body::after {
     align-self: stretch;
     min-height: calc(100vh - 3rem);
     overflow: hidden;
+    margin-right: -1.5rem; /* пристыковываем к правой границе окна (совпадает с отступом layout) */
 }
 
 .theory-sidebar::before {

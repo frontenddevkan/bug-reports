@@ -277,6 +277,8 @@ function initBgChargeCanvas() {
         // Все кружки, кроме каждого второго (j % 2 === 1), замедляем ещё на 4 секунды.
         const hCount = Math.min(MAX_DOTS, hLines.length);
         for (let j = 0; j < hCount; j++) {
+            // Убираем 3‑й, 4‑й и 6‑й кружок, едущие слева направо (индексы 2, 3 и 5)
+            if (j === 2 || j === 3 || j === 5) continue;
             const line = hLines[j];
             const delay = delayForLine(j);
             const extra = j % 2 === 1 ? 0 : 4;
