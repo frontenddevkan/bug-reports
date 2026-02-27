@@ -91,7 +91,7 @@ body::after {
 
 .layout {
     display: grid;
-    grid-template-columns: 220px minmax(0, 1fr) 280px;
+    grid-template-columns: 220px minmax(0, 1fr) 280px; /* 3 неравные зоны: слева навигация, по центру мэйн, справа теория */
     gap: 1.5rem;
     align-items: start;
     justify-content: stretch;
@@ -940,7 +940,8 @@ body::after {
     position: absolute;
     left: 0;
     right: 0;
-    top: 50%;
+    /* линия проходит уже под подписями (под Trainee и остальными), поэтому опускаем её ниже центра */
+    top: calc(50% + 20px);
     transform: translateY(-50%);
     height: 0.2px;
     border-radius: 0;
@@ -950,7 +951,7 @@ body::after {
 .roadmap-timeline-progress {
     position: absolute;
     left: 0;
-    top: 50%;
+    top: calc(50% + 20px);
     transform: translateY(-50%);
     height: 0.2px;
     border-radius: 0;
@@ -1072,7 +1073,7 @@ body::after {
 }
 
 .roadmap-step-labels {
-    margin-top: 0.7rem; /* +~4px отступ между кружком и подписями */
+    margin-top: 0.95rem; /* ещё +4px отступа между кружком и подписями */
     font-size: 0.75rem;
     line-height: 1.25;
     min-height: 2.4em;
@@ -1082,7 +1083,7 @@ body::after {
 
 /* Для стартового Trainee чуть больше отступа от кружка до подписи */
 .roadmap-step[data-step-id="trainee-start"] .roadmap-step-labels {
-    margin-top: 0.9rem;
+    margin-top: 1.15rem;
 }
 
 .roadmap-step-grade {
