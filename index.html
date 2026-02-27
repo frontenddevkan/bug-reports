@@ -133,37 +133,27 @@
     </section>
 
     <div class="layout">
-        <main class="main">
-            <div class="main-layout-columns">
-                <nav class="left-sidebar-nav">
-                    <div class="left-sidebar-title">Навигация</div>
-                    <button class="left-nav-link" type="button" onclick="document.getElementById('bugReportsList').scrollIntoView({behavior:'smooth'});">
-                        Багрепорты
-                    </button>
-                    <button class="left-nav-link" type="button" onclick="document.getElementById('testsPanel').scrollIntoView({behavior:'smooth'});">
-                        Тесты
-                    </button>
-                    <button class="left-nav-link" type="button" onclick="document.getElementById('checklistsPanel').scrollIntoView({behavior:'smooth'});">
-                        Чек‑листы
-                    </button>
-                    <button class="left-nav-link" type="button" onclick="document.getElementById('sdlcSection').scrollIntoView({behavior:'smooth'});">
-                        Процесс дня (SDLC)
-                    </button>
-                </nav>
+        <nav class="left-sidebar-nav">
+            <div class="left-sidebar-title">Навигация</div>
+            <button type="button" class="left-nav-link btn" data-scroll-target="#bugReportsList">Багрепорты</button>
+            <button type="button" class="left-nav-link btn" data-scroll-target="#testsPanel">Тесты</button>
+            <button type="button" class="left-nav-link btn" data-scroll-target="#checklistsPanel">Чек‑листы</button>
+            <button type="button" class="left-nav-link btn" data-scroll-target="#sdlcSection">Процесс дня (SDLC)</button>
+        </nav>
 
-                <div class="main-content">
-                    <section class="simulator-day">
-                        <p class="simulator-greeting">Рабочий день тестировщика: смотри задачи, проходи чек‑листы и тренируйся находить баги.</p>
-                        <div class="today-board">
-                            <div class="today-board-title">Задачи на сегодня (симуляция Jira)</div>
-                            <div class="today-tasks">
-                                <span class="task-chip status-todo">QA-101 • Проверить новый релиз (Smoke)</span>
-                                <span class="task-chip status-inprogress">QA-102 • Ретест фикса бага (Sanity)</span>
-                                <span class="task-chip status-todo">QA-103 • Протестировать API эндпоинт (GET /users)</span>
-                                <span class="task-chip status-done">QA-099 • Завести багрепорт по найденному дефекту</span>
-                            </div>
-                        </div>
-                    </section>
+        <main class="main-content">
+            <section class="simulator-day">
+                <p class="simulator-greeting">Рабочий день тестировщика: смотри задачи, проходи чек‑листы и тренируйся находить баги.</p>
+                <div class="today-board">
+                    <div class="today-board-title">Задачи на сегодня (симуляция Jira)</div>
+                    <div class="today-tasks">
+                        <span class="task-chip status-todo">QA-101 • Проверить новый релиз (Smoke)</span>
+                        <span class="task-chip status-inprogress">QA-102 • Ретест фикса бага (Sanity)</span>
+                        <span class="task-chip status-todo">QA-103 • Протестировать API эндпоинт (GET /users)</span>
+                        <span class="task-chip status-done">QA-099 • Завести багрепорт по найденному дефекту</span>
+                    </div>
+                </div>
+            </section>
 
                     <section id="sdlcSection" class="sdlc-visual">
                         <h2>Процесс дня (SDLC)</h2>
@@ -236,8 +226,6 @@
                             <div id="checklistOrderArea" class="checklist-order-area hidden"></div>
                         </div>
                     </section>
-                </div>
-            </div>
         </main>
 
         <aside class="theory-sidebar">

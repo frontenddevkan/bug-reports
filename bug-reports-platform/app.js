@@ -78,10 +78,12 @@ const CHECKLISTS = {
 
 /**
  * Фоновая анимация "ток по сетке" (canvas)
- * - Сетка уже есть в CSS, здесь рисуем только "огоньки"
- * - Вертикали: 1-я линия (mod 3 == 1) сверху вниз, 2-я без изменений, 3-я (mod 3 == 0) снизу вверх
- * - Горизонтали: 1-я (mod 3 == 1) справа налево, 2-я без изменений, 3-я (mod 3 == 0) слева направо
- * - Задержки: down 0s, up 4s, left->right 3s, right->left 2s
+ * - Линии сетки рисуются CSS (тонкие 0.1px)
+ * - Здесь рисуем "узелки тока" (1px точки), бегущие по линиям
+ * - Движение: вертикали сверху вниз за 6 секунд, горизонтали слева направо за 6 секунд
+ * - Сдвиг (задержка) по линиям: 1-я линия 0s, 2-я 4s, 3-я 8s, 4-я 12s (и дальше по порядку)
+ * - Вспышка: каждые 4 секунды точка становится максимально белой + усиливается бело‑синий ореол,
+ *   и за 1 секунду возвращается к умеренной яркости
  */
 function initBgChargeCanvas() {
     const canvas = document.getElementById('bgChargeCanvas');
@@ -91,7 +93,8 @@ function initBgChargeCanvas() {
     if (!ctx) return;
 
     const grid = 8; // px — соответствует background-size сетки
-    const PERIOD_DOWN = 6.0; // 6 секунд сверху вниз
+    const TRAVEL_PERIOD = 6.0; // 6 секунд пробег по линии
+    const FLASH_PERIOD = 4.0; // каждые 4 секунды вспышка
 
     function resize() {
         const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
@@ -106,25 +109,31 @@ function initBgChargeCanvas() {
     window.addEventListener('resize', resize, { passive: true });
 
     function drawDot(x, y, intensity) {
-        // базовый 1px кружок (субпиксельно — выглядеть будет как 1px точка)
-        const base = 0.55 + 0.35 * intensity;
-        ctx.fillStyle = `rgba(255,255,255,${base})`;
+        // 1px точка + мягкий ореол на вспышке
+        const baseAlpha = 0.22; // менее интенсивный “умеренный белый”
+        const flashAlpha = 0.78 * intensity; // на вспышке становится почти максимально белой
+        const a = Math.min(1, baseAlpha + flashAlpha);
+
+        ctx.save();
+        ctx.fillStyle = `rgba(255,255,255,${a})`;
+
+        // тень/ореол усиливается на вспышке
+        const blur = 1 + 12 * intensity;
+        ctx.shadowBlur = blur;
+        ctx.shadowColor = `rgba(56,189,248,${0.55 * intensity})`;
         ctx.beginPath();
         ctx.arc(x, y, 0.5, 0, Math.PI * 2);
         ctx.fill();
 
-        // вспышка: белая тень -> синий ореол, затем обратно
-        if (intensity > 0.01) {
-            const g = ctx.createRadialGradient(x, y, 0, x, y, 10);
-            g.addColorStop(0, `rgba(255,255,255,${0.9 * intensity})`);
-            g.addColorStop(0.25, `rgba(255,255,255,${0.45 * intensity})`);
-            g.addColorStop(0.55, `rgba(56,189,248,${0.35 * intensity})`);
-            g.addColorStop(1, 'rgba(56,189,248,0)');
-            ctx.fillStyle = g;
+        // добавляем белый компонент ореола, чтобы ощущалось “белый -> синий”
+        if (intensity > 0.001) {
+            ctx.shadowBlur = blur * 0.6;
+            ctx.shadowColor = `rgba(255,255,255,${0.45 * intensity})`;
             ctx.beginPath();
-            ctx.arc(x, y, 10, 0, Math.PI * 2);
+            ctx.arc(x, y, 0.5, 0, Math.PI * 2);
             ctx.fill();
         }
+        ctx.restore();
     }
 
     function phase(t, period, delay) {
@@ -132,14 +141,17 @@ function initBgChargeCanvas() {
         return ((tt % 1) + 1) % 1;
     }
 
-    function flashIntensity(tSec) {
-        // каждые пару секунд вспышка, которая за 1 сек возвращается в норму
-        // 0..1 внутри 2-сек окна
-        const cycle = ((tSec % 2) + 2) % 2;
-        // 0..1..0 треугольник в пределах 1 секунды, потом затухание
-        if (cycle <= 1) return 1 - Math.abs(cycle - 0.0); // пик в начале
-        const t = cycle - 1; // 0..1
-        return Math.max(0, 1 - t); // затухание
+    function flashIntensity(tSec, delaySec) {
+        // каждые 4 секунды вспышка с затуханием за 1 секунду
+        const local = ((tSec - delaySec) % FLASH_PERIOD + FLASH_PERIOD) % FLASH_PERIOD; // 0..4
+        if (local > 1) return 0;
+        // 1 -> 0 плавно за 1 секунду
+        return 0.5 * (1 + Math.cos(Math.PI * local));
+    }
+
+    function delayForLine(lineIndex) {
+        // 1-я линия 0s, 2-я 4s, 3-я 8s, 4-я 12s, ...
+        return lineIndex * 4;
     }
 
     function render(tSec) {
@@ -148,12 +160,28 @@ function initBgChargeCanvas() {
 
         const w = window.innerWidth;
         const h = window.innerHeight;
-        // только первая вертикальная линия сетки (x = 0)
-        const x = 0;
-        const p = phase(tSec, PERIOD_DOWN, 0);
-        const y = p * h;
-        const intensity = flashIntensity(tSec);
-        drawDot(x, y, intensity);
+
+        // Вертикали: каждая линия — свой узелок
+        const vCount = Math.floor(w / grid) + 1;
+        for (let i = 0; i < vCount; i++) {
+            const x = i * grid;
+            const delay = delayForLine(i);
+            const p = phase(tSec, TRAVEL_PERIOD, delay);
+            const y = p * h;
+            const intensity = flashIntensity(tSec, delay);
+            drawDot(x, y, intensity);
+        }
+
+        // Горизонтали: каждая линия — свой узелок
+        const hCount = Math.floor(h / grid) + 1;
+        for (let j = 0; j < hCount; j++) {
+            const y = j * grid;
+            const delay = delayForLine(j);
+            const p = phase(tSec, TRAVEL_PERIOD, delay);
+            const x = p * w;
+            const intensity = flashIntensity(tSec, delay);
+            drawDot(x, y, intensity);
+        }
 
         ctx.globalCompositeOperation = 'source-over';
     }
