@@ -1392,9 +1392,7 @@ body::after {
     background: rgba(14, 25, 64, 0.32); /* чуть ярче, чтобы блок явно был виден справа */
     border-radius: 0;
     box-shadow:
-        0 0 0 0.5px rgba(255, 255, 255, 0.28),
-        0 0 0 1.5px rgba(56, 189, 248, 0.32),
-        0 26px 80px rgba(15,23,42,0.98);
+        0 26px 80px rgba(15,23,42,0.98); /* только мягкая внешняя тень, без "бордера" по периметру */
     padding: 1.25rem 1.5rem;
     font-size: 0.85rem;
     position: sticky;
@@ -1412,7 +1410,9 @@ body::after {
     content: '';
     position: absolute;
     inset: 0;
-    border: 0.5px solid rgba(56, 189, 248, 0.38);
+    border-width: 0.5px 0.5px 0.5px 0; /* сверху, справа, снизу; слева — нет линии */
+    border-style: solid;
+    border-color: rgba(56, 189, 248, 0.38);
     transform: translate(-1px, -1px);
     pointer-events: none;
 }
