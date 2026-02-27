@@ -70,47 +70,15 @@ body::after {
     animation: diagonals-slide 30s linear infinite alternate;
 }
 
-/* Анимированные "огоньки" по сетке — эффект бегущего тока */
-.grid-charge {
+/* Canvas-слой для анимации "тока" по сетке */
+.bg-charge-canvas {
     position: fixed;
     inset: 0;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
-    mix-blend-mode: screen;
     z-index: 0;
-}
-
-.grid-charge--down {
-    background-image:
-        radial-gradient(circle, rgba(255,255,255,0.8) 0, rgba(255,255,255,0.6) 2px, rgba(56,189,248,0.4) 4px, transparent 8px);
-    background-size: 40px 200%;
-    background-repeat: repeat;
-    animation: grid-charge-down 10s linear infinite;
-}
-
-.grid-charge--up {
-    background-image:
-        radial-gradient(circle, rgba(255,255,255,0.8) 0, rgba(255,255,255,0.6) 2px, rgba(56,189,248,0.4) 4px, transparent 8px);
-    background-size: 44px 200%;
-    background-repeat: repeat;
-    animation: grid-charge-up 12s linear infinite;
-}
-
-@keyframes grid-charge-down {
-    0% {
-        background-position: 0 -100%;
-    }
-    100% {
-        background-position: 0 100%;
-    }
-}
-
-@keyframes grid-charge-up {
-    0% {
-        background-position: 0 100%;
-    }
-    100% {
-        background-position: 0 -100%;
-    }
+    mix-blend-mode: screen;
 }
 
 body::after {
@@ -474,6 +442,204 @@ body::after {
     margin-top: 1.5rem;
     padding-top: 1.5rem;
     border-top: 1px dashed rgba(56, 189, 248, 0.3);
+}
+
+/* Тренажёры / карточки обучения */
+.trainer-panel,
+.employment-panel {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed rgba(56, 189, 248, 0.3);
+}
+
+.trainer-header,
+.employment-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.trainer-actions {
+    display: inline-flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.trainer-hint {
+    margin-top: 0.6rem;
+    color: var(--text-soft);
+    font-size: 0.85rem;
+}
+
+.sdlc-match {
+    margin-top: 0.9rem;
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 1rem;
+}
+
+.sdlc-bank,
+.sdlc-targets {
+    border-radius: 18px;
+    border: 0.5px solid rgba(56, 189, 248, 0.6);
+    background: rgba(15, 23, 42, 0.72);
+    box-shadow:
+        0 0 0 0.5px rgba(15, 23, 42, 0.95),
+        0 0 0 1.5px rgba(148, 163, 184, 0.35),
+        0 22px 70px rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+.sdlc-bank {
+    padding: 0.85rem;
+}
+
+.sdlc-bank-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #e5e7eb;
+    margin-bottom: 0.6rem;
+}
+
+.sdlc-bank-items {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.sdlc-chip {
+    user-select: none;
+    cursor: grab;
+    border-radius: 14px;
+    padding: 0.55rem 0.7rem;
+    border: 0.5px solid rgba(148, 163, 184, 0.75);
+    background: rgba(15, 23, 42, 0.35);
+    color: #e5e7eb;
+    font-size: 0.88rem;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.55);
+}
+
+.sdlc-chip:active {
+    cursor: grabbing;
+}
+
+.sdlc-targets {
+    padding: 0.85rem;
+    display: grid;
+    gap: 0.6rem;
+}
+
+.sdlc-target-row {
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    gap: 0.8rem;
+    align-items: center;
+}
+
+.sdlc-target-title {
+    font-weight: 700;
+    color: #e5e7eb;
+}
+
+.sdlc-drop {
+    min-height: 46px;
+    border-radius: 14px;
+    border: 0.5px solid rgba(148, 163, 184, 0.7);
+    background: rgba(15, 23, 42, 0.22);
+    display: flex;
+    align-items: center;
+    padding: 0.35rem 0.45rem;
+    gap: 0.4rem;
+}
+
+.sdlc-drop.is-over {
+    border-color: rgba(56, 189, 248, 0.9);
+    box-shadow:
+        0 0 0 1px rgba(56, 189, 248, 0.35),
+        0 0 22px rgba(56, 189, 248, 0.25);
+}
+
+.trainer-result {
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+}
+
+.trainer-result.ok {
+    color: #bbf7d0;
+    text-shadow: 0 0 16px rgba(74, 222, 128, 0.25);
+}
+
+.trainer-result.bad {
+    color: #ffe4e6;
+    text-shadow: 0 0 16px rgba(248, 113, 113, 0.18);
+}
+
+/* Собеседование */
+.employment-card {
+    margin-top: 0.9rem;
+    padding: 1rem 1.1rem;
+    border-radius: 18px;
+    border: 0.5px solid rgba(56, 189, 248, 0.6);
+    background: rgba(15, 23, 42, 0.72);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+.employment-card-title {
+    font-weight: 700;
+    color: #e5e7eb;
+    margin-bottom: 0.7rem;
+}
+
+.qa-list {
+    display: grid;
+    gap: 0.55rem;
+}
+
+.qa-item {
+    border-radius: 14px;
+    border: 0.5px solid rgba(148, 163, 184, 0.55);
+    background: rgba(15, 23, 42, 0.28);
+    padding: 0.4rem 0.6rem;
+}
+
+.qa-item > summary {
+    cursor: pointer;
+    font-weight: 650;
+    color: #e5e7eb;
+    list-style: none;
+}
+
+.qa-item > summary::-webkit-details-marker {
+    display: none;
+}
+
+.qa-answer {
+    margin-top: 0.55rem;
+    color: #d1d5db;
+    font-size: 0.92rem;
+    line-height: 1.45;
+}
+
+.qa-answer ul {
+    margin-top: 0.4rem;
+    padding-left: 1.1rem;
+}
+
+.qa-tip {
+    margin-top: 0.6rem;
+    color: var(--text-soft);
+    font-size: 0.85rem;
+}
+
+@media (max-width: 960px) {
+    .sdlc-match {
+        grid-template-columns: 1fr;
+    }
+    .sdlc-target-row {
+        grid-template-columns: 1fr;
+    }
 }
 
 .checklists-header h2 {

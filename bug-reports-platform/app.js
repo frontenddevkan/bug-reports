@@ -38,6 +38,127 @@ const CHECKLISTS = {
 };
 
 /**
+ * Фоновая анимация "ток по сетке" (canvas)
+ * - Сетка уже есть в CSS, здесь рисуем только "огоньки"
+ * - Вертикали: 1-я линия (mod 3 == 1) сверху вниз, 2-я без изменений, 3-я (mod 3 == 0) снизу вверх
+ * - Горизонтали: 1-я (mod 3 == 1) справа налево, 2-я без изменений, 3-я (mod 3 == 0) слева направо
+ * - Задержки: down 0s, up 4s, left->right 3s, right->left 2s
+ */
+function initBgChargeCanvas() {
+    const canvas = document.getElementById('bgChargeCanvas');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const grid = 4; // px — соответствует background-size сетки
+    const lineStride = 12; // чтобы не рисовать на каждой линии (иначе слишком тяжело)
+
+    const PERIOD_DOWN = 8.5;
+    const PERIOD_UP = 9.5;
+    const PERIOD_LR = 10.0;
+    const PERIOD_RL = 11.0;
+
+    function resize() {
+        const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+        canvas.width = Math.floor(window.innerWidth * dpr);
+        canvas.height = Math.floor(window.innerHeight * dpr);
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    function orbGradient(x, y) {
+        // белый центр -> белая мягкая тень -> голубой широкий ореол
+        const g = ctx.createRadialGradient(x, y, 0, x, y, 12);
+        g.addColorStop(0, 'rgba(255,255,255,0.95)');
+        g.addColorStop(0.2, 'rgba(255,255,255,0.55)');
+        g.addColorStop(0.45, 'rgba(56,189,248,0.35)');
+        g.addColorStop(1, 'rgba(56,189,248,0)');
+        return g;
+    }
+
+    function drawOrb(x, y) {
+        ctx.fillStyle = orbGradient(x, y);
+        ctx.beginPath();
+        ctx.arc(x, y, 12, 0, Math.PI * 2);
+        ctx.fill();
+
+        // яркое ядро (≈2px)
+        ctx.fillStyle = 'rgba(255,255,255,0.95)';
+        ctx.beginPath();
+        ctx.arc(x, y, 2, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    function phase(t, period, delay) {
+        const tt = (t - delay) / period;
+        return ((tt % 1) + 1) % 1;
+    }
+
+    function render(tSec) {
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        ctx.globalCompositeOperation = 'screen';
+
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+
+        // Вертикальные "огоньки"
+        for (let x = 0; x <= w; x += grid * lineStride) {
+            const lineIndex = Math.round(x / grid);
+            const mod = lineIndex % 3;
+            if (mod === 2) continue; // без изменений
+
+            if (mod === 1) {
+                // сверху вниз
+                const p = phase(tSec, PERIOD_DOWN, 0);
+                const y = p * (h + 60) - 30;
+                drawOrb(x, y);
+            } else {
+                // снизу вверх (mod === 0)
+                const p = phase(tSec, PERIOD_UP, 4);
+                const y = (1 - p) * (h + 60) - 30;
+                drawOrb(x, y);
+            }
+        }
+
+        // Горизонтальные "огоньки"
+        for (let y = 0; y <= h; y += grid * lineStride) {
+            const lineIndex = Math.round(y / grid);
+            const mod = lineIndex % 3;
+            if (mod === 2) continue;
+
+            if (mod === 1) {
+                // справа налево (задержка 2s)
+                const p = phase(tSec, PERIOD_RL, 2);
+                const x = (1 - p) * (w + 60) - 30;
+                drawOrb(x, y);
+            } else {
+                // слева направо (mod === 0) (задержка 3s)
+                const p = phase(tSec, PERIOD_LR, 3);
+                const x = p * (w + 60) - 30;
+                drawOrb(x, y);
+            }
+        }
+
+        ctx.globalCompositeOperation = 'source-over';
+    }
+
+    let raf = 0;
+    function tick(now) {
+        const tSec = now / 1000;
+        render(tSec);
+        raf = requestAnimationFrame(tick);
+    }
+    raf = requestAnimationFrame(tick);
+
+    // cleanup не нужен для статической страницы
+}
+
+/**
  * Симулятор: подсветка текущего этапа SDLC (визуализация процесса дня)
  * Мы циклично подсвечиваем этапы и сохраняем индекс в localStorage,
  * чтобы при обновлении страницы продолжать примерно "с того же места".
@@ -219,6 +340,54 @@ const QUIZ_QUESTIONS = [
             { t: 'Управлять проектом и командой так, чтобы цели были достигнуты в срок и нужного качества', ok: true, why: 'PM планирует, координирует команды и следит за выполнением плана, вовремя внося корректировки.' },
             { t: 'Писать весь код проекта и самостоятельно тестировать его', ok: false, why: 'Код пишут разработчики, тестированием занимается QA; PM управляет процессом, а не делает всю работу один.' },
             { t: 'Только настраивать сеть и сервера', ok: false, why: 'Сеть и сервера — зона NetOps/админов, а не PM.' },
+        ],
+    },
+    {
+        q: 'Что такое тестирование?',
+        options: [
+            { t: 'Процесс проверки продукта и поиска несоответствий требованиям/ожиданиям, чтобы снизить риски перед релизом', ok: true, why: 'Тестирование помогает выявлять дефекты и риски: проверяем соответствие требованиям и ожиданиям.' },
+            { t: 'Процесс написания кода и разработки новых функций', ok: false, why: 'Это разработка. Тестирование — отдельная активность контроля качества.' },
+            { t: 'Процесс оформления дизайна интерфейса', ok: false, why: 'Это задача UI/UX‑дизайна, а не тестирования.' },
+        ],
+    },
+    {
+        q: 'Чем отличается верификация от валидации?',
+        options: [
+            { t: 'Верификация — “делаем продукт правильно?” (соответствие требованиям), валидация — “делаем правильный продукт?” (нужен ли он пользователю)', ok: true, why: 'Классическая связка: verify = соответствие спецификации, validate = соответствие реальным нуждам.' },
+            { t: 'Верификация — это релиз в прод, а валидация — это написание тест‑кейсов', ok: false, why: 'Нет. Это понятия про “правильность” относительно требований и потребностей.' },
+            { t: 'Это одно и то же, просто разные слова', ok: false, why: 'Нет, это разные цели проверки.' },
+        ],
+    },
+    {
+        q: 'Что такое RC Build?',
+        options: [
+            { t: 'Release Candidate — сборка‑кандидат в релиз, прошедшая ключевые проверки и готовая к финальной валидации', ok: true, why: 'RC Build — кандидат в релиз: если критичные дефекты закрыты, сборка готовится к выпуску.' },
+            { t: 'Сборка для дизайнеров, чтобы выбрать цвета и шрифты', ok: false, why: 'Дизайн обычно фиксируется раньше, RC относится к релизной готовности.' },
+            { t: 'Сборка, где разрешено иметь любые критические дефекты', ok: false, why: 'Наоборот: RC предполагает отсутствие критичных дефектов (по критериям релиза).' },
+        ],
+    },
+    {
+        q: 'Что такое качественный продукт?',
+        options: [
+            { t: 'Продукт, который решает задачу пользователя, соответствует требованиям и стабильно работает в реальных условиях', ok: true, why: 'Качество — это не только “без багов”, а полезность + соответствие ожиданиям/AC + приемлемые риски.' },
+            { t: 'Продукт без единого дефекта, даже косметического', ok: false, why: 'Абсолютно “без дефектов” почти недостижимо и не всегда нужно; важны приоритеты и риски.' },
+            { t: 'Продукт с самым красивым интерфейсом', ok: false, why: 'Внешний вид важен, но качество шире: функциональность, надёжность, удобство и т.д.' },
+        ],
+    },
+    {
+        q: 'Что такое приёмочные критерии (Acceptance Criteria) и когда их формируют?',
+        options: [
+            { t: 'Условия “готовности” фичи/истории; формируются на этапе требований до разработки вместе с PO/BA/QA', ok: true, why: 'AC фиксируют, что именно должно быть сделано, чтобы задача считалась выполненной.' },
+            { t: 'Список багов, найденных тестировщиком перед релизом', ok: false, why: 'Это баг‑репорты. AC — критерии готовности, а не дефекты.' },
+            { t: 'Список автотестов, которые пишет разработчик', ok: false, why: 'Автотесты — инструмент проверки, но AC — договорённость о результатах.' },
+        ],
+    },
+    {
+        q: 'Почему ошибки дороже исправлять после релиза?',
+        options: [
+            { t: 'Нужно делать горячие фиксы/откаты, подключать поддержку, теряется доверие пользователей и растут бизнес‑потери', ok: true, why: 'Цена включает не только разработку, но и репутацию, SLA, поддержку и простои.' },
+            { t: 'Потому что в проде нельзя менять код', ok: false, why: 'Менять можно, но это рискованнее и дороже по последствиям.' },
+            { t: 'Потому что тестировщик уже “закрыл” проект', ok: false, why: 'Причина в последствиях для бизнеса и пользователей, а не в формальностях.' },
         ],
     },
 ];
@@ -664,6 +833,7 @@ initRoadmap();
 initQuiz();
 initChecklists();
 initQuizPopup();
+initBgChargeCanvas();
 
 /**
  * Приветственное всплывающее окно при открытии симулятора
@@ -712,6 +882,146 @@ function escapeHtml(str) {
         .replace(/\"/g, '&quot;')
         .replace(/'/g, '&#039;');
 }
+
+/**
+ * Тренажёр: сопоставление этапов SDLC (drag & drop)
+ */
+function initSdlcMatchTrainer() {
+    const bankEl = document.getElementById('sdlcBank');
+    const targetsEl = document.getElementById('sdlcTargets');
+    const checkBtn = document.getElementById('sdlcMatchCheckBtn');
+    const resetBtn = document.getElementById('sdlcMatchResetBtn');
+    const resultEl = document.getElementById('sdlcMatchResult');
+    if (!bankEl || !targetsEl || !checkBtn || !resetBtn || !resultEl) return;
+
+    const STORAGE_KEY = 'simulator.sdlc.match.v1';
+
+    const items = [
+        { id: 'idea', label: 'Формирование идеи' },
+        { id: 'biz', label: 'Бизнес‑требования и приёмочные критерии (AC)' },
+        { id: 'sys', label: 'Системные требования и дизайн‑макеты' },
+        { id: 'build', label: 'Промежуточный билд' },
+        { id: 'bugs', label: 'Баг‑репорты' },
+        { id: 'fixed', label: 'Исправленный билд' },
+        { id: 'rc', label: 'Релиз‑кандидат (RC Build)' },
+        { id: 'prod', label: 'Готовый продукт (релиз)' },
+    ];
+
+    const targets = [
+        { id: 't-idea', title: 'Идея', correct: 'idea' },
+        { id: 't-biz', title: 'Бизнес‑требования и приёмочные критерии', correct: 'biz' },
+        { id: 't-sys', title: 'Системные требования и дизайн‑макеты', correct: 'sys' },
+        { id: 't-build', title: 'Промежуточный билд', correct: 'build' },
+        { id: 't-bugs', title: 'Баг‑репорты', correct: 'bugs' },
+        { id: 't-fixed', title: 'Исправленный билд', correct: 'fixed' },
+        { id: 't-rc', title: 'Релиз‑кандидат билд', correct: 'rc' },
+        { id: 't-prod', title: 'Готовый продукт', correct: 'prod' },
+    ];
+
+    let state = { placements: {} };
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : null;
+        if (parsed && typeof parsed === 'object') state = parsed;
+    } catch (_) {}
+
+    function save() {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) {}
+    }
+
+    function createChip(item) {
+        const el = document.createElement('div');
+        el.className = 'sdlc-chip';
+        el.draggable = true;
+        el.dataset.itemId = item.id;
+        el.textContent = item.label;
+        el.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', item.id);
+            e.dataTransfer.effectAllowed = 'move';
+        });
+        return el;
+    }
+
+    function render() {
+        bankEl.innerHTML = '';
+        targetsEl.innerHTML = '';
+        resultEl.className = 'trainer-result';
+        resultEl.textContent = '';
+
+        // Таргеты
+        targets.forEach((t) => {
+            const row = document.createElement('div');
+            row.className = 'sdlc-target-row';
+            const title = document.createElement('div');
+            title.className = 'sdlc-target-title';
+            title.textContent = t.title;
+
+            const drop = document.createElement('div');
+            drop.className = 'sdlc-drop';
+            drop.dataset.targetId = t.id;
+
+            drop.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                drop.classList.add('is-over');
+            });
+            drop.addEventListener('dragleave', () => drop.classList.remove('is-over'));
+            drop.addEventListener('drop', (e) => {
+                e.preventDefault();
+                drop.classList.remove('is-over');
+                const itemId = e.dataTransfer.getData('text/plain');
+                if (!itemId) return;
+                // Удаляем itemId из других целей
+                Object.keys(state.placements).forEach((k) => {
+                    if (state.placements[k] === itemId) delete state.placements[k];
+                });
+                state.placements[t.id] = itemId;
+                save();
+                render();
+            });
+
+            const placedId = state.placements[t.id];
+            if (placedId) {
+                const it = items.find(i => i.id === placedId);
+                if (it) {
+                    const chip = createChip(it);
+                    drop.appendChild(chip);
+                }
+            }
+
+            row.appendChild(title);
+            row.appendChild(drop);
+            targetsEl.appendChild(row);
+        });
+
+        // Банк — показываем те, кто не размещён
+        const placed = new Set(Object.values(state.placements));
+        items.filter(i => !placed.has(i.id)).forEach((i) => bankEl.appendChild(createChip(i)));
+    }
+
+    checkBtn.addEventListener('click', () => {
+        let okCount = 0;
+        targets.forEach((t) => {
+            if (state.placements[t.id] === t.correct) okCount += 1;
+        });
+        if (okCount === targets.length) {
+            resultEl.className = 'trainer-result ok';
+            resultEl.textContent = 'Верно! Ты правильно сопоставила все этапы SDLC.';
+        } else {
+            resultEl.className = 'trainer-result bad';
+            resultEl.textContent = `Пока не идеально: верно ${okCount} из ${targets.length}. Попробуй ещё раз — подсказка: вспомни артефакт каждого этапа.`;
+        }
+    });
+
+    resetBtn.addEventListener('click', () => {
+        state = { placements: {} };
+        save();
+        render();
+    });
+
+    render();
+}
+
+initSdlcMatchTrainer();
 
 /**
  * Рендер одного багрепорта в список

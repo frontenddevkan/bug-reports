@@ -7,9 +7,8 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <canvas id="bgChargeCanvas" class="bg-charge-canvas" aria-hidden="true"></canvas>
     <div class="page-shell">
-    <div class="grid-charge grid-charge--down"></div>
-    <div class="grid-charge grid-charge--up"></div>
     <!-- 
     УРОК: Структура HTML страницы
     - header: шапка сайта
@@ -145,6 +144,7 @@
             <nav class="left-sidebar-nav">
                 <div class="left-sidebar-title">Навигация по симулятору</div>
                 <button type="button" class="left-nav-link" data-scroll-target="#simulatorDay">Рабочий день (SDLC)</button>
+                <button type="button" class="left-nav-link" data-scroll-target="#employmentPanel">Трудоустройство • Собеседование</button>
                 <button type="button" class="left-nav-link" data-scroll-target="#bugReportsList">Багрепорты</button>
                 <button type="button" class="left-nav-link" data-scroll-target="#testsPanel">Тесты</button>
                 <button type="button" class="left-nav-link" data-scroll-target="#checklistsPanel">Чек‑листы</button>
@@ -174,6 +174,27 @@
                     <li class="sdlc-step" data-sdlc-step="fix">Исправление дефектов</li>
                 </ol>
                 <p class="sdlc-hint">Подсказка: симулятор подсвечивает текущий этап и помогает “прожить” день QA — от требований до баг‑фиксов.</p>
+            </section>
+
+            <section id="sdlcMatchPanel" class="trainer-panel">
+                <div class="trainer-header">
+                    <h2>Тренажёр: сопоставь этапы SDLC</h2>
+                    <div class="trainer-actions">
+                        <button id="sdlcMatchCheckBtn" class="btn btn-secondary" type="button">Проверить</button>
+                        <button id="sdlcMatchResetBtn" class="btn btn-secondary" type="button">Сброс</button>
+                    </div>
+                </div>
+                <p class="trainer-hint">
+                    Перетащи карточки слева к правильным строкам справа. Это тренирует понимание SDLC: “что где происходит” и “какой артефакт на выходе”.
+                </p>
+                <div class="sdlc-match">
+                    <div class="sdlc-bank">
+                        <div class="sdlc-bank-title">Карточки</div>
+                        <div class="sdlc-bank-items" id="sdlcBank"></div>
+                    </div>
+                    <div class="sdlc-targets" id="sdlcTargets"></div>
+                </div>
+                <div class="trainer-result" id="sdlcMatchResult" aria-live="polite"></div>
             </section>
 
             <!-- 
@@ -228,6 +249,62 @@
                 <div class="checklists-content">
                     <div id="checklistRunArea" class="checklist-run-area"></div>
                     <div id="checklistOrderArea" class="checklist-order-area hidden"></div>
+                </div>
+            </section>
+
+            <section id="employmentPanel" class="employment-panel">
+                <div class="employment-header">
+                    <h2>Трудоустройство • Собеседование</h2>
+                </div>
+                <div class="employment-card">
+                    <div class="employment-card-title">Топ вопросов на собеседовании по пройденной теме (с ответами)</div>
+                    <div class="qa-list" id="interviewQaList">
+                        <details class="qa-item" open>
+                            <summary>1) Что такое тестирование?</summary>
+                            <div class="qa-answer">
+                                <p><strong>Коротко:</strong> тестирование — это проверка продукта, чтобы найти несоответствия требованиям и ожиданиям и снизить риск проблем в релизе.</p>
+                                <p><strong>Что сказать на собесе:</strong></p>
+                                <ul>
+                                    <li><strong>Верификация</strong>: “делаем продукт правильно?” — соответствие спецификациям/требованиям.</li>
+                                    <li><strong>Валидация</strong>: “делаем правильный продукт?” — соответствует ли продукт реальным потребностям пользователя/бизнеса.</li>
+                                    <li><strong>Явные/неявные требования</strong>: явные описаны явно; неявные — ожидаемы “по умолчанию” (например, безопасность, удобство, стабильность).</li>
+                                </ul>
+                            </div>
+                        </details>
+
+                        <details class="qa-item">
+                            <summary>2) Что такое качественный продукт?</summary>
+                            <div class="qa-answer">
+                                <p><strong>Коротко:</strong> качественный продукт решает задачу пользователя, соответствует требованиям и работает стабильно в реальных условиях.</p>
+                                <p><strong>Шпаргалка:</strong> качество = ценность для пользователя + соответствие требованиям + приемлемые риски.</p>
+                            </div>
+                        </details>
+
+                        <details class="qa-item">
+                            <summary>3) Что такое качество?</summary>
+                            <div class="qa-answer">
+                                <p><strong>Коротко:</strong> качество — это степень соответствия ожиданиям/требованиям с разных точек зрения: пользователя, бизнеса и команды.</p>
+                                <p><strong>Что сказать:</strong> упомяни модель качества (например: функциональность, надёжность, usability, maintainability, эффективность, портативность) — это показывает системное понимание.</p>
+                            </div>
+                        </details>
+
+                        <details class="qa-item">
+                            <summary>4) Что такое жизненный цикл ПО (SDLC)?</summary>
+                            <div class="qa-answer">
+                                <p><strong>Коротко:</strong> SDLC — этапы, которые проходит продукт от идеи до релиза и поддержки. На каждом этапе появляются артефакты: требования, дизайн, билд, баг‑репорты, RC и т.д.</p>
+                                <p><strong>Частые уточнения и готовые ответы:</strong></p>
+                                <ul>
+                                    <li><strong>Какие этапы проходит продукт?</strong> Идея → Требования/AC → Дизайн/архитектура → Разработка/билд → Тестирование → Исправления → Верификация → RC Build → Релиз/Готовый продукт.</li>
+                                    <li><strong>Когда формируются приёмочные критерии (AC)?</strong> На этапе требований вместе с BA/PO/QA (до разработки), чтобы всем было понятно “что считаем готовым”.</li>
+                                    <li><strong>Когда включается QA?</strong> Чем раньше, тем дешевле ошибки: уже на требованиях (ревью требований, риски, критерии приёмки).</li>
+                                    <li><strong>Когда дороже всего исправлять ошибку?</strong> После релиза (в проде): цена включает репутацию, поддержку, откаты, горячие фиксы.</li>
+                                    <li><strong>Что такое RC Build?</strong> Release Candidate — сборка‑кандидат в релиз: прошла критичные проверки и готова к финальной валидации перед релизом.</li>
+                                    <li><strong>Зачем хранить закрытые дефекты?</strong> Для анализа (какие классы багов повторяются), отчётности, базы знаний и регресса.</li>
+                                </ul>
+                                <p class="qa-tip"><strong>Совет:</strong> используй терминологию и называй результат каждого этапа — это обычно “закрывает” сразу несколько дополнительных вопросов.</p>
+                            </div>
+                        </details>
+                    </div>
                 </div>
             </section>
             </main>
