@@ -964,6 +964,16 @@ function initChecklists() {
         closeChecklistsModalBtn.addEventListener('click', () => {
             checklistsModal.classList.add('hidden');
         });
+
+        // Клик по фону чек-листов с подтверждением
+        checklistsModal.addEventListener('click', (event) => {
+            if (event.target === checklistsModal) {
+                const ok = confirm('Закрыть форму чек-листа без сохранения прогресса?');
+                if (ok) {
+                    checklistsModal.classList.add('hidden');
+                }
+            }
+        });
     }
 }
 
@@ -1016,11 +1026,15 @@ if (closeModalBtn) {
 // Закрытие при клике вне окна (на тёмный фон)
 if (bugReportModal) {
     bugReportModal.addEventListener('click', function (event) {
-        // event.target — элемент, по которому кликнули
-        // Если кликнули по самому modal (тёмному фону), а не по content — закрываем
+        // Клик строго по фону (а не по содержимому модалки)
         if (event.target === bugReportModal) {
-            logStep('Клик по фону модального окна — закрываем окно.');
-            closeModal();
+            const ok = confirm('Закрыть форму багрепорта без сохранения?');
+            if (ok) {
+                logStep('Клик по фону модального окна + подтверждение — закрываем окно.');
+                closeModal();
+            } else {
+                logStep('Клик по фону модального окна — пользователь отменил закрытие.');
+            }
         }
     });
 }

@@ -1205,8 +1205,8 @@ body::after {
 }
 
 .btn-primary {
-    background: rgba(15, 23, 42, 0.35);
-    border-color: rgba(56, 189, 248, 0.9);
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    border-color: rgba(56, 189, 248, 0.95);
 }
 
 /* Кнопка "Создать багрепорт" должна визуально идти поверх любых рамок по краям колонок */
@@ -1217,9 +1217,9 @@ body::after {
 }
 
 .btn-secondary {
-    background: rgba(15, 23, 42, 0.28);
+    background: rgba(15, 23, 42, 0.85);
     color: #e5e7eb;
-    border-color: rgba(148, 163, 184, 0.8);
+    border-color: rgba(56, 189, 248, 0.7);
 }
 
 .bug-list {
@@ -1667,8 +1667,8 @@ body::after {
 }
 
 .quiz-popup-window {
-    /* делаем окно мини-теста менее прозрачным примерно на 14% */
-    background: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.32), rgba(15, 23, 42, 0.96));
+    /* делаем окно мини-теста ещё менее прозрачным, чтобы совпадало по плотности с формами */
+    background: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.46), rgba(15, 23, 42, 0.98));
     border-radius: 22px;
     max-width: 520px;
     width: 90%;
