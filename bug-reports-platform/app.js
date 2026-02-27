@@ -261,7 +261,9 @@ function initBgChargeCanvas() {
         // Все кружки, кроме каждого второго (i % 2 === 1), замедляем ещё на 4 секунды.
         const vCount = Math.min(MAX_DOTS, vLines.length);
         for (let i = 0; i < vCount; i++) {
-            const line = vLines[i];
+            // второй огонёк, который движется снизу вверх (i === 1), сдвигаем правее на ~8 линий
+            const lineIndex = i === 1 ? Math.min(vLines.length - 1, i + 8) : i;
+            const line = vLines[lineIndex];
             const delay = delayForLine(i);
             const extra = i % 2 === 1 ? 0 : 4;
             const p = phase(tSec, TRAVEL_PERIOD + extra, delay);

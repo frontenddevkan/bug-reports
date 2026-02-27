@@ -157,7 +157,7 @@ body::after {
 }
 
 .header-donate:hover {
-    transform: translateY(-1px) scale(1.5);
+    transform: translateY(-1px); /* без масштабирования */
     /* не убираем "бордер" (ring) на hover */
 }
 
@@ -299,7 +299,7 @@ body::after {
 }
 
 .header-telegram:hover {
-    transform: translateY(-1px) scale(1.5);
+    transform: translateY(-1px); /* без масштабирования */
     /* не убираем "бордер" (ring) на hover */
 }
 
@@ -1517,14 +1517,17 @@ body::after {
         transform 160ms ease,
         box-shadow 160ms ease,
         background 160ms ease;
+    position: relative;
+    z-index: 0;
 }
 
 .left-nav-link:hover {
     background: rgba(15, 23, 42, 0.24);
-    transform: scale(1.5);
+    transform: scale(1.02); /* лёгкий скейл на ~полпикселя */
     box-shadow:
         0 0 0 0.5px rgba(56, 189, 248, 0.35),
         0 10px 24px rgba(15, 23, 42, 0.95);
+    z-index: 2; /* поверх соседних кнопок */
 }
 
 .main-content {
