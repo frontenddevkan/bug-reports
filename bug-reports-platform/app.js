@@ -93,7 +93,7 @@ function initBgChargeCanvas() {
     if (!ctx) return;
 
     // Сетка и "ток" рисуются canvas'ом (для неравномерности, двойных линий и укороченных линий)
-    const FLASH_PERIOD = 4.0; // каждые 4 секунды вспышка
+    const FLASH_PERIOD = 8.0; // каждые 8 секунд вспышка у каждого кружка
     const TRAVEL_PERIOD = 11.0; // замедляем ещё на ~4 секунды
 
     // Сетка мельче примерно в 2 раза и чуть "помельче" (≈ 6px), плюс неравномерность
@@ -233,8 +233,8 @@ function initBgChargeCanvas() {
     }
 
     function flashIntensity(tSec, delaySec) {
-        // каждые 4 секунды вспышка с затуханием за 1 секунду
-        const local = ((tSec - delaySec) % FLASH_PERIOD + FLASH_PERIOD) % FLASH_PERIOD; // 0..4
+        // каждые 8 секунд вспышка с затуханием за 1 секунду
+        const local = ((tSec - delaySec) % FLASH_PERIOD + FLASH_PERIOD) % FLASH_PERIOD; // 0..8
         if (local > 1) return 0;
         // 1 -> 0 плавно за 1 секунду
         return 0.5 * (1 + Math.cos(Math.PI * local));
@@ -269,7 +269,8 @@ function initBgChargeCanvas() {
             const down = i % 2 === 0; // каждая вторая — наоборот
             const y = down ? p * len : (1 - p) * len;
             const x = line.pos;
-            const intensity = flashIntensity(tSec, delay);
+            // у каждого кружка своя фаза вспышки: шаг 5 секунд, чтобы не совпадали
+            const intensity = flashIntensity(tSec, i * 5.0);
             drawDot(x, y, intensity);
         }
 
@@ -287,7 +288,8 @@ function initBgChargeCanvas() {
             const right = j % 2 === 0;
             const x = right ? p * len : (1 - p) * len;
             const y = line.pos;
-            const intensity = flashIntensity(tSec, delay);
+            // у каждого кружка своя фаза вспышки: шаг 5 секунд, чтобы не совпадали
+            const intensity = flashIntensity(tSec, j * 5.0);
             drawDot(x, y, intensity);
         }
 
