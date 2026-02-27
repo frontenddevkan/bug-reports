@@ -274,6 +274,8 @@ function initBgChargeCanvas() {
         // Все кружки, кроме каждого второго (i % 2 === 1), замедляем ещё на 4 секунды.
         const vCount = Math.min(MAX_DOTS, vLines.length);
         for (let i = 0; i < vCount; i++) {
+            // каждый третий вертикальный шарик убираем для ещё более лёгкой анимации
+            if ((i + 1) % 3 === 0) continue;
             // второй огонёк, который движется снизу вверх (i === 1), сдвигаем правее на ~8 линий
             const lineIndex = i === 1 ? Math.min(vLines.length - 1, i + 8) : i;
             const line = vLines[lineIndex];
@@ -293,8 +295,8 @@ function initBgChargeCanvas() {
         // Все кружки, кроме каждого второго (j % 2 === 1), замедляем ещё на 4 секунды.
         const hCount = Math.min(MAX_DOTS, hLines.length);
         for (let j = 0; j < hCount; j++) {
-            // Убираем 3‑й и 5‑й кружок, едущие слева направо (индексы 2 и 4)
-            if (j === 2 || j === 4) continue;
+            // каждый третий горизонтальный шарик также убираем (индексы 2,5,8,...)
+            if ((j + 1) % 3 === 0) continue;
             const line = hLines[j];
             const delay = delayForLine(j);
             const extra = j % 2 === 1 ? 0 : 4;
