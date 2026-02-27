@@ -39,6 +39,10 @@ body {
     position: relative;
     overflow-x: hidden;
     padding: 0 4px; /* общий отступ 4px слева/справа для всего контента */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    margin: 0 auto;
     background-size:
         auto,
         auto,
