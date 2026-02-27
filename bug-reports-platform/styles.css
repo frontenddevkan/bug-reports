@@ -875,7 +875,8 @@ body::after {
     position: absolute;
     left: 0;
     right: 0;
-    top: 1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
     height: 2px;
     border-radius: 999px;
     background: linear-gradient(90deg, rgba(56, 189, 248, 0.05), rgba(56, 189, 248, 0.6), rgba(129, 140, 248, 0.35));
@@ -884,7 +885,8 @@ body::after {
 .roadmap-timeline-progress {
     position: absolute;
     left: 0;
-    top: 1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
     height: 2px;
     border-radius: 999px;
     background: linear-gradient(90deg, #3b82f6, #0ea5e9);
@@ -896,7 +898,14 @@ body::after {
     position: relative;
     flex: 0 0 auto;
     text-align: center;
-    min-width: 90px;
+    min-width: 100px;
+}
+
+.roadmap-step-grade-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    justify-content: center;
 }
 
 .roadmap-circle {
@@ -906,7 +915,9 @@ body::after {
     height: 30px;
     border-radius: 50%;
     border: 1.5px solid rgba(56, 189, 248, 0.9);
-    background: radial-gradient(circle at 30% 30%, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.3));
+    background:
+        radial-gradient(circle at 30% 30%, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.3)),
+        rgba(15, 23, 42, 1); /* сплошной тёмный фон под градиентом, чтобы линия не просвечивала */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -978,6 +989,8 @@ body::after {
 
 .roadmap-step-skill {
     color: #9ca3af;
+    max-width: 100px;
+    margin: 0 auto;
 }
 
 .roadmap-circle-index {
@@ -1023,8 +1036,8 @@ body::after {
     border-radius: 999px;
     font-size: 0.95rem;
     cursor: pointer;
-    border: 0.5px solid rgba(148, 163, 184, 0.8);
-    background: rgba(15, 23, 42, 0.2);
+    border: none;
+    background: rgba(15, 23, 42, 0.1);
     color: #e5e7eb;
     box-shadow:
         4px 4px 18px rgba(11, 99, 246, 0.9),

@@ -53,12 +53,14 @@
             <div class="roadmap-timeline" id="roadmapTimeline">
                 <div class="roadmap-timeline-progress" id="roadmapTimelineProgress"></div>
 
-                    <div class="roadmap-step roadmap-step--grade" data-step-id="trainee-theory">
-                    <button type="button" class="roadmap-circle">
-                            <span class="roadmap-circle-index"></span>
-                    </button>
-                    <div class="roadmap-step-labels">
+                <div class="roadmap-step roadmap-step--grade" data-step-id="trainee-theory">
+                    <div class="roadmap-step-grade-row">
                         <div class="roadmap-step-grade">Trainee</div>
+                        <button type="button" class="roadmap-circle">
+                            <span class="roadmap-circle-index"></span>
+                        </button>
+                    </div>
+                    <div class="roadmap-step-labels">
                         <div class="roadmap-step-skill">База теории тестирования, уровни и виды</div>
                     </div>
                 </div>
@@ -104,31 +106,37 @@
                 </div>
 
                 <div class="roadmap-step roadmap-step--grade" data-step-id="middle-ownership">
-                    <button type="button" class="roadmap-circle">
-                        <span class="roadmap-circle-index"></span>
-                    </button>
-                    <div class="roadmap-step-labels">
+                    <div class="roadmap-step-grade-row">
                         <div class="roadmap-step-grade">Middle</div>
+                        <button type="button" class="roadmap-circle">
+                            <span class="roadmap-circle-index"></span>
+                        </button>
+                    </div>
+                    <div class="roadmap-step-labels">
                         <div class="roadmap-step-skill">Планирование, стратегия, работа с рисками</div>
                     </div>
                 </div>
 
                 <div class="roadmap-step roadmap-step--grade" data-step-id="auto-qa">
-                    <button type="button" class="roadmap-circle">
-                        <span class="roadmap-circle-index"></span>
-                    </button>
-                    <div class="roadmap-step-labels">
+                    <div class="roadmap-step-grade-row">
                         <div class="roadmap-step-grade">Auto QA</div>
+                        <button type="button" class="roadmap-circle">
+                            <span class="roadmap-circle-index"></span>
+                        </button>
+                    </div>
+                    <div class="roadmap-step-labels">
                         <div class="roadmap-step-skill">Автотесты, CI/CD, API/UI‑фреймворки</div>
                     </div>
                 </div>
 
                 <div class="roadmap-step roadmap-step--grade" data-step-id="senior-qa">
-                    <button type="button" class="roadmap-circle">
-                        <span class="roadmap-circle-index"></span>
-                    </button>
-                    <div class="roadmap-step-labels">
+                    <div class="roadmap-step-grade-row">
                         <div class="roadmap-step-grade">Senior / Lead</div>
+                        <button type="button" class="roadmap-circle">
+                            <span class="roadmap-circle-index"></span>
+                        </button>
+                    </div>
+                    <div class="roadmap-step-labels">
                         <div class="roadmap-step-skill">Стратегия качества, процессы, менторство</div>
                     </div>
                 </div>
@@ -227,30 +235,6 @@
                 </div>
             </section>
 
-            <section id="checklistsPanel" class="checklists-panel">
-                <div class="checklists-header">
-                    <h2>Чек‑листы</h2>
-                </div>
-                <div class="checklists-controls">
-                    <div class="checklists-types">
-                        <button type="button" class="btn btn-secondary checklists-type-btn" data-checklist-id="web-smoke">
-                            Web: Smoke‑чек‑лист
-                        </button>
-                    </div>
-                    <div class="checklists-modes">
-                        <button type="button" class="btn btn-secondary checklists-mode-btn" data-checklist-mode="run">
-                            Проходить чек‑лист
-                        </button>
-                        <button type="button" class="btn btn-secondary checklists-mode-btn" data-checklist-mode="order">
-                            Тренировка порядка
-                        </button>
-                    </div>
-                </div>
-                <div class="checklists-content">
-                    <div id="checklistRunArea" class="checklist-run-area"></div>
-                    <div id="checklistOrderArea" class="checklist-order-area hidden"></div>
-                </div>
-            </section>
 
             <section id="employmentPanel" class="employment-panel">
                 <div class="employment-header">
@@ -305,6 +289,31 @@
                             </div>
                         </details>
                     </div>
+                </div>
+            </section>
+
+            <section id="checklistsPanel" class="checklists-panel">
+                <div class="checklists-header">
+                    <h2>Чек‑листы</h2>
+                </div>
+                <div class="checklists-controls">
+                    <div class="checklists-types">
+                        <button type="button" class="btn btn-secondary checklists-type-btn" data-checklist-id="web-smoke">
+                            Web: Smoke‑чек‑лист
+                        </button>
+                    </div>
+                    <div class="checklists-modes">
+                        <button type="button" class="btn btn-secondary checklists-mode-btn" data-checklist-mode="run">
+                            Проходить чек‑лист
+                        </button>
+                        <button type="button" class="btn btn-secondary checklists-mode-btn" data-checklist-mode="order">
+                            Тренировка порядка
+                        </button>
+                    </div>
+                </div>
+                <div class="checklists-content">
+                    <div id="checklistRunArea" class="checklist-run-area"></div>
+                    <div id="checklistOrderArea" class="checklist-order-area hidden"></div>
                 </div>
             </section>
             </main>
