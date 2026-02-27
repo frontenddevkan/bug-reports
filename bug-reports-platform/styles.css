@@ -844,13 +844,13 @@ body::after {
     width: 100%;
     /* усиленный синий градиент: темнее уже к середине, глубже в тёмно-синий справа */
     background:
-        radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.18), transparent 48%),
-        radial-gradient(circle at 100% 0%, rgba(30, 64, 175, 0.2), transparent 52%),
+        radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.14), transparent 48%),
+        radial-gradient(circle at 100% 0%, rgba(30, 64, 175, 0.16), transparent 52%),
         linear-gradient(
             135deg,
-            rgba(14, 25, 64, 0.04),
-            rgba(30, 64, 175, 0.18),
-            rgba(15, 23, 42, 0.92)
+            rgba(14, 25, 64, 0.02),
+            rgba(30, 64, 175, 0.14),
+            rgba(15, 23, 42, 0.88)
         );
     border-radius: 0;
     box-shadow:
@@ -1077,6 +1077,11 @@ body::after {
     min-height: 2.4em;
     display: grid;
     align-content: start;
+}
+
+/* Для стартового Trainee чуть больше отступа от кружка до подписи */
+.roadmap-step[data-step-id="trainee-start"] .roadmap-step-labels {
+    margin-top: 0.9rem;
 }
 
 .roadmap-step-grade {
@@ -1366,6 +1371,7 @@ body::after {
     min-height: calc(100vh - 3rem);
     overflow: hidden;
     margin-right: 0;
+    grid-column: 3;
 }
 
 .theory-sidebar::before {
@@ -1481,6 +1487,7 @@ body::after {
     min-height: calc(100vh - 3rem);
     overflow: hidden;
     margin-left: 0; /* вплотную к левому краю */
+    grid-column: 1;
 }
 
 .left-sidebar-nav::before {
@@ -1537,6 +1544,7 @@ body::after {
 .main-content {
     flex: 1;
     min-width: 0;
+    grid-column: 2;
 }
 
 .section-hint {
