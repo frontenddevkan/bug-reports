@@ -241,8 +241,8 @@ function initBgChargeCanvas() {
     }
 
     function delayForLine(lineIndex) {
-        // базовое запаздывание + ещё +4с на каждый следующий шарик (хаотичнее)
-        return lineIndex * 4;
+        // базовое запаздывание + 8s на каждый следующий шарик (ещё более рассинхронено)
+        return lineIndex * 8;
     }
 
     // Чтобы не перегружать страницу, анимацию делаем только на ограниченном числе линий,
@@ -257,12 +257,14 @@ function initBgChargeCanvas() {
 
         ctx.globalCompositeOperation = 'screen';
 
-        // Вертикальные шарики: строго по линиям, направление чередуем
+        // Вертикальные шарики: строго по линиям, направление чередуем.
+        // Все кружки, кроме каждого второго (i % 2 === 1), замедляем ещё на 4 секунды.
         const vCount = Math.min(MAX_DOTS, vLines.length);
         for (let i = 0; i < vCount; i++) {
             const line = vLines[i];
             const delay = delayForLine(i);
-            const p = phase(tSec, TRAVEL_PERIOD, delay);
+            const extra = i % 2 === 1 ? 0 : 4;
+            const p = phase(tSec, TRAVEL_PERIOD + extra, delay);
             const len = line.half ? viewportH * 0.5 : viewportH;
             const down = i % 2 === 0; // каждая вторая — наоборот
             const y = down ? p * len : (1 - p) * len;
@@ -271,12 +273,14 @@ function initBgChargeCanvas() {
             drawDot(x, y, intensity);
         }
 
-        // Горизонтальные шарики: строго по линиям, направление чередуем
+        // Горизонтальные шарики: строго по линиям, направление чередуем.
+        // Все кружки, кроме каждого второго (j % 2 === 1), замедляем ещё на 4 секунды.
         const hCount = Math.min(MAX_DOTS, hLines.length);
         for (let j = 0; j < hCount; j++) {
             const line = hLines[j];
             const delay = delayForLine(j);
-            const p = phase(tSec, TRAVEL_PERIOD, delay);
+            const extra = j % 2 === 1 ? 0 : 4;
+            const p = phase(tSec, TRAVEL_PERIOD + extra, delay);
             const len = line.half ? viewportW * 0.5 : viewportW;
             const right = j % 2 === 0;
             const x = right ? p * len : (1 - p) * len;
