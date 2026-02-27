@@ -297,6 +297,17 @@ function initBgChargeCanvas() {
             // у каждого кружка своя фаза вспышки: шаг 5 секунд, чтобы не совпадали
             const intensity = flashIntensity(tSec, i * 5.0);
             drawDot(x, y, intensity);
+
+            // Подсветка участка линии вокруг шарика: 4px до и 4px после по направлению движения
+            const segHalf = 4;
+            const yStart = Math.max(0, y - segHalf);
+            const yEnd = Math.min(len, y + segHalf);
+            ctx.strokeStyle = `rgba(248,250,252,${0.25 * intensity})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(x + 0.5, yStart);
+            ctx.lineTo(x + 0.5, yEnd);
+            ctx.stroke();
         }
 
         // Горизонтальные шарики: строго по линиям, направление чередуем.
@@ -316,6 +327,17 @@ function initBgChargeCanvas() {
             // у каждого кружка своя фаза вспышки: шаг 5 секунд, чтобы не совпадали
             const intensity = flashIntensity(tSec, j * 5.0);
             drawDot(x, y, intensity);
+
+            // Подсветка участка линии вокруг шарика: 4px до и 4px после по горизонтали
+            const segHalfH = 4;
+            const xStart = Math.max(0, x - segHalfH);
+            const xEnd = Math.min(len, x + segHalfH);
+            ctx.strokeStyle = `rgba(248,250,252,${0.25 * intensity})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(xStart, y + 0.5);
+            ctx.lineTo(xEnd, y + 0.5);
+            ctx.stroke();
         }
 
         ctx.globalCompositeOperation = 'source-over';
@@ -635,13 +657,9 @@ function initQuiz() {
 
     nextBtn.addEventListener('click', () => {
         current += 1;
+        // При ручном запуске через форму тестов крутим вопросы по кругу, без жёсткого завершения
         if (current >= QUIZ_QUESTIONS.length) {
-            progressEl.textContent = `Готово: ${QUIZ_QUESTIONS.length} вопросов`;
-            questionEl.textContent = 'Тест завершён. Отличная работа!';
-            optionsEl.innerHTML = '';
-            feedbackEl.innerHTML = `<div class="ok"><strong>Результат:</strong> ты прошла мини‑тест по SDLC. Дальше добавим вопросы по HTTP, баг‑репортам, типам тестирования и собесу.</div>`;
-            nextBtn.classList.add('hidden');
-            return;
+            current = 0;
         }
         showQuestion();
     });
@@ -771,15 +789,7 @@ function initQuizPopup() {
         closePopup();
     });
 
-    // Позволяем явно открывать мини‑квиз по кнопке "Тесты" в левом меню
-    const testsNavBtn = document.querySelector('.left-nav-link[data-scroll-target="#testsPanel"]');
-    if (testsNavBtn) {
-        testsNavBtn.addEventListener('click', () => {
-            // сразу показываем квиз‑попап и не скроллим страницу
-            startSession();
-        });
-    }
-
+    // Автоматический мини‑квиз каждые N минут
     schedule();
 }
 
@@ -1106,6 +1116,32 @@ initGreetingPopup();
             if (!target) return;
             target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
+    });
+})();
+
+// Открытие модального окна с тестами по кнопке "Тесты" в навигации
+(function initTestsModal() {
+    const testsModal = document.getElementById('testsModal');
+    const closeTestsModalBtn = document.getElementById('closeTestsModalBtn');
+    const testsNavBtn = document.querySelector('.left-nav-link[data-scroll-target="#testsPanel"]');
+    if (!testsModal || !closeTestsModalBtn || !testsNavBtn) return;
+
+    testsNavBtn.addEventListener('click', () => {
+        testsModal.classList.remove('hidden');
+    });
+
+    closeTestsModalBtn.addEventListener('click', () => {
+        testsModal.classList.add('hidden');
+    });
+
+    // Клик по фону тестов с подтверждением выхода
+    testsModal.addEventListener('click', (event) => {
+        if (event.target === testsModal) {
+            const ok = confirm('Выйти из тестов?');
+            if (ok) {
+                testsModal.classList.add('hidden');
+            }
+        }
     });
 })();
 
