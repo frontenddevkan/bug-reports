@@ -1661,7 +1661,12 @@ body::after {
 .section-hint {
     margin-top: 0.5rem;
     font-size: 0.8rem;
-    color: #666;
+    color: rgba(229, 231, 235, 0.88);
+}
+
+/* В модалке чек‑листов подсказку делаем ещё заметнее */
+#checklistsModal .section-hint {
+    color: rgba(248, 250, 252, 0.92);
 }
 
 /* Попап‑квиз каждые N минут */
