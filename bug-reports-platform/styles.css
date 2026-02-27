@@ -93,10 +93,10 @@ body::after {
     grid-template-columns: 220px minmax(0, 1fr) 280px;
     gap: 1.5rem;
     align-items: start;
-    justify-content: center;
-    max-width: 1320px;
-    margin: 0 auto;
-    padding: 0; /* от края окна до левого сайдбара будет ровно его собственный отступ */
+    justify-content: stretch;
+    width: 100%;
+    margin: 0;
+    padding: 0; /* панели прижаты к краям окна */
 }
 
 /* На большинстве ноутбуков/десктопов сайдбары должны быть видимы.
@@ -126,7 +126,7 @@ body::after {
     gap: 0.875rem; /* +~2px */
     flex-wrap: wrap;
     justify-content: flex-end;
-    padding-top: 0.1rem; /* чуть выше, ближе к h1 */
+    padding-top: 0.35rem; /* чуть опускаем кнопки, чтобы совпадали с линией заголовка */
 }
 
 .header-actions a {
@@ -1480,7 +1480,7 @@ body::after {
     align-self: stretch;
     min-height: calc(100vh - 3rem);
     overflow: hidden;
-    margin-left: 8px; /* отодвигаем навигацию на 8px от левого края страницы */
+    margin-left: 0; /* вплотную к левому краю */
 }
 
 .left-sidebar-nav::before {
