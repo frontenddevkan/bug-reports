@@ -38,6 +38,7 @@ body {
     color: var(--text-main);
     position: relative;
     overflow-x: hidden;
+    padding: 0 4px; /* общий отступ 4px слева/справа для всего контента */
     background-size:
         auto,
         auto,
