@@ -28,13 +28,14 @@ body {
         radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.18), transparent 55%),
         radial-gradient(circle at 100% 100%, rgba(129, 140, 248, 0.24), transparent 55%),
         radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.16), transparent 55%),
-        /* Сетка: шаг 16px, без теней. Каждая 2-я линия — двойная (сдвиг 1px) */
+        /* Сетка: шаг 16px, без теней. Более глубокий синий (низкий контраст).
+           Каждая 2-я линия — двойная (сдвиг 1px) */
         /* горизонтали: одиночная линия на 0px в каждом 32px блоке */
         repeating-linear-gradient(
             to bottom,
-            rgba(248, 250, 252, 0.06) 0px,
-            rgba(56, 189, 248, 0.18) 0.2px,
-            rgba(30, 64, 175, 0.22) 0.4px,
+            rgba(59, 130, 246, 0.04) 0px,
+            rgba(30, 64, 175, 0.10) 0.2px,
+            rgba(30, 58, 138, 0.14) 0.4px,
             transparent 0.4px,
             transparent 32px
         ),
@@ -43,22 +44,22 @@ body {
             to bottom,
             transparent 0,
             transparent 16px,
-            rgba(248, 250, 252, 0.06) 16px,
-            rgba(56, 189, 248, 0.18) 16.2px,
-            rgba(30, 64, 175, 0.22) 16.4px,
+            rgba(59, 130, 246, 0.04) 16px,
+            rgba(30, 64, 175, 0.10) 16.2px,
+            rgba(30, 58, 138, 0.14) 16.4px,
             transparent 16.4px,
             transparent 17px,
-            rgba(56, 189, 248, 0.12) 17px,
-            rgba(30, 64, 175, 0.18) 17.2px,
+            rgba(30, 64, 175, 0.08) 17px,
+            rgba(30, 58, 138, 0.12) 17.2px,
             transparent 17.4px,
             transparent 32px
         ),
         /* вертикали: одиночная линия на 0px в каждом 32px блоке */
         repeating-linear-gradient(
             90deg,
-            rgba(248, 250, 252, 0.06) 0px,
-            rgba(56, 189, 248, 0.18) 0.2px,
-            rgba(30, 64, 175, 0.22) 0.4px,
+            rgba(59, 130, 246, 0.04) 0px,
+            rgba(30, 64, 175, 0.10) 0.2px,
+            rgba(30, 58, 138, 0.14) 0.4px,
             transparent 0.4px,
             transparent 32px
         ),
@@ -67,13 +68,13 @@ body {
             90deg,
             transparent 0,
             transparent 16px,
-            rgba(248, 250, 252, 0.06) 16px,
-            rgba(56, 189, 248, 0.18) 16.2px,
-            rgba(30, 64, 175, 0.22) 16.4px,
+            rgba(59, 130, 246, 0.04) 16px,
+            rgba(30, 64, 175, 0.10) 16.2px,
+            rgba(30, 58, 138, 0.14) 16.4px,
             transparent 16.4px,
             transparent 17px,
-            rgba(56, 189, 248, 0.12) 17px,
-            rgba(30, 64, 175, 0.18) 17.2px,
+            rgba(30, 64, 175, 0.08) 17px,
+            rgba(30, 58, 138, 0.12) 17.2px,
             transparent 17.4px,
             transparent 32px
         ),
@@ -162,13 +163,13 @@ body::after {
 
 .header {
     width: 100%;
-    background: rgba(15, 23, 42, 0.08);
+    background: rgba(15, 23, 42, 0.064);
     padding: 1.4rem 2.2rem;
     box-shadow: none;
     border-radius: 0;
     border: none;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -878,8 +879,12 @@ body::after {
     margin: 1.4rem auto 0.6rem;
     max-width: none;
     width: 100%;
-    background: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.18), transparent 55%), rgba(15, 23, 42, 0.1);
-    border-radius: 22px;
+    /* вернуть "красивый" синий градиентный фон */
+    background:
+        radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.22), transparent 55%),
+        radial-gradient(circle at 100% 0%, rgba(59, 130, 246, 0.18), transparent 60%),
+        linear-gradient(135deg, rgba(29, 78, 216, 0.16), rgba(14, 165, 233, 0.08), rgba(15, 23, 42, 0.18));
+    border-radius: 0;
     box-shadow:
         0 0 0 0.5px rgba(255, 255, 255, 0.18),
         0 0 0 1.5px rgba(56, 189, 248, 0.12),
@@ -889,6 +894,16 @@ body::after {
     border: 0.5px solid rgba(255, 255, 255, 0.18);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    position: relative;
+}
+
+.roadmap-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 0.5px solid rgba(56, 189, 248, 0.38);
+    transform: translate(-1px, -1px);
+    pointer-events: none;
 }
 
 .roadmap-toggle {
@@ -959,6 +974,24 @@ body::after {
     flex: 0 0 auto;
     text-align: center;
     min-width: 100px;
+}
+
+.roadmap-step--grade-label {
+    min-width: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-right: 0.4rem;
+}
+
+.roadmap-grade-label {
+    font-weight: 800;
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+    color: rgba(248, 250, 252, 0.98);
+    text-shadow:
+        0 0 10px rgba(255,255,255,0.18),
+        0 0 18px rgba(56,189,248,0.22);
 }
 
 .roadmap-step-grade-row {
@@ -1306,11 +1339,11 @@ body::after {
 /* Правый сайдбар с теорией */
 .theory-sidebar {
     width: 280px;
-    background: rgba(15, 23, 42, 0.82);
-    border-radius: 26px;
+    background: rgba(14, 25, 64, 0.21);
+    border-radius: 0;
     box-shadow:
-        0 0 0 0.5px rgba(56, 189, 248, 0.6),
-        0 0 0 1.5px rgba(255, 255, 255, 0.04),
+        0 0 0 0.5px rgba(255, 255, 255, 0.18),
+        0 0 0 1.5px rgba(56, 189, 248, 0.12),
         0 26px 80px rgba(15,23,42,0.98);
     padding: 1.25rem 1.5rem;
     font-size: 0.85rem;
@@ -1319,6 +1352,18 @@ body::after {
     max-height: calc(100vh - 3rem);
     display: flex;
     flex-direction: column;
+    align-self: stretch;
+    min-height: calc(100vh - 3rem);
+    overflow: hidden;
+}
+
+.theory-sidebar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 0.5px solid rgba(56, 189, 248, 0.38);
+    transform: translate(-1px, -1px);
+    pointer-events: none;
 }
 
 .theory-sidebar h2 {
@@ -1445,12 +1490,27 @@ body::after {
 .left-sidebar-nav {
     width: 200px;
     flex-shrink: 0;
-    border-radius: 22px;
-    background: rgba(15, 23, 42, 0.8);
-    border: 0.5px solid rgba(56, 189, 248, 0.55);
+    border-radius: 0;
+    background: rgba(14, 25, 64, 0.21);
+    border: 0.5px solid rgba(255, 255, 255, 0.18);
+    box-shadow:
+        0 0 0 1.5px rgba(56, 189, 248, 0.12),
+        0 26px 80px rgba(15,23,42,0.9);
     padding: 0.9rem 0.85rem 1rem;
     position: sticky;
     top: 1.5rem;
+    align-self: stretch;
+    min-height: calc(100vh - 3rem);
+    overflow: hidden;
+}
+
+.left-sidebar-nav::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 0.5px solid rgba(56, 189, 248, 0.38);
+    transform: translate(-1px, -1px);
+    pointer-events: none;
 }
 
 .left-sidebar-title {
