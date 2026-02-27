@@ -30,15 +30,15 @@ body {
         radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.16), transparent 55%),
         /* горизонтальная линия сетки: ещё более тонкая линия + голубое свечение */
         linear-gradient(
-            rgba(255, 255, 255, 0.05) 0.5px,
-            rgba(56, 189, 248, 0.12) 1px,
+            rgba(255, 255, 255, 0.08) 0.1px,
+            rgba(56, 189, 248, 0.22) 0.2px,
             transparent 4px
         ),
         /* вертикальная линия сетки: ещё более тонкая линия + голубое свечение */
         linear-gradient(
             90deg,
-            rgba(255, 255, 255, 0.05) 0.5px,
-            rgba(56, 189, 248, 0.12) 1px,
+            rgba(255, 255, 255, 0.08) 0.1px,
+            rgba(56, 189, 248, 0.22) 0.2px,
             transparent 4px
         ),
         var(--bg-deep);
@@ -109,13 +109,14 @@ body::after {
 }
 
 .header {
-    background: rgba(15, 23, 42, 0.42);
+    width: 100%;
+    background: rgba(15, 23, 42, 0.2);
     padding: 1.4rem 2.2rem;
     box-shadow: none;
-    border-radius: 26px;
+    border-radius: 0;
     border: none;
-    backdrop-filter: blur(22px);
-    -webkit-backdrop-filter: blur(22px);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -189,6 +190,71 @@ body::after {
         "Courier New",
         monospace;
     letter-spacing: 0.06em;
+}
+
+/* Глитч-заголовок: лёгкий "сигнал рвётся" */
+.glitch-title {
+    position: relative;
+    text-transform: uppercase;
+    color: rgba(248, 250, 252, 0.98);
+    text-shadow:
+        0 0 10px rgba(255,255,255,0.12),
+        0 0 18px rgba(56,189,248,0.16);
+}
+
+.glitch-title::before,
+.glitch-title::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    color: rgba(248, 250, 252, 0.9);
+    pointer-events: none;
+    mix-blend-mode: screen;
+    opacity: 0.55;
+}
+
+.glitch-title::before {
+    transform: translate(-1px, 1px);
+    text-shadow: 0 0 14px rgba(56,189,248,0.22);
+    clip-path: inset(0 0 60% 0);
+    animation: glitch-shift-1 4.5s infinite steps(1, end);
+}
+
+.glitch-title::after {
+    transform: translate(2px, -1px);
+    text-shadow: 0 0 14px rgba(255,255,255,0.16);
+    clip-path: inset(55% 0 0 0);
+    animation: glitch-shift-2 6s infinite steps(1, end);
+}
+
+.glitch-title {
+    background-image:
+        linear-gradient(90deg, transparent 0, rgba(255,255,255,0.0) 40%, rgba(255,255,255,0.12) 50%, rgba(56,189,248,0.08) 55%, transparent 70%),
+        linear-gradient(90deg, transparent 0, rgba(255,255,255,0.0) 20%, rgba(255,255,255,0.10) 30%, transparent 45%);
+    background-size: 240px 100%, 180px 100%;
+    background-repeat: no-repeat;
+    animation: title-scan 9s linear infinite;
+}
+
+@keyframes title-scan {
+    0% { background-position: -260px 0, 120% 0; }
+    100% { background-position: 120% 0, -220px 0; }
+}
+
+@keyframes glitch-shift-1 {
+    0%, 74% { transform: translate(-1px, 1px); opacity: 0.35; }
+    75% { transform: translate(-2px, 0px); opacity: 0.75; }
+    76% { transform: translate(0px, 0px); opacity: 0.4; }
+    100% { transform: translate(-1px, 1px); opacity: 0.35; }
+}
+
+@keyframes glitch-shift-2 {
+    0%, 58% { transform: translate(2px, -1px); opacity: 0.35; }
+    59% { transform: translate(1px, -2px); opacity: 0.7; }
+    60% { transform: translate(0px, 0px); opacity: 0.4; }
+    100% { transform: translate(2px, -1px); opacity: 0.35; }
 }
 
 .subtitle {
@@ -640,6 +706,30 @@ body::after {
     .sdlc-target-row {
         grid-template-columns: 1fr;
     }
+}
+
+/* Убираем скругления у блоков (кроме кругов/чекпоинтов роадмапа) */
+.header,
+.main,
+.theory-sidebar,
+.left-sidebar-nav,
+.roadmap-banner,
+.simulator-day,
+.sdlc-visual,
+.quiz-area,
+.checklist-run-area,
+.checklist-order-area,
+.bug-card,
+.modal-content,
+.quiz-popup-window,
+.employment-card,
+.qa-item,
+.sdlc-bank,
+.sdlc-targets,
+.sdlc-chip,
+.sdlc-drop,
+.btn {
+    border-radius: 0 !important;
 }
 
 .checklists-header h2 {
@@ -1415,13 +1505,13 @@ body::after {
 .greeting-popup {
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.35);
+    background: rgba(15, 23, 42, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1600;
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 .greeting-popup.hidden {
@@ -1429,16 +1519,27 @@ body::after {
 }
 
 .greeting-popup-window {
-    background: radial-gradient(circle at 0% 0%, rgba(129, 140, 248, 0.18), rgba(15, 23, 42, 0.8));
-    border-radius: 30px;
+    position: relative;
+    background: rgba(15, 23, 42, 0.2);
+    border-radius: 0;
     padding: 3rem 3.6rem;
     max-width: 820px;
     width: 94%;
     box-shadow:
-        0 0 0 0.5px rgba(56, 189, 248, 0.8),
-        0 0 0 1.5px rgba(255, 255, 255, 0.06),
+        0 0 0 0.5px rgba(255, 255, 255, 0.18),
+        0 0 0 1.5px rgba(56, 189, 248, 0.12),
+        18px 18px 18px rgba(255, 255, 255, 0.08),
         0 30px 90px rgba(15, 23, 42, 0.98);
     animation: greeting-pop 0.6s ease-out forwards;
+}
+
+.greeting-popup-window::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 0.5px solid rgba(56, 189, 248, 0.38);
+    transform: translate(-1px, -1px);
+    pointer-events: none;
 }
 
 .greeting-popup-text {

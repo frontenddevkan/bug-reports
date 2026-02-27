@@ -52,7 +52,7 @@ function initBgChargeCanvas() {
     if (!ctx) return;
 
     const grid = 4; // px — соответствует background-size сетки
-    const lineStride = 12; // чтобы не рисовать на каждой линии (иначе слишком тяжело)
+    const lineStride = 1; // рисуем по линиям, но часть линий "без изменений" пропускаем по правилам
 
     const PERIOD_DOWN = 8.5;
     const PERIOD_UP = 9.5;
@@ -71,26 +71,29 @@ function initBgChargeCanvas() {
     resize();
     window.addEventListener('resize', resize, { passive: true });
 
-    function orbGradient(x, y) {
+    function orbGradient(x, y, pulse) {
         // белый центр -> белая мягкая тень -> голубой широкий ореол
-        const g = ctx.createRadialGradient(x, y, 0, x, y, 12);
-        g.addColorStop(0, 'rgba(255,255,255,0.95)');
-        g.addColorStop(0.2, 'rgba(255,255,255,0.55)');
-        g.addColorStop(0.45, 'rgba(56,189,248,0.35)');
+        const g = ctx.createRadialGradient(x, y, 0, x, y, 14);
+        const a0 = 0.92 * pulse;
+        const a1 = 0.55 * pulse;
+        const a2 = 0.38 * pulse;
+        g.addColorStop(0, `rgba(255,255,255,${a0})`);
+        g.addColorStop(0.2, `rgba(255,255,255,${a1})`);
+        g.addColorStop(0.45, `rgba(56,189,248,${a2})`);
         g.addColorStop(1, 'rgba(56,189,248,0)');
         return g;
     }
 
-    function drawOrb(x, y) {
-        ctx.fillStyle = orbGradient(x, y);
+    function drawOrb(x, y, coreRadius, pulse) {
+        ctx.fillStyle = orbGradient(x, y, pulse);
         ctx.beginPath();
-        ctx.arc(x, y, 12, 0, Math.PI * 2);
+        ctx.arc(x, y, 14, 0, Math.PI * 2);
         ctx.fill();
 
-        // яркое ядро (≈2px)
-        ctx.fillStyle = 'rgba(255,255,255,0.95)';
+        // яркое ядро (вертикаль 5px / горизонталь 6px)
+        ctx.fillStyle = `rgba(255,255,255,${0.95 * pulse})`;
         ctx.beginPath();
-        ctx.arc(x, y, 2, 0, Math.PI * 2);
+        ctx.arc(x, y, coreRadius, 0, Math.PI * 2);
         ctx.fill();
     }
 
@@ -99,12 +102,21 @@ function initBgChargeCanvas() {
         return ((tt % 1) + 1) % 1;
     }
 
+    function pulseIntensity(tSec) {
+        // вспышка каждые ~3с и ~4с, плюс мягкое затухание
+        const p3 = (Math.sin((Math.PI * 2 * tSec) / 3) + 1) / 2;
+        const p4 = (Math.sin((Math.PI * 2 * tSec) / 4) + 1) / 2;
+        const peak = Math.max(p3, p4);
+        return 0.55 + 0.45 * peak;
+    }
+
     function render(tSec) {
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         ctx.globalCompositeOperation = 'screen';
 
         const w = window.innerWidth;
         const h = window.innerHeight;
+        const pulse = pulseIntensity(tSec);
 
         // Вертикальные "огоньки"
         for (let x = 0; x <= w; x += grid * lineStride) {
@@ -116,12 +128,12 @@ function initBgChargeCanvas() {
                 // сверху вниз
                 const p = phase(tSec, PERIOD_DOWN, 0);
                 const y = p * (h + 60) - 30;
-                drawOrb(x, y);
+                drawOrb(x, y, 5, pulse);
             } else {
                 // снизу вверх (mod === 0)
                 const p = phase(tSec, PERIOD_UP, 4);
                 const y = (1 - p) * (h + 60) - 30;
-                drawOrb(x, y);
+                drawOrb(x, y, 5, pulse);
             }
         }
 
@@ -135,12 +147,12 @@ function initBgChargeCanvas() {
                 // справа налево (задержка 2s)
                 const p = phase(tSec, PERIOD_RL, 2);
                 const x = (1 - p) * (w + 60) - 30;
-                drawOrb(x, y);
+                drawOrb(x, y, 6, pulse);
             } else {
                 // слева направо (mod === 0) (задержка 3s)
                 const p = phase(tSec, PERIOD_LR, 3);
                 const x = p * (w + 60) - 30;
-                drawOrb(x, y);
+                drawOrb(x, y, 6, pulse);
             }
         }
 
