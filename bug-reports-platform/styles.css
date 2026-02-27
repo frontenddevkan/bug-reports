@@ -112,6 +112,9 @@ body::after {
 
 .my .two {
     flex: 1 1 auto; /* занимает всё оставшееся пространство между ними */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* секции одна под другой с отступом */
 }
 
 .layout {
