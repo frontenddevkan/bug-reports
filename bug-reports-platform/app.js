@@ -159,6 +159,10 @@ function initBgChargeCanvas() {
         return BASE_TRAVEL_PERIOD + lineIndex * 5;
     }
 
+    // Чтобы не перегружать страницу, рисуем ограниченное число линий:
+    // берём только первые 8 вертикальных и 8 горизонтальных линий.
+    const MAX_LINES = 8;
+
     function render(tSec) {
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         ctx.globalCompositeOperation = 'screen';
@@ -167,7 +171,7 @@ function initBgChargeCanvas() {
         const h = window.innerHeight;
 
         // Вертикали: каждая линия — свой узелок
-        const vCount = Math.floor(w / grid) + 1;
+        const vCount = Math.min(MAX_LINES, Math.floor(w / grid) + 1);
         for (let i = 0; i < vCount; i++) {
             const x = i * grid;
             const delay = delayForLine(i);
@@ -179,7 +183,7 @@ function initBgChargeCanvas() {
         }
 
         // Горизонтали: каждая линия — свой узелок
-        const hCount = Math.floor(h / grid) + 1;
+        const hCount = Math.min(MAX_LINES, Math.floor(h / grid) + 1);
         for (let j = 0; j < hCount; j++) {
             const y = j * grid;
             const delay = delayForLine(j);
