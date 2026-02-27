@@ -1498,7 +1498,7 @@ body::after {
     box-shadow:
         0 0 0 1.5px rgba(56, 189, 248, 0.12),
         0 26px 80px rgba(15,23,42,0.9);
-    padding: 1.1rem 0.85rem 1rem;
+    padding: 1.7rem 0.85rem 1rem; /* опускаем кнопки ещё на ~10px от верхнего края сайдбара */
     display: flex;
     flex-direction: column;
     gap: 6px; /* +2px воздуха между кнопками */
