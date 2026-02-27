@@ -96,7 +96,7 @@ body::after {
     justify-content: center;
     max-width: 1320px;
     margin: 0 auto;
-    padding: 0 8px;
+    padding: 0; /* от края окна до левого сайдбара будет ровно его собственный отступ */
 }
 
 /* На большинстве ноутбуков/десктопов сайдбары должны быть видимы.
@@ -1448,8 +1448,8 @@ body::after {
     }
 }
 
-/* Адаптив: планшеты и мобильные — в одну колонку только на совсем узких экранах */
-@media (max-width: 800px) {
+/* Адаптив: планшеты и мобильные — в одну колонку только на очень узких экранах */
+@media (max-width: 640px) {
     .layout {
         grid-template-columns: 1fr;
         max-width: 100%;
@@ -1507,7 +1507,7 @@ body::after {
     align-self: stretch;
     min-height: calc(100vh - 3rem);
     overflow: hidden;
-    margin-left: 8px; /* отодвигаем навигацию ещё на 8px правее от края */
+    margin-left: 8px; /* отодвигаем навигацию на 8px от левого края страницы */
 }
 
 .left-sidebar-nav::before {
