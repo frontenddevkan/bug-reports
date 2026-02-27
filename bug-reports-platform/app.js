@@ -18,9 +18,48 @@ const closeModalBtn = document.getElementById('closeModalBtn');
 const bugReportForm = document.getElementById('bugReportForm');
 const bugReportsList = document.getElementById('bugReportsList');
 const cancelFormBtn = document.getElementById('cancelFormBtn');
+const makeScreenshotBtn = document.getElementById('makeScreenshotBtn');
 
 // Локальное хранилище багрепортов (память + localStorage)
 let bugReports = [];
+let bugArtifacts = []; // простая коллекция артефактов (скриншоты) в текущей сессии
+async function captureScreenshot() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+        alert('Ваш браузер не поддерживает захват экрана (getDisplayMedia). Попробуйте в актуальной версии Chrome/Edge.');
+        return;
+    }
+    try {
+        const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+        const track = stream.getVideoTracks()[0];
+        const imageCapture = new ImageCapture(track);
+        const bitmap = await imageCapture.grabFrame();
+
+        const canvas = document.createElement('canvas');
+        canvas.width = bitmap.width;
+        canvas.height = bitmap.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(bitmap, 0, 0);
+        const dataUrl = canvas.toDataURL('image/png');
+
+        bugArtifacts.push({
+            type: 'screenshot',
+            createdAt: new Date().toISOString(),
+            dataUrl,
+        });
+
+        track.stop();
+        alert('Скриншот сохранён как артефакт текущей сессии (позже выведем отдельный блок со списком).');
+    } catch (err) {
+        console.error('Ошибка при захвате экрана', err);
+        alert('Не удалось сделать скриншот: ' + err.message);
+    }
+}
+
+if (makeScreenshotBtn) {
+    makeScreenshotBtn.addEventListener('click', () => {
+        captureScreenshot();
+    });
+}
 
 // Базовые чек‑листы (можно расширять)
 const CHECKLISTS = {
@@ -51,7 +90,7 @@ function initBgChargeCanvas() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const grid = 4; // px — соответствует background-size сетки
+    const grid = 8; // px — соответствует background-size сетки
     const lineStride = 1; // рисуем по линиям, но часть линий "без изменений" пропускаем по правилам
 
     const PERIOD_DOWN = 8.5;
@@ -73,10 +112,10 @@ function initBgChargeCanvas() {
 
     function orbGradient(x, y, pulse) {
         // белый центр -> белая мягкая тень -> голубой широкий ореол
-        const g = ctx.createRadialGradient(x, y, 0, x, y, 14);
-        const a0 = 0.92 * pulse;
-        const a1 = 0.55 * pulse;
-        const a2 = 0.38 * pulse;
+        const g = ctx.createRadialGradient(x, y, 0, x, y, 18);
+        const a0 = 1.0 * pulse;
+        const a1 = 0.8 * pulse;
+        const a2 = 0.55 * pulse;
         g.addColorStop(0, `rgba(255,255,255,${a0})`);
         g.addColorStop(0.2, `rgba(255,255,255,${a1})`);
         g.addColorStop(0.45, `rgba(56,189,248,${a2})`);
@@ -87,7 +126,7 @@ function initBgChargeCanvas() {
     function drawOrb(x, y, coreRadius, pulse) {
         ctx.fillStyle = orbGradient(x, y, pulse);
         ctx.beginPath();
-        ctx.arc(x, y, 14, 0, Math.PI * 2);
+        ctx.arc(x, y, 18, 0, Math.PI * 2);
         ctx.fill();
 
         // яркое ядро (вертикаль 5px / горизонталь 6px)
