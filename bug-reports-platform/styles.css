@@ -1024,6 +1024,7 @@ body::after {
         0 0 16px rgba(56, 189, 248, 0.75),
         0 0 32px rgba(56, 189, 248, 0.5);
     animation: roadmap-pulse 1.6s ease-out infinite;
+    z-index: 5; /* свечение над всеми слоями */
 }
 
 .roadmap-step--done .roadmap-circle-index::after {
@@ -1463,7 +1464,7 @@ body::after {
 }
 
 .left-sidebar-nav {
-    width: 200px;
+    width: 220px;
     flex-shrink: 0;
     border-radius: 0;
     background: rgba(14, 25, 64, 0.21);
@@ -1477,6 +1478,7 @@ body::after {
     align-self: stretch;
     min-height: calc(100vh - 3rem);
     overflow: hidden;
+    margin-left: -1.5rem; /* пристыковываем к левой границе окна (совпадает с отступом layout) */
 }
 
 .left-sidebar-nav::before {
@@ -1510,10 +1512,18 @@ body::after {
     cursor: pointer;
     margin-bottom: 0.3rem;
     box-shadow: 4px 4px 14px rgba(15, 23, 42, 0.55);
+    transition:
+        transform 160ms ease,
+        box-shadow 160ms ease,
+        background 160ms ease;
 }
 
 .left-nav-link:hover {
     background: rgba(15, 23, 42, 0.24);
+    transform: scale(1.5);
+    box-shadow:
+        0 0 0 0.5px rgba(56, 189, 248, 0.35),
+        0 10px 24px rgba(15, 23, 42, 0.95);
 }
 
 .main-content {
