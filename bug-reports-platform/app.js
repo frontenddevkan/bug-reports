@@ -118,14 +118,17 @@ function initBgChargeCanvas() {
     let vLines = [];
     let hLines = [];
 
-    function makeGradient(isVertical, x, y, len) {
+    function makeGradient(isVertical, x, y, len, boost = 1) {
         const g = isVertical
             ? gridCtx.createLinearGradient(x, y, x, y + len)
             : gridCtx.createLinearGradient(x, y, x + len, y);
         // слабый белый -> полупрозрачный голубой -> глубокий синий
-        g.addColorStop(0, `rgba(248,250,252,${Math.max(0, 0.05 - EXTRA_TRANSPARENCY)})`);
-        g.addColorStop(0.5, `rgba(56,189,248,${Math.max(0, 0.10 - EXTRA_TRANSPARENCY)})`);
-        g.addColorStop(1, `rgba(30,58,138,${Math.max(0, 0.16 - EXTRA_TRANSPARENCY)})`);
+        const a0 = Math.max(0, 0.05 - EXTRA_TRANSPARENCY);
+        const a1 = Math.max(0, 0.1 - EXTRA_TRANSPARENCY);
+        const a2 = Math.max(0, 0.16 - EXTRA_TRANSPARENCY);
+        g.addColorStop(0, `rgba(248,250,252,${Math.min(1, a0 * boost)})`);
+        g.addColorStop(0.5, `rgba(56,189,248,${Math.min(1, a1 * boost)})`);
+        g.addColorStop(1, `rgba(30,58,138,${Math.min(1, a2 * boost)})`);
         return g;
     }
 
@@ -153,7 +156,8 @@ function initBgChargeCanvas() {
         // вертикали
         vLines.forEach((l) => {
             const len = l.half ? viewportH * 0.5 : viewportH;
-            gridCtx.strokeStyle = makeGradient(true, l.pos, 0, len);
+            const vBoost = (l.idx + 1) % 8 === 0 ? 1.35 : 1; // каждую 8-ю вертикаль делаем чуть белее
+            gridCtx.strokeStyle = makeGradient(true, l.pos, 0, len, vBoost);
             gridCtx.beginPath();
             gridCtx.moveTo(l.pos + 0.5, 0);
             gridCtx.lineTo(l.pos + 0.5, len);
@@ -161,7 +165,7 @@ function initBgChargeCanvas() {
 
             if (l.doubled) {
                 // дубль: смещение 1px вправо и вниз (для вертикали "вниз" визуально — это просто сдвиг по y старта)
-                gridCtx.strokeStyle = makeGradient(true, l.pos + 1, 1, len);
+                gridCtx.strokeStyle = makeGradient(true, l.pos + 1, 1, len, vBoost);
                 gridCtx.beginPath();
                 gridCtx.moveTo(l.pos + 1.5, 1);
                 gridCtx.lineTo(l.pos + 1.5, len);
@@ -172,7 +176,8 @@ function initBgChargeCanvas() {
         // горизонтали
         hLines.forEach((l) => {
             const len = l.half ? viewportW * 0.5 : viewportW;
-            gridCtx.strokeStyle = makeGradient(false, 0, l.pos, len);
+            const hBoost = (l.idx + 1) % 4 === 0 ? 1.35 : 1; // каждую 4-ю горизонталь делаем чуть белее
+            gridCtx.strokeStyle = makeGradient(false, 0, l.pos, len, hBoost);
             gridCtx.beginPath();
             gridCtx.moveTo(0, l.pos + 0.5);
             gridCtx.lineTo(len, l.pos + 0.5);
