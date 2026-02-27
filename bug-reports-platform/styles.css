@@ -93,6 +93,23 @@ body::after {
     display: none !important;
 }
 
+/* Личная секция my под таймлайном: три тестовых flex-блока */
+.my {
+    display: flex;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    width: 100%;
+}
+
+.my .one,
+.my .two,
+.my .three {
+    flex: 1 1 0;
+    min-height: 80px;
+    border: 1px dashed rgba(148, 163, 184, 0.7);
+    background: rgba(15, 23, 42, 0.55);
+}
+
 .layout {
     display: flex;                /* 3 неравные колонки в ряд */
     align-items: flex-start;
