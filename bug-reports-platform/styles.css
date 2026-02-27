@@ -1374,7 +1374,7 @@ body::after {
     display: flex;
     flex-direction: column;
     align-self: stretch;
-    min-height: 100vh; /* во всю высоту экрана */
+    min-height: 100vh; /* во всю высоту видимой области экрана */
     overflow: hidden;
     margin-right: 0;
 }
@@ -1489,7 +1489,7 @@ body::after {
     position: sticky;
     top: 1.5rem;
     align-self: stretch;
-    min-height: 100vh; /* во всю высоту экрана */
+    min-height: 100vh; /* во всю высоту видимой области экрана */
     overflow: hidden;
     margin-left: 0; /* вплотную к левому краю */
 }
