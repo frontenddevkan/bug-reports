@@ -90,23 +90,12 @@ body::after {
 }
 
 .layout {
-    display: grid;
-    grid-template-columns: 220px minmax(0, 1fr) 280px; /* 3 неравные зоны: слева навигация, по центру мэйн, справа теория */
+    display: flex;                /* 3 неравные колонки в ряд */
+    align-items: flex-start;
     gap: 1.5rem;
-    align-items: start;
-    justify-content: stretch;
     width: 100%;
     margin: 0;
-    padding: 0; /* панели прижаты к краям окна */
-}
-
-/* Фиксируем, что все три колонки (левый сайдбар, мэйн, теория)
-   начинаются в ОДНОЙ строке grid (row 1), чтобы справа не было "пустоты" выше,
-   даже если aside идёт в разметке после основного контента. */
-.left-sidebar-nav,
-.main-content,
-.theory-sidebar {
-    grid-row: 1;
+    padding: 0;                   /* панели прижаты к краям окна */
 }
 
 /* На большинстве ноутбуков/десктопов сайдбары должны быть видимы.
@@ -1366,6 +1355,7 @@ body::after {
 /* Правый сайдбар с теорией */
 .theory-sidebar {
     width: 280px;
+    flex: 0 0 280px; /* фиксированная ширина справа */
     background: rgba(14, 25, 64, 0.32); /* чуть ярче, чтобы блок явно был виден справа */
     border-radius: 0;
     box-shadow:
@@ -1383,7 +1373,6 @@ body::after {
     min-height: 100vh; /* во всю высоту экрана */
     overflow: hidden;
     margin-right: 0;
-    grid-column: 3;
 }
 
 .theory-sidebar::before {
@@ -1482,7 +1471,7 @@ body::after {
 
 .left-sidebar-nav {
     width: 220px;
-    flex-shrink: 0;
+    flex: 0 0 220px; /* фиксированная ширина слева */
     border-radius: 0;
     background: rgba(14, 25, 64, 0.21);
     border: 0.5px solid rgba(255, 255, 255, 0.18);
@@ -1499,7 +1488,6 @@ body::after {
     min-height: 100vh; /* во всю высоту экрана */
     overflow: hidden;
     margin-left: 0; /* вплотную к левому краю */
-    grid-column: 1;
 }
 
 .left-sidebar-nav::before {
@@ -1554,9 +1542,8 @@ body::after {
 }
 
 .main-content {
-    flex: 1;
+    flex: 1 1 0%;
     min-width: 0;
-    grid-column: 2;
 }
 
 .section-hint {
