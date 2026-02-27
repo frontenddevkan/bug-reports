@@ -166,9 +166,16 @@ function initBgChargeCanvas() {
         vLines.forEach((l) => {
             const len = l.quarter ? viewportH * 0.25 : viewportH;
             const vBoost = (l.idx + 1) % 8 === 0 ? 1.35 : 1; // каждую 8-ю вертикаль делаем чуть белее
-            // Градиент прозрачности от левого верхнего к правому нижнему: по X
+            // Градиент прозрачности от левого верхнего к правому нижнему: по X.
+            // До ~40% ширины сохраняем полную яркость, затем плавно уходим к 30%.
             const t = viewportW > 0 ? l.pos / viewportW : 0;
-            const fade = 1 - 0.7 * t; // 100% яркость слева, ~30% справа
+            let fade;
+            if (t <= 0.4) {
+                fade = 1;
+            } else {
+                const local = (t - 0.4) / 0.6; // 0..1 для правых 60% экрана
+                fade = 1 - 0.7 * local;        // от 1 до 0.3
+            }
             gridCtx.strokeStyle = makeGradient(true, l.pos, 0, len, vBoost, fade);
             gridCtx.beginPath();
             gridCtx.moveTo(l.pos + 0.5, 0);
@@ -180,9 +187,16 @@ function initBgChargeCanvas() {
         hLines.forEach((l) => {
             const len = l.quarter ? viewportW * 0.25 : viewportW;
             const hBoost = (l.idx + 1) % 4 === 0 ? 1.35 : 1; // каждую 4-ю горизонталь делаем чуть белее
-            // Градиент прозрачности от левого верхнего к правому нижнему: по Y
+            // Градиент прозрачности от левого верхнего к правому нижнему: по Y.
+            // До ~40% высоты сохраняем полную яркость, затем плавно уходим к 30%.
             const t = viewportH > 0 ? l.pos / viewportH : 0;
-            const fade = 1 - 0.7 * t; // 100% яркость сверху, ~30% снизу
+            let fade;
+            if (t <= 0.4) {
+                fade = 1;
+            } else {
+                const local = (t - 0.4) / 0.6; // 0..1 для нижних 60% экрана
+                fade = 1 - 0.7 * local;        // от 1 до 0.3
+            }
             gridCtx.strokeStyle = makeGradient(false, 0, l.pos, len, hBoost, fade);
             gridCtx.beginPath();
             gridCtx.moveTo(0, l.pos + 0.5);
