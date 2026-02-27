@@ -298,8 +298,8 @@ function initBgChargeCanvas() {
             const intensity = flashIntensity(tSec, i * 5.0);
             drawDot(x, y, intensity);
 
-            // Подсветка участка линии вокруг шарика: 4px до и 4px после по направлению движения
-            const segHalf = 4;
+            // Подсветка участка линии вокруг шарика: 8px до и 8px после по направлению движения
+            const segHalf = 8;
             const yStart = Math.max(0, y - segHalf);
             const yEnd = Math.min(len, y + segHalf);
             ctx.strokeStyle = `rgba(255,255,255,${0.55 * intensity})`;
@@ -328,8 +328,8 @@ function initBgChargeCanvas() {
             const intensity = flashIntensity(tSec, j * 5.0);
             drawDot(x, y, intensity);
 
-            // Подсветка участка линии вокруг шарика: 4px до и 4px после по горизонтали
-            const segHalfH = 4;
+            // Подсветка участка линии вокруг шарика: 8px до и 8px после по горизонтали
+            const segHalfH = 8;
             const xStart = Math.max(0, x - segHalfH);
             const xEnd = Math.min(len, x + segHalfH);
             ctx.strokeStyle = `rgba(255,255,255,${0.55 * intensity})`;

@@ -145,8 +145,8 @@ body::after {
     width: 100%;
     /* чуть более плотный фон + мягкий синий градиент */
     background:
-        linear-gradient(120deg, rgba(56, 189, 248, 0.06), rgba(15, 23, 42, 0.12)),
-        rgba(15, 23, 42, 0.055);
+        linear-gradient(120deg, rgba(56, 189, 248, 0.10), rgba(15, 23, 42, 0.18)),
+        rgba(15, 23, 42, 0.085);
     padding: 1.4rem 2.2rem;
     box-shadow: none;
     border-radius: 0;
@@ -1667,6 +1667,7 @@ body::after {
 /* В модалке чек‑листов подсказку делаем ещё заметнее */
 #checklistsModal .section-hint {
     color: rgba(248, 250, 252, 0.92);
+    margin-top: 0.25rem;
 }
 
 /* Попап‑квиз каждые N минут */
