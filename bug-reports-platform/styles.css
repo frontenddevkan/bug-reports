@@ -1406,6 +1406,50 @@ body::after {
     margin-top: 10px; /* на 10px ниже текста/деталей багрепорта */
 }
 
+.bug-card .download-actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.step-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.step-index {
+    width: 1.5rem;
+    text-align: right;
+    margin-top: 0.35rem;
+    font-size: 0.85rem;
+    color: #9ca3af;
+}
+
+.step-input {
+    flex: 1 1 auto;
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    border: 1px solid rgba(56, 189, 248, 0.55);
+    background: rgba(15, 23, 42, 0.95);
+    color: #e5e7eb;
+}
+
+.add-step-btn {
+    margin-top: 0.5rem;
+}
+
+.make-screenshot-btn {
+    margin-top: 0.4rem;
+}
+
 /* Правый сайдбар с теорией */
 .theory-sidebar {
     width: 280px;

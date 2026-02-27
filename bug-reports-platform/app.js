@@ -54,6 +54,14 @@ async function captureScreenshot() {
             dataUrl,
         });
 
+        // Добавляем пометку в поле "Фактический результат", чтобы видно было, что скриншот привязан к описанию
+        const actualField = document.getElementById('actual');
+        if (actualField) {
+            const stamp = new Date().toLocaleString();
+            const prefix = actualField.value && !actualField.value.endsWith('\n') ? '\n' : '';
+            actualField.value += `${prefix}[Скриншот от ${stamp} сохранён как артефакт сессии]`;
+        }
+
         track.stop();
         alert('Скриншот сохранён как артефакт текущей сессии (позже выведем отдельный блок со списком).');
     } catch (err) {
@@ -1278,19 +1286,32 @@ function renderBugReport(report) {
             <summary>Окружение</summary>
             <pre>${escapeHtml(report.environment)}</pre>
         </details>
-        <button type="button" class="btn btn-secondary btn-download">
-            Скачать TXT
-        </button>
+        <div class="download-actions">
+            <button type="button" class="btn btn-secondary btn-download-txt">
+                Скачать TXT
+            </button>
+            <button type="button" class="btn btn-secondary btn-download-pdf">
+                Скачать PDF
+            </button>
+        </div>
     `;
 
     bugReportsList.appendChild(card);
 
-    // Вешаем обработчик на кнопку скачивания TXT
-    const downloadBtn = card.querySelector('.btn-download');
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', () => {
+    // Вешаем обработчики на кнопки скачивания TXT / PDF
+    const downloadTxtBtn = card.querySelector('.btn-download-txt');
+    if (downloadTxtBtn) {
+        downloadTxtBtn.addEventListener('click', () => {
             logStep(`Нажата кнопка "Скачать TXT" для багрепорта "${report.title}".`);
             downloadReportAsTxt(report);
+        });
+    }
+
+    const downloadPdfBtn = card.querySelector('.btn-download-pdf');
+    if (downloadPdfBtn) {
+        downloadPdfBtn.addEventListener('click', () => {
+            logStep(`Нажата кнопка "Скачать PDF" для багрепорта "${report.title}". (экспорт в PDF в разработке)`);
+            downloadReportAsPdf(report);
         });
     }
 }
@@ -1363,16 +1384,76 @@ function downloadReportAsTxt(report) {
     URL.revokeObjectURL(url);
 }
 
+// Заготовка под экспорт в PDF: пока предупреждаем, что функциональность в разработке
+function downloadReportAsPdf(report) {
+    alert('Экспорт багрепорта в PDF пока в разработке. Сейчас можно сохранить его как TXT-файл.');
+}
+
 /**
- * Обработка отправки формы багрепорта
+ * Обработка отправки формы багрепорта + инициализация UI шагов
  */
 if (bugReportForm) {
+    // Инициализируем нумерованные шаги
+    (function initBugReportSteps() {
+        const list = document.getElementById('stepsList');
+        const addBtn = document.getElementById('addStepBtn');
+        if (!list || !addBtn) return;
+
+        function rebuildIndices() {
+            const rows = Array.from(list.querySelectorAll('.step-row'));
+            rows.forEach((row, idx) => {
+                const label = row.querySelector('.step-index');
+                const input = row.querySelector('.step-input');
+                const n = idx + 1;
+                if (label) label.textContent = n + '.';
+                if (input && !input.value) {
+                    input.placeholder = `Шаг ${n}: что делаем?`;
+                }
+            });
+        }
+
+        function addRow(initialValue = '') {
+            const row = document.createElement('div');
+            row.className = 'step-row';
+            row.innerHTML = `
+                <span class="step-index"></span>
+                <input type="text" class="step-input" />
+            `;
+            const input = row.querySelector('.step-input');
+            if (input) input.value = initialValue;
+            list.appendChild(row);
+            rebuildIndices();
+        }
+
+        // Если по каким-то причинам шагов нет в разметке — создаём три
+        if (!list.querySelector('.step-row')) {
+            addRow();
+            addRow();
+            addRow();
+        } else {
+            rebuildIndices();
+        }
+
+        addBtn.addEventListener('click', () => addRow());
+    })();
+
+    function collectStepsText() {
+        const inputs = bugReportForm.querySelectorAll('.step-input');
+        const lines = [];
+        inputs.forEach((input, idx) => {
+            const value = input.value.trim();
+            if (!value) return;
+            lines.push(`${idx + 1}. ${value}`);
+        });
+        return lines.join('\n');
+    }
+
     bugReportForm.addEventListener('submit', function (event) {
         event.preventDefault(); // не даём браузеру перезагружать страницу
 
         // Достаём значения полей
         const title = bugReportForm.elements['title'].value.trim();
-        const steps = bugReportForm.elements['steps'].value.trim();
+        const steps = collectStepsText();
         const expected = bugReportForm.elements['expected'].value.trim();
         const actual = bugReportForm.elements['actual'].value.trim();
         // Поля окружения теперь разнесены — все НЕобязательные
