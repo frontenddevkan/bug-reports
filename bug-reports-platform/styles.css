@@ -1202,6 +1202,12 @@ body::after {
     border-color: rgba(56, 189, 248, 0.9);
 }
 
+/* Кнопка "Создать багрепорт" должна визуально идти поверх любых рамок по краям колонок */
+#createBugReportBtn {
+    position: relative;
+    z-index: 3;
+}
+
 .btn-secondary {
     background: rgba(15, 23, 42, 0.28);
     color: #e5e7eb;
