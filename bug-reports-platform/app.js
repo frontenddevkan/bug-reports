@@ -92,48 +92,139 @@ function initBgChargeCanvas() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const grid = 16; // px — соответствует background-size сетки (шаг 16)
-    const BASE_TRAVEL_PERIOD = 7.0; // базово 7 секунд пробег по линии
+    // Сетка и "ток" рисуются canvas'ом (для неравномерности, двойных линий и укороченных линий)
     const FLASH_PERIOD = 4.0; // каждые 4 секунды вспышка
+    const TRAVEL_PERIOD = 7.0; // шарик проходит свой путь за ~7 секунд
+
+    // Сетка мельче примерно в 2 раза и чуть "помельче" (≈ 6px), плюс неравномерность
+    const SPACING_PATTERN = [6, 6, 8, 6, 4, 6, 8, 6];
+    const LINE_THICKNESS = 0.2; // 0.2px как просили
+    const EXTRA_TRANSPARENCY = 0.04; // +4% прозрачности линиям
+
+    // Offscreen слой со статической сеткой
+    const gridLayer = document.createElement('canvas');
+    const gridCtx = gridLayer.getContext('2d');
+    if (!gridCtx) return;
+
+    let viewportW = 0;
+    let viewportH = 0;
+    let vLines = [];
+    let hLines = [];
+
+    function makeGradient(isVertical, x, y, len) {
+        const g = isVertical
+            ? gridCtx.createLinearGradient(x, y, x, y + len)
+            : gridCtx.createLinearGradient(x, y, x + len, y);
+        // слабый белый -> полупрозрачный голубой -> глубокий синий
+        g.addColorStop(0, `rgba(248,250,252,${Math.max(0, 0.05 - EXTRA_TRANSPARENCY)})`);
+        g.addColorStop(0.5, `rgba(56,189,248,${Math.max(0, 0.10 - EXTRA_TRANSPARENCY)})`);
+        g.addColorStop(1, `rgba(30,58,138,${Math.max(0, 0.16 - EXTRA_TRANSPARENCY)})`);
+        return g;
+    }
+
+    function buildLines(max, isVertical) {
+        const lines = [];
+        let pos = 0;
+        let idx = 0;
+        while (pos <= max + 1) {
+            const spacing = SPACING_PATTERN[idx % SPACING_PATTERN.length];
+            const half = idx % 4 === 3; // каждая 4-я линия — только 50%
+            const doubled = idx % 3 === 2; // каждая 3-я линия двоится
+            lines.push({ idx, pos, half, doubled });
+            pos += spacing;
+            idx++;
+        }
+        return lines;
+    }
+
+    function redrawGrid() {
+        gridCtx.clearRect(0, 0, viewportW, viewportH);
+        gridCtx.lineCap = 'butt';
+        gridCtx.lineJoin = 'miter';
+        gridCtx.lineWidth = LINE_THICKNESS;
+
+        // вертикали
+        vLines.forEach((l) => {
+            const len = l.half ? viewportH * 0.5 : viewportH;
+            gridCtx.strokeStyle = makeGradient(true, l.pos, 0, len);
+            gridCtx.beginPath();
+            gridCtx.moveTo(l.pos + 0.5, 0);
+            gridCtx.lineTo(l.pos + 0.5, len);
+            gridCtx.stroke();
+
+            if (l.doubled) {
+                // дубль: смещение 1px вправо и вниз (для вертикали "вниз" визуально — это просто сдвиг по y старта)
+                gridCtx.strokeStyle = makeGradient(true, l.pos + 1, 1, len);
+                gridCtx.beginPath();
+                gridCtx.moveTo(l.pos + 1.5, 1);
+                gridCtx.lineTo(l.pos + 1.5, len);
+                gridCtx.stroke();
+            }
+        });
+
+        // горизонтали
+        hLines.forEach((l) => {
+            const len = l.half ? viewportW * 0.5 : viewportW;
+            gridCtx.strokeStyle = makeGradient(false, 0, l.pos, len);
+            gridCtx.beginPath();
+            gridCtx.moveTo(0, l.pos + 0.5);
+            gridCtx.lineTo(len, l.pos + 0.5);
+            gridCtx.stroke();
+
+            if (l.doubled) {
+                // дубль: смещение 1px вправо и вниз
+                gridCtx.strokeStyle = makeGradient(false, 1, l.pos + 1, len);
+                gridCtx.beginPath();
+                gridCtx.moveTo(1, l.pos + 1.5);
+                gridCtx.lineTo(len, l.pos + 1.5);
+                gridCtx.stroke();
+            }
+        });
+    }
 
     function resize() {
-        const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-        canvas.width = Math.floor(window.innerWidth * dpr);
-        canvas.height = Math.floor(window.innerHeight * dpr);
+        const dpr = Math.max(1, Math.min(1.5, window.devicePixelRatio || 1));
+        viewportW = window.innerWidth;
+        viewportH = window.innerHeight;
+
+        canvas.width = Math.floor(viewportW * dpr);
+        canvas.height = Math.floor(viewportH * dpr);
         canvas.style.width = '100%';
         canvas.style.height = '100%';
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        gridLayer.width = Math.floor(viewportW * dpr);
+        gridLayer.height = Math.floor(viewportH * dpr);
+        gridCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        vLines = buildLines(viewportW, true);
+        hLines = buildLines(viewportH, false);
+        redrawGrid();
     }
 
     resize();
     window.addEventListener('resize', resize, { passive: true });
 
     function drawDot(x, y, intensity) {
-        // 1.5px точка + мягкий ореол на вспышке
-        const baseAlpha = 0.22; // менее интенсивный “умеренный белый”
-        const flashAlpha = 0.78 * intensity; // на вспышке становится почти максимально белой
-        const a = Math.min(1, baseAlpha + flashAlpha);
+        // 1.5px шарик + ореол (на вспышке шире на +2px и "размытей")
+        const coreR = 0.75;
+        const glowR = 4 + 2 * intensity; // шире на 2px на вспышке
 
-        ctx.save();
-        ctx.fillStyle = `rgba(255,255,255,${a})`;
+        const g = ctx.createRadialGradient(x, y, 0, x, y, glowR);
+        g.addColorStop(0, `rgba(255,255,255,${0.28 + 0.62 * intensity})`);
+        g.addColorStop(0.25, `rgba(255,255,255,${0.10 + 0.28 * intensity})`);
+        g.addColorStop(0.55, `rgba(56,189,248,${0.05 + 0.20 * intensity})`);
+        g.addColorStop(1, 'rgba(30,58,138,0)');
 
-        // тень/ореол усиливается на вспышке
-        const blur = 2 + 13 * intensity; // на 1px более размытая тень
-        ctx.shadowBlur = blur;
-        ctx.shadowColor = `rgba(56,189,248,${0.55 * intensity})`;
+        ctx.fillStyle = g;
         ctx.beginPath();
-        ctx.arc(x, y, 0.75, 0, Math.PI * 2);
+        ctx.arc(x, y, glowR, 0, Math.PI * 2);
         ctx.fill();
 
-        // добавляем белый компонент ореола, чтобы ощущалось “белый -> синий”
-        if (intensity > 0.001) {
-            ctx.shadowBlur = blur * 0.6;
-            ctx.shadowColor = `rgba(255,255,255,${0.45 * intensity})`;
-            ctx.beginPath();
-            ctx.arc(x, y, 0.75, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        ctx.restore();
+        ctx.fillStyle = `rgba(255,255,255,${0.22 + 0.68 * intensity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, coreR, 0, Math.PI * 2);
+        ctx.fill();
     }
 
     function phase(t, period, delay) {
@@ -150,46 +241,46 @@ function initBgChargeCanvas() {
     }
 
     function delayForLine(lineIndex) {
-        // 1-я линия 0s, 2-я 4s, 3-я 8s, 4-я 12s, ...
+        // базовое запаздывание + ещё +4с на каждый следующий шарик (хаотичнее)
         return lineIndex * 4;
     }
 
-    function travelPeriodForLine(lineIndex) {
-        // каждая следующая линия бежит на 5 секунд дольше предыдущей
-        return BASE_TRAVEL_PERIOD + lineIndex * 5;
-    }
-
-    // Чтобы не перегружать страницу, рисуем ограниченное число линий:
-    // берём только первые 8 вертикальных и 8 горизонтальных линий.
-    const MAX_LINES = 8;
+    // Чтобы не перегружать страницу, анимацию делаем только на ограниченном числе линий,
+    // а сама сетка (линии) уже нарисована в gridLayer.
+    const MAX_DOTS = 14;
 
     function render(tSec) {
-        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        // рисуем сетку одним drawImage (быстро)
+        ctx.clearRect(0, 0, viewportW, viewportH);
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.drawImage(gridLayer, 0, 0, viewportW, viewportH);
+
         ctx.globalCompositeOperation = 'screen';
 
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-
-        // Вертикали: каждая линия — свой узелок
-        const vCount = Math.min(MAX_LINES, Math.floor(w / grid) + 1);
+        // Вертикальные шарики: строго по линиям, направление чередуем
+        const vCount = Math.min(MAX_DOTS, vLines.length);
         for (let i = 0; i < vCount; i++) {
-            const x = i * grid;
+            const line = vLines[i];
             const delay = delayForLine(i);
-            const period = travelPeriodForLine(i);
-            const p = phase(tSec, period, delay);
-            const y = p * h;
+            const p = phase(tSec, TRAVEL_PERIOD, delay);
+            const len = line.half ? viewportH * 0.5 : viewportH;
+            const down = i % 2 === 0; // каждая вторая — наоборот
+            const y = down ? p * len : (1 - p) * len;
+            const x = line.pos;
             const intensity = flashIntensity(tSec, delay);
             drawDot(x, y, intensity);
         }
 
-        // Горизонтали: каждая линия — свой узелок
-        const hCount = Math.min(MAX_LINES, Math.floor(h / grid) + 1);
+        // Горизонтальные шарики: строго по линиям, направление чередуем
+        const hCount = Math.min(MAX_DOTS, hLines.length);
         for (let j = 0; j < hCount; j++) {
-            const y = j * grid;
+            const line = hLines[j];
             const delay = delayForLine(j);
-            const period = travelPeriodForLine(j);
-            const p = phase(tSec, period, delay);
-            const x = p * w;
+            const p = phase(tSec, TRAVEL_PERIOD, delay);
+            const len = line.half ? viewportW * 0.5 : viewportW;
+            const right = j % 2 === 0;
+            const x = right ? p * len : (1 - p) * len;
+            const y = line.pos;
             const intensity = flashIntensity(tSec, delay);
             drawDot(x, y, intensity);
         }
@@ -197,10 +288,19 @@ function initBgChargeCanvas() {
         ctx.globalCompositeOperation = 'source-over';
     }
 
+    // Ограничиваем FPS, чтобы страница не "висела" на скролле/кликах
     let raf = 0;
+    let last = 0;
+    const FRAME_MS = 1000 / 30;
     function tick(now) {
-        const tSec = now / 1000;
-        render(tSec);
+        if (document.hidden) {
+            raf = requestAnimationFrame(tick);
+            return;
+        }
+        if (now - last >= FRAME_MS) {
+            last = now;
+            render(now / 1000);
+        }
         raf = requestAnimationFrame(tick);
     }
     raf = requestAnimationFrame(tick);
