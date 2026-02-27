@@ -118,6 +118,15 @@ body::after {
     border: none; /* у центрального столбца нет собственных линий, только у вложенных блоков */
 }
 
+/* Вертикальные разделительные линии: справа у first, слева у third */
+.my .one {
+    border-right: 0.5px solid rgba(56, 189, 248, 0.32);
+}
+
+.my .three {
+    border-left: 0.5px solid rgba(56, 189, 248, 0.32);
+}
+
 .layout {
     display: flex;                /* 3 неравные колонки в ряд */
     align-items: flex-start;
