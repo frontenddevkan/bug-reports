@@ -1254,7 +1254,7 @@ body::after {
 }
 
 .modal-content {
-    background: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.44), rgba(15, 23, 42, 0.98));
+    background: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.58), rgba(15, 23, 42, 0.98));
     padding: 2rem;
     border-radius: 18px;
     max-width: 600px;
