@@ -99,7 +99,7 @@ body::after {
    three — обёртка для правого сайдбара (ширина по содержимому) */
 .my {
     display: flex;
-    gap: 1rem;
+    gap: 0; /* без отступов между one / two / three */
     margin: 1.5rem 0;
     width: 100%;
 }
