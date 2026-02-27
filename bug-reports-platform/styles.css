@@ -1401,6 +1401,10 @@ body::after {
     white-space: pre-wrap;
 }
 
+.bug-card .btn-download {
+    margin-top: 10px; /* на 10px ниже текста/деталей багрепорта */
+}
+
 /* Правый сайдбар с теорией */
 .theory-sidebar {
     width: 280px;
