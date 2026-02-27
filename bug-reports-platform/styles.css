@@ -1572,7 +1572,8 @@ body::after {
 }
 
 .quiz-popup-window {
-    background: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.22), rgba(15, 23, 42, 0.95));
+    /* делаем окно мини-теста менее прозрачным примерно на 14% */
+    background: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.32), rgba(15, 23, 42, 0.96));
     border-radius: 22px;
     max-width: 520px;
     width: 90%;
