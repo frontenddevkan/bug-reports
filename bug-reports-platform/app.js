@@ -902,15 +902,9 @@ function initGreetingPopup() {
 
     setTimeout(hide, 4000);
 
-    // любое нажатие клавиши или клик вне окна — закрывает приветствие
+    // любое нажатие клавиши или любой клик — закрывает приветствие (включая клик по самому окну)
     document.addEventListener('keydown', hide, { once: true });
-    document.addEventListener(
-        'click',
-        (e) => {
-            if (!popup.contains(e.target)) hide();
-        },
-        { once: true }
-    );
+    document.addEventListener('pointerdown', hide, { once: true, capture: true });
 }
 
 initGreetingPopup();
