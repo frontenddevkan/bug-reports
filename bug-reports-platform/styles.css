@@ -118,14 +118,8 @@ body::after {
     border: none; /* у центрального столбца нет собственных линий, только у вложенных блоков */
 }
 
-/* Вертикальные разделительные линии: справа у first, слева у third */
-.my .one {
-    border-right: 0.5px solid rgba(56, 189, 248, 0.32);
-}
-
-.my .three {
-    border-left: 0.5px solid rgba(56, 189, 248, 0.32);
-}
+/* У обёрток first / second / third нет своих бордеров по вертикали,
+   видим только рамки у внутренних панелей, чтобы не было нахлёстов линий */
 
 .layout {
     display: flex;                /* 3 неравные колонки в ряд */
@@ -1425,9 +1419,7 @@ body::after {
     content: '';
     position: absolute;
     inset: 0;
-    border-width: 0.5px 0.5px 0.5px 0; /* сверху, справа, снизу; слева — нет линии */
-    border-style: solid;
-    border-color: rgba(56, 189, 248, 0.38);
+    border: 0.5px solid rgba(56, 189, 248, 0.38); /* единая рамка самого блока, без доп. внешних бордеров */
     transform: translate(-1px, -1px);
     pointer-events: none;
 }
