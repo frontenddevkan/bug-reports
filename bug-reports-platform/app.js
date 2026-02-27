@@ -91,12 +91,7 @@ function initBgChargeCanvas() {
     if (!ctx) return;
 
     const grid = 8; // px — соответствует background-size сетки
-    const lineStride = 1; // рисуем по линиям, но часть линий "без изменений" пропускаем по правилам
-
-    const PERIOD_DOWN = 8.5;
-    const PERIOD_UP = 9.5;
-    const PERIOD_LR = 10.0;
-    const PERIOD_RL = 11.0;
+    const PERIOD_DOWN = 6.0; // 6 секунд сверху вниз
 
     function resize() {
         const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
@@ -110,30 +105,26 @@ function initBgChargeCanvas() {
     resize();
     window.addEventListener('resize', resize, { passive: true });
 
-    function orbGradient(x, y, pulse) {
-        // белый центр -> белая мягкая тень -> голубой широкий ореол
-        const g = ctx.createRadialGradient(x, y, 0, x, y, 18);
-        const a0 = 1.0 * pulse;
-        const a1 = 0.8 * pulse;
-        const a2 = 0.55 * pulse;
-        g.addColorStop(0, `rgba(255,255,255,${a0})`);
-        g.addColorStop(0.2, `rgba(255,255,255,${a1})`);
-        g.addColorStop(0.45, `rgba(56,189,248,${a2})`);
-        g.addColorStop(1, 'rgba(56,189,248,0)');
-        return g;
-    }
-
-    function drawOrb(x, y, coreRadius, pulse) {
-        ctx.fillStyle = orbGradient(x, y, pulse);
+    function drawDot(x, y, intensity) {
+        // базовый 1px кружок (субпиксельно — выглядеть будет как 1px точка)
+        const base = 0.55 + 0.35 * intensity;
+        ctx.fillStyle = `rgba(255,255,255,${base})`;
         ctx.beginPath();
-        ctx.arc(x, y, 18, 0, Math.PI * 2);
+        ctx.arc(x, y, 0.5, 0, Math.PI * 2);
         ctx.fill();
 
-        // яркое ядро (вертикаль 5px / горизонталь 6px)
-        ctx.fillStyle = `rgba(255,255,255,${0.95 * pulse})`;
-        ctx.beginPath();
-        ctx.arc(x, y, coreRadius, 0, Math.PI * 2);
-        ctx.fill();
+        // вспышка: белая тень -> синий ореол, затем обратно
+        if (intensity > 0.01) {
+            const g = ctx.createRadialGradient(x, y, 0, x, y, 10);
+            g.addColorStop(0, `rgba(255,255,255,${0.9 * intensity})`);
+            g.addColorStop(0.25, `rgba(255,255,255,${0.45 * intensity})`);
+            g.addColorStop(0.55, `rgba(56,189,248,${0.35 * intensity})`);
+            g.addColorStop(1, 'rgba(56,189,248,0)');
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.arc(x, y, 10, 0, Math.PI * 2);
+            ctx.fill();
+        }
     }
 
     function phase(t, period, delay) {
@@ -141,12 +132,14 @@ function initBgChargeCanvas() {
         return ((tt % 1) + 1) % 1;
     }
 
-    function pulseIntensity(tSec) {
-        // вспышка каждые ~3с и ~4с, плюс мягкое затухание
-        const p3 = (Math.sin((Math.PI * 2 * tSec) / 3) + 1) / 2;
-        const p4 = (Math.sin((Math.PI * 2 * tSec) / 4) + 1) / 2;
-        const peak = Math.max(p3, p4);
-        return 0.55 + 0.45 * peak;
+    function flashIntensity(tSec) {
+        // каждые пару секунд вспышка, которая за 1 сек возвращается в норму
+        // 0..1 внутри 2-сек окна
+        const cycle = ((tSec % 2) + 2) % 2;
+        // 0..1..0 треугольник в пределах 1 секунды, потом затухание
+        if (cycle <= 1) return 1 - Math.abs(cycle - 0.0); // пик в начале
+        const t = cycle - 1; // 0..1
+        return Math.max(0, 1 - t); // затухание
     }
 
     function render(tSec) {
@@ -155,45 +148,12 @@ function initBgChargeCanvas() {
 
         const w = window.innerWidth;
         const h = window.innerHeight;
-        const pulse = pulseIntensity(tSec);
-
-        // Вертикальные "огоньки"
-        for (let x = 0; x <= w; x += grid * lineStride) {
-            const lineIndex = Math.round(x / grid);
-            const mod = lineIndex % 3;
-            if (mod === 2) continue; // без изменений
-
-            if (mod === 1) {
-                // сверху вниз
-                const p = phase(tSec, PERIOD_DOWN, 0);
-                const y = p * (h + 60) - 30;
-                drawOrb(x, y, 5, pulse);
-            } else {
-                // снизу вверх (mod === 0)
-                const p = phase(tSec, PERIOD_UP, 4);
-                const y = (1 - p) * (h + 60) - 30;
-                drawOrb(x, y, 5, pulse);
-            }
-        }
-
-        // Горизонтальные "огоньки"
-        for (let y = 0; y <= h; y += grid * lineStride) {
-            const lineIndex = Math.round(y / grid);
-            const mod = lineIndex % 3;
-            if (mod === 2) continue;
-
-            if (mod === 1) {
-                // справа налево (задержка 2s)
-                const p = phase(tSec, PERIOD_RL, 2);
-                const x = (1 - p) * (w + 60) - 30;
-                drawOrb(x, y, 6, pulse);
-            } else {
-                // слева направо (mod === 0) (задержка 3s)
-                const p = phase(tSec, PERIOD_LR, 3);
-                const x = p * (w + 60) - 30;
-                drawOrb(x, y, 6, pulse);
-            }
-        }
+        // только первая вертикальная линия сетки (x = 0)
+        const x = 0;
+        const p = phase(tSec, PERIOD_DOWN, 0);
+        const y = p * h;
+        const intensity = flashIntensity(tSec);
+        drawDot(x, y, intensity);
 
         ctx.globalCompositeOperation = 'source-over';
     }
@@ -903,8 +863,17 @@ function initGreetingPopup() {
     setTimeout(hide, 4000);
 
     // любое нажатие клавиши или любой клик — закрывает приветствие (включая клик по самому окну)
-    document.addEventListener('keydown', hide, { once: true });
-    document.addEventListener('pointerdown', hide, { once: true, capture: true });
+    function onAnyInput() {
+        hide();
+        document.removeEventListener('keydown', onAnyInput, true);
+        document.removeEventListener('pointerdown', onAnyInput, true);
+        document.removeEventListener('mousedown', onAnyInput, true);
+        document.removeEventListener('touchstart', onAnyInput, true);
+    }
+    document.addEventListener('keydown', onAnyInput, true);
+    document.addEventListener('pointerdown', onAnyInput, true);
+    document.addEventListener('mousedown', onAnyInput, true);
+    document.addEventListener('touchstart', onAnyInput, true);
 }
 
 initGreetingPopup();
