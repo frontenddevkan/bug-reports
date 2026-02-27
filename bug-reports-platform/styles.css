@@ -1453,38 +1453,6 @@ body::after {
     }
 }
 
-/* Адаптив: планшеты и мобильные — в одну колонку только на очень узких экранах */
-@media (max-width: 640px) {
-    .layout {
-        grid-template-columns: 1fr;
-        max-width: 100%;
-        padding: 0 8px 1.5rem;
-    }
-
-    .main {
-        padding: 1.25rem 1rem;
-    }
-
-    .left-sidebar-nav {
-        position: static;
-        width: 100%;
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-    }
-
-    .left-nav-link {
-        white-space: nowrap;
-    }
-
-    .theory-sidebar {
-        position: static;
-        width: 100%;
-        max-height: none;
-        margin-top: 1rem;
-    }
-}
-
 /* Левый сайдбар-навигация по разделам симулятора */
 .main-layout-columns {
     display: flex;
