@@ -448,6 +448,73 @@
         </div>
     </div>
 
+    <!-- Модальное окно: тесты (квиз) -->
+    <div id="testsModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Тесты (тренажёр)</h2>
+                <button type="button" id="closeTestsModalBtn" class="btn-close">&times;</button>
+            </div>
+            <section id="testsPanel" class="tests-panel">
+                <div class="tests-header">
+                    <h2>Тесты (тренажёр)</h2>
+                    <button id="startQuizBtn" class="btn btn-secondary" type="button">Начать</button>
+                </div>
+                <p class="section-hint">
+                    Короткие теоретические вопросы по SDLC и базовой теории тестирования. Выбирай один из вариантов,
+                    сразу получаешь разбор, а прогресс помогает “раскачивать” мышление тестировщика небольшими порциями.
+                </p>
+                <div id="quizArea" class="quiz-area hidden" aria-live="polite">
+                    <div class="quiz-progress" id="quizProgress"></div>
+                    <div class="quiz-question" id="quizQuestion"></div>
+                    <div class="quiz-options" id="quizOptions"></div>
+                    <div class="quiz-feedback" id="quizFeedback"></div>
+                    <div class="quiz-actions">
+                        <button id="nextQuizBtn" class="btn btn-primary hidden" type="button">Следующий вопрос</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Модальное окно: чек‑листы -->
+    <div id="checklistsModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Чек‑листы</h2>
+                <button type="button" id="closeChecklistsModalBtn" class="btn-close">&times;</button>
+            </div>
+            <section id="checklistsPanel" class="checklists-panel">
+                <div class="checklists-header">
+                    <h2>Чек‑листы</h2>
+                </div>
+                <p class="section-hint">
+                    Здесь ты тренируешься работать с чек‑листами как в реальной задаче: можно просто проходить список
+                    проверок по фиче или регрессу, а можно отрабатывать правильный порядок шагов в режиме “Тренировка порядка”.
+                </p>
+                <div class="checklists-controls">
+                    <div class="checklists-types">
+                        <button type="button" class="btn btn-secondary checklists-type-btn" data-checklist-id="web-smoke">
+                            Web: Smoke‑чек‑лист
+                        </button>
+                    </div>
+                    <div class="checklists-modes">
+                        <button type="button" class="btn btn-secondary checklists-mode-btn" data-checklist-mode="run">
+                            Проходить чек‑лист
+                        </button>
+                        <button type="button" class="btn btn-secondary checklists-mode-btn" data-checklist-mode="order">
+                            Тренировка порядка
+                        </button>
+                    </div>
+                </div>
+                <div class="checklists-content">
+                    <div id="checklistRunArea" class="checklist-run-area"></div>
+                    <div id="checklistOrderArea" class="checklist-order-area hidden"></div>
+                </div>
+            </section>
+        </div>
+    </div>
+
     <!-- Приветственное всплывающее окно симулятора -->
     <div id="greetingPopup" class="greeting-popup hidden" aria-live="polite">
         <div class="greeting-popup-window">

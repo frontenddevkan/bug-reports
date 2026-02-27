@@ -763,6 +763,15 @@ function initQuizPopup() {
         closePopup();
     });
 
+    // Позволяем явно открывать мини‑квиз по кнопке "Тесты" в левом меню
+    const testsNavBtn = document.querySelector('.left-nav-link[data-scroll-target="#testsPanel"]');
+    if (testsNavBtn) {
+        testsNavBtn.addEventListener('click', () => {
+            // сразу показываем квиз‑попап и не скроллим страницу
+            startSession();
+        });
+    }
+
     schedule();
 }
 
@@ -934,6 +943,20 @@ function initChecklists() {
     typeButtons[0].classList.add('btn-primary');
     modeButtons[0].classList.add('btn-primary');
     applyMode();
+
+    // Открытие модального окна чек‑листов по кнопке слева
+    const checklistsModal = document.getElementById('checklistsModal');
+    const closeChecklistsModalBtn = document.getElementById('closeChecklistsModalBtn');
+    const checklistsNavBtn = document.querySelector('.left-nav-link[data-scroll-target="#checklistsPanel"]');
+
+    if (checklistsModal && closeChecklistsModalBtn && checklistsNavBtn) {
+        checklistsNavBtn.addEventListener('click', () => {
+            checklistsModal.classList.remove('hidden');
+        });
+        closeChecklistsModalBtn.addEventListener('click', () => {
+            checklistsModal.classList.add('hidden');
+        });
+    }
 }
 
 /**
@@ -1053,6 +1076,10 @@ initGreetingPopup();
         const targetSelector = btn.getAttribute('data-scroll-target');
         if (!targetSelector) return;
         btn.addEventListener('click', () => {
+            // Для тестов и чек‑листов используем модальные окна/квизы, а не скролл
+            if (targetSelector === '#testsPanel' || targetSelector === '#checklistsPanel') {
+                return;
+            }
             const target = document.querySelector(targetSelector);
             if (!target) return;
             target.scrollIntoView({ behavior: 'smooth', block: 'start' });
