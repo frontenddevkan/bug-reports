@@ -1071,7 +1071,7 @@ body::after {
 }
 
 .roadmap-step-labels {
-    margin-top: 0.45rem;
+    margin-top: 0.7rem; /* +~4px отступ между кружком и подписями */
     font-size: 0.75rem;
     line-height: 1.25;
     min-height: 2.4em;
