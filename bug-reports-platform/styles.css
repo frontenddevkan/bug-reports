@@ -143,7 +143,7 @@ body::after {
     align-items: center;
     gap: 0.5rem;
     padding: 0.3rem 0.7rem;
-    border-radius: 999px;
+    border-radius: 0;
     text-decoration: none;
     background: rgba(15, 23, 42, 0.08);
     box-shadow:
@@ -285,7 +285,7 @@ body::after {
     align-items: center;
     gap: 0.5rem;
     padding: 0.3rem 0.7rem;
-    border-radius: 999px;
+    border-radius: 0;
     text-decoration: none;
     background: rgba(15, 23, 42, 0.08);
     box-shadow:
@@ -846,7 +846,7 @@ body::after {
         0 0 0 1.5px rgba(56, 189, 248, 0.12),
         18px 18px 18px rgba(255, 255, 255, 0.08),
         0 30px 90px rgba(15, 23, 42, 0.98);
-    padding: 0.8rem 1.2rem 1rem;
+    padding: 1.4rem 1.6rem 1.2rem; /* чуть больше отступ сверху/слева, чтобы glow не бился об край */
     border: 0.5px solid transparent; /* оставляем только внешний бордер ::before */
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -934,8 +934,11 @@ body::after {
 .roadmap-step {
     position: relative;
     flex: 0 0 auto;
-    text-align: center;
     min-width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
 .roadmap-step--grade-label {
