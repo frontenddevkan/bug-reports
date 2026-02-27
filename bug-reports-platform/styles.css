@@ -114,7 +114,10 @@ body::after {
 
 .header {
     width: 100%;
-    background: rgba(15, 23, 42, 0.047);
+    /* чуть более плотный фон + мягкий синий градиент */
+    background:
+        linear-gradient(120deg, rgba(56, 189, 248, 0.06), rgba(15, 23, 42, 0.12)),
+        rgba(15, 23, 42, 0.055);
     padding: 1.4rem 2.2rem;
     box-shadow: none;
     border-radius: 0;
@@ -834,9 +837,9 @@ body::after {
     width: 100%;
     /* вернуть "красивый" синий градиентный фон */
     background:
-        radial-gradient(circle at 0% 0%, rgba(30, 64, 175, 0.18), transparent 55%),
-        radial-gradient(circle at 100% 0%, rgba(30, 58, 138, 0.18), transparent 60%),
-        linear-gradient(135deg, rgba(14, 25, 64, 0.16), rgba(30, 58, 138, 0.08), rgba(15, 23, 42, 0.14));
+        radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.18), transparent 55%),
+        radial-gradient(circle at 100% 0%, rgba(30, 64, 175, 0.18), transparent 60%),
+        linear-gradient(135deg, rgba(14, 25, 64, 0.12), rgba(30, 64, 175, 0.08), rgba(15, 23, 42, 0.10));
     border-radius: 0;
     box-shadow:
         0 0 0 0.5px rgba(255, 255, 255, 0.18),

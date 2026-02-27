@@ -1,0 +1,61 @@
+Блок \"Рабочий день тестировщика\" + \"Задачи на сегодня (симуляция Jira)\" — референс оформления
+
+Файлы:
+- bug-reports-platform/styles.css
+  - .simulator-greeting
+  - .today-board-title
+  - .today-tasks
+  - .task-chip (+ модификаторы status-todo / status-inprogress / status-done)
+
+Ключевые фрагменты:
+
+.simulator-greeting {
+    font-weight: 700;
+    color: #e5e7eb;
+    margin-bottom: 0.75rem;
+}
+
+.today-board-title {
+    font-size: 0.85rem;
+    color: #9ca3af;
+    margin-bottom: 0.5rem;
+}
+
+.today-tasks {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    overflow-x: auto;
+}
+
+.task-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.6rem;
+    border-radius: 0;
+    font-size: 0.8rem;
+    border: 0.2px solid rgba(56, 189, 248, 0.18);
+    background: rgba(15, 23, 42, 0.96);
+    color: #e5e7eb;
+}
+
+.task-chip.status-todo {
+    border-color: rgba(59, 130, 246, 0.9);
+    background: radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.4), rgba(15,23,42,0.98));
+    color: #dbeafe;
+}
+
+.task-chip.status-inprogress {
+    border-color: rgba(251, 191, 36, 0.9);
+    background: radial-gradient(circle at 0% 0%, rgba(251, 191, 36, 0.35), rgba(15,23,42,0.98));
+    color: #fef9c3;
+}
+
+.task-chip.status-done {
+    border-color: rgba(34, 197, 94, 0.9);
+    background: radial-gradient(circle at 0% 0%, rgba(34, 197, 94, 0.35), rgba(15,23,42,0.98));
+    color: #bbf7d0;
+}
+
+Этот блок можно переиспользовать как \"мини-Jira\" в других частях тренажёра.
+
