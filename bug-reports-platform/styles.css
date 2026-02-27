@@ -1355,6 +1355,7 @@ body::after {
     display: flex;
     justify-content: flex-end;
     margin-top: 0.5rem;
+    gap: 4px; /* небольшой 4px отступ между кнопками "Сохранить отчёт" и "Отмена" */
 }
 
 /* Карточка багрепорта в списке */
