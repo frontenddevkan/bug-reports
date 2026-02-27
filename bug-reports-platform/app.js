@@ -131,10 +131,10 @@ function initBgChargeCanvas() {
         const g = isVertical
             ? gridCtx.createLinearGradient(x, y, x, y + len)
             : gridCtx.createLinearGradient(x, y, x + len, y);
-        // слабый белый -> полупрозрачный голубой -> глубокий синий
-        const a0 = Math.max(0, 0.05 - EXTRA_TRANSPARENCY);
-        const a1 = Math.max(0, 0.1 - EXTRA_TRANSPARENCY);
-        const a2 = Math.max(0, 0.16 - EXTRA_TRANSPARENCY);
+        // слабый белый -> более заметный голубой -> глубокий синий
+        const a0 = Math.max(0, 0.08 - EXTRA_TRANSPARENCY);
+        const a1 = Math.max(0, 0.18 - EXTRA_TRANSPARENCY);
+        const a2 = Math.max(0, 0.24 - EXTRA_TRANSPARENCY);
         g.addColorStop(0, `rgba(248,250,252,${Math.min(1, a0 * boost)})`);
         g.addColorStop(0.5, `rgba(56,189,248,${Math.min(1, a1 * boost)})`);
         g.addColorStop(1, `rgba(30,58,138,${Math.min(1, a2 * boost)})`);
@@ -302,7 +302,7 @@ function initBgChargeCanvas() {
             const segHalf = 4;
             const yStart = Math.max(0, y - segHalf);
             const yEnd = Math.min(len, y + segHalf);
-            ctx.strokeStyle = `rgba(248,250,252,${0.25 * intensity})`;
+            ctx.strokeStyle = `rgba(255,255,255,${0.55 * intensity})`;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(x + 0.5, yStart);
@@ -332,7 +332,7 @@ function initBgChargeCanvas() {
             const segHalfH = 4;
             const xStart = Math.max(0, x - segHalfH);
             const xEnd = Math.min(len, x + segHalfH);
-            ctx.strokeStyle = `rgba(248,250,252,${0.25 * intensity})`;
+            ctx.strokeStyle = `rgba(255,255,255,${0.55 * intensity})`;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(xStart, y + 0.5);
