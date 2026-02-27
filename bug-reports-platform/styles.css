@@ -115,8 +115,7 @@ body::after {
     display: flex;
     flex-direction: column;
     gap: 1.5rem; /* секции одна под другой с отступом */
-    border-left: none;
-    border-right: none;
+    border: none; /* у центрального столбца нет собственных линий, только у вложенных блоков */
 }
 
 .layout {
