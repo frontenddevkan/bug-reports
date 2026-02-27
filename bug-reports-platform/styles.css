@@ -28,18 +28,18 @@ body {
         radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.18), transparent 55%),
         radial-gradient(circle at 100% 100%, rgba(129, 140, 248, 0.24), transparent 55%),
         radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.16), transparent 55%),
-        /* горизонтальная линия сетки: яркое ядро + голубое свечение */
+        /* горизонтальная линия сетки: ещё более тонкая линия + голубое свечение */
         linear-gradient(
-            rgba(255, 255, 255, 0.06) 1px,
-            rgba(56, 189, 248, 0.16) 1px,
-            transparent 2px
+            rgba(255, 255, 255, 0.05) 0.5px,
+            rgba(56, 189, 248, 0.12) 1px,
+            transparent 4px
         ),
-        /* вертикальная линия сетки: яркое ядро + голубое свечение */
+        /* вертикальная линия сетки: ещё более тонкая линия + голубое свечение */
         linear-gradient(
             90deg,
-            rgba(255, 255, 255, 0.06) 1px,
-            rgba(56, 189, 248, 0.16) 1px,
-            transparent 2px
+            rgba(255, 255, 255, 0.05) 0.5px,
+            rgba(56, 189, 248, 0.12) 1px,
+            transparent 4px
         ),
         var(--bg-deep);
     min-height: 100vh;
@@ -70,6 +70,49 @@ body::after {
     animation: diagonals-slide 30s linear infinite alternate;
 }
 
+/* Анимированные "огоньки" по сетке — эффект бегущего тока */
+.grid-charge {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    z-index: 0;
+}
+
+.grid-charge--down {
+    background-image:
+        radial-gradient(circle, rgba(255,255,255,0.8) 0, rgba(255,255,255,0.6) 2px, rgba(56,189,248,0.4) 4px, transparent 8px);
+    background-size: 40px 200%;
+    background-repeat: repeat;
+    animation: grid-charge-down 10s linear infinite;
+}
+
+.grid-charge--up {
+    background-image:
+        radial-gradient(circle, rgba(255,255,255,0.8) 0, rgba(255,255,255,0.6) 2px, rgba(56,189,248,0.4) 4px, transparent 8px);
+    background-size: 44px 200%;
+    background-repeat: repeat;
+    animation: grid-charge-up 12s linear infinite;
+}
+
+@keyframes grid-charge-down {
+    0% {
+        background-position: 0 -100%;
+    }
+    100% {
+        background-position: 0 100%;
+    }
+}
+
+@keyframes grid-charge-up {
+    0% {
+        background-position: 0 100%;
+    }
+    100% {
+        background-position: 0 -100%;
+    }
+}
+
 body::after {
     animation-direction: alternate-reverse;
     opacity: 0.45;
@@ -79,6 +122,8 @@ body::after {
     max-width: 1320px;
     margin: 0 auto 2.5rem;
     padding: 2.5rem 1.5rem 2.5rem;
+    position: relative;
+    z-index: 1;
 }
 
 .hidden {
@@ -96,15 +141,9 @@ body::after {
 }
 
 .header {
-    background:
-        radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.32), transparent 60%),
-        radial-gradient(circle at 100% 0%, rgba(129, 140, 248, 0.24), transparent 60%),
-        rgba(15, 23, 42, 0.68);
+    background: rgba(15, 23, 42, 0.42);
     padding: 1.4rem 2.2rem;
-    box-shadow:
-        0 0 0 0.5px rgba(148, 163, 184, 0.8),
-        0 0 0 1.5px rgba(255, 255, 255, 0.04),
-        0 26px 90px rgba(15,23,42,0.98);
+    box-shadow: none;
     border-radius: 26px;
     border: none;
     backdrop-filter: blur(22px);
@@ -130,7 +169,7 @@ body::after {
     padding: 0.3rem 0.7rem;
     border-radius: 999px;
     text-decoration: none;
-    background: radial-gradient(circle at 0% 0%, rgba(251, 191, 36, 0.55), rgba(30, 64, 175, 0.98));
+    background: rgba(15, 23, 42, 0.28);
     box-shadow:
         0 0 0 1px rgba(250, 204, 21, 0.8),
         0 10px 30px rgba(15, 23, 42, 0.7);
@@ -175,12 +214,26 @@ body::after {
     color: transparent;
     background-size: 200% 200%;
     animation: title-glow 14s linear infinite;
+    font-family:
+        "JetBrains Mono",
+        "Fira Code",
+        "IBM Plex Mono",
+        "Courier New",
+        monospace;
+    letter-spacing: 0.06em;
 }
 
 .subtitle {
     margin-top: 0.5rem;
     color: var(--text-soft);
     max-width: 520px;
+    font-family:
+        "JetBrains Mono",
+        "Fira Code",
+        "IBM Plex Mono",
+        "Courier New",
+        monospace;
+    letter-spacing: 0.02em;
 }
 
 .header-telegram {
@@ -190,7 +243,7 @@ body::after {
     padding: 0.3rem 0.7rem;
     border-radius: 999px;
     text-decoration: none;
-    background: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.6), rgba(15, 23, 42, 0.98));
+    background: rgba(15, 23, 42, 0.28);
     box-shadow:
         0 0 0 1px rgba(56, 189, 248, 0.85),
         0 10px 30px rgba(15, 23, 42, 0.7);
@@ -715,7 +768,7 @@ body::after {
     font-size: 0.95rem;
     cursor: pointer;
     border: 0.5px solid rgba(148, 163, 184, 0.8);
-    background: radial-gradient(circle at 0% 0%, rgba(148, 163, 184, 0.18), rgba(15, 23, 42, 0.96));
+    background: rgba(15, 23, 42, 0.28);
     color: #e5e7eb;
     box-shadow:
         0 5px 15px 0 rgba(11, 99, 246, 1),
@@ -732,12 +785,12 @@ body::after {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(79, 70, 229, 0.95));
+    background: rgba(15, 23, 42, 0.35);
     border-color: rgba(56, 189, 248, 0.9);
 }
 
 .btn-secondary {
-    background: radial-gradient(circle at 0% 0%, rgba(148, 163, 184, 0.18), rgba(15, 23, 42, 0.96));
+    background: rgba(15, 23, 42, 0.28);
     color: #e5e7eb;
     border-color: rgba(148, 163, 184, 0.8);
 }
