@@ -384,10 +384,8 @@ body::after {
     border: 0.5px solid rgba(56, 189, 248, 0.6);
     border-left: none;
     border-right: none; /* только верх/низ, чтобы не давать вертикальные линии в секции second */
-    box-shadow:
-        0 0 0 0.5px rgba(15, 23, 42, 0.95),
-        0 0 0 1.5px rgba(148, 163, 184, 0.35),
-        0 22px 70px rgba(15, 23, 42, 0.95);
+    /* оставляем только мягкую нижнюю тень, без обводки по периметру (чтобы не было вертикальных линий) */
+    box-shadow: 0 22px 70px rgba(15, 23, 42, 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
 }
@@ -448,10 +446,8 @@ body::after {
     border-left: none;
     border-right: none; /* убираем вертикальные линии у блока процесса дня */
     background: rgba(15, 23, 42, 0.72);
-    box-shadow:
-        0 0 0 0.5px rgba(15, 23, 42, 0.95),
-        0 0 0 1.5px rgba(148, 163, 184, 0.35),
-        0 22px 70px rgba(15, 23, 42, 0.95);
+    /* только нижняя мягкая тень, без контурной обводки */
+    box-shadow: 0 22px 70px rgba(15, 23, 42, 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
 }
