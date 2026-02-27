@@ -854,11 +854,24 @@ function initGreetingPopup() {
     const popup = document.getElementById('greetingPopup');
     if (!popup) return;
 
+    function hide() {
+        if (popup.classList.contains('hidden')) return;
+        popup.classList.add('hidden');
+    }
+
     popup.classList.remove('hidden');
 
-    setTimeout(() => {
-        popup.classList.add('hidden');
-    }, 5000);
+    setTimeout(hide, 4000);
+
+    // любое нажатие клавиши или клик вне окна — закрывает приветствие
+    document.addEventListener('keydown', hide, { once: true });
+    document.addEventListener(
+        'click',
+        (e) => {
+            if (!popup.contains(e.target)) hide();
+        },
+        { once: true }
+    );
 }
 
 initGreetingPopup();
