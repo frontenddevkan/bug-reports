@@ -126,7 +126,7 @@ body::after {
 }
 
 .my .three {
-    border-left: 0.5px solid rgba(56, 189, 248, 0.32);
+    border: 0.5px solid rgba(56, 189, 248, 0.32); /* полноценный бордер по периметру для третьей колонки */
 }
 
 .layout {
@@ -1425,10 +1425,8 @@ body::after {
     content: '';
     position: absolute;
     inset: 0;
-    border-width: 0.5px 0.5px 0.5px 0; /* сверху, справа, снизу; слева нет линии — её даёт .my .three */
-    border-style: solid;
-    border-color: rgba(56, 189, 248, 0.38);
-    transform: translate(-1px, -1px);
+    border: none; /* бордер даёт обёртка .my .three, псевдоэлемент только для внутренних эффектов при необходимости */
+    transform: none;
     pointer-events: none;
 }
 
