@@ -1214,6 +1214,9 @@ body::after {
     position: relative;
     z-index: 3;
     margin-top: 1.5rem; /* отступ от блока "Процесс дня" после того, как убрали gap у .my .two */
+    /* возвращаем прежнее оформление именно для этой кнопки */
+    background: rgba(15, 23, 42, 0.35);
+    border-color: rgba(56, 189, 248, 0.9);
 }
 
 .btn-secondary {
