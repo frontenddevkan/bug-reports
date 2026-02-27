@@ -92,7 +92,7 @@ function initBgChargeCanvas() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const grid = 8; // px — соответствует background-size сетки
+    const grid = 16; // px — соответствует background-size сетки (шаг 16)
     const BASE_TRAVEL_PERIOD = 7.0; // базово 7 секунд пробег по линии
     const FLASH_PERIOD = 4.0; // каждые 4 секунды вспышка
 
@@ -109,7 +109,7 @@ function initBgChargeCanvas() {
     window.addEventListener('resize', resize, { passive: true });
 
     function drawDot(x, y, intensity) {
-        // 2px точка + мягкий ореол на вспышке
+        // 1.5px точка + мягкий ореол на вспышке
         const baseAlpha = 0.22; // менее интенсивный “умеренный белый”
         const flashAlpha = 0.78 * intensity; // на вспышке становится почти максимально белой
         const a = Math.min(1, baseAlpha + flashAlpha);
@@ -118,11 +118,11 @@ function initBgChargeCanvas() {
         ctx.fillStyle = `rgba(255,255,255,${a})`;
 
         // тень/ореол усиливается на вспышке
-        const blur = 1 + 12 * intensity;
+        const blur = 2 + 13 * intensity; // на 1px более размытая тень
         ctx.shadowBlur = blur;
         ctx.shadowColor = `rgba(56,189,248,${0.55 * intensity})`;
         ctx.beginPath();
-        ctx.arc(x, y, 2, 0, Math.PI * 2);
+        ctx.arc(x, y, 0.75, 0, Math.PI * 2);
         ctx.fill();
 
         // добавляем белый компонент ореола, чтобы ощущалось “белый -> синий”
@@ -130,7 +130,7 @@ function initBgChargeCanvas() {
             ctx.shadowBlur = blur * 0.6;
             ctx.shadowColor = `rgba(255,255,255,${0.45 * intensity})`;
             ctx.beginPath();
-            ctx.arc(x, y, 2, 0, Math.PI * 2);
+            ctx.arc(x, y, 0.75, 0, Math.PI * 2);
             ctx.fill();
         }
         ctx.restore();
