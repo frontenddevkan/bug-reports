@@ -911,7 +911,7 @@ body::after {
 .roadmap-scroll-inner {
     overflow-x: auto; /* горизонтальный скролл оставляем тут */
     overflow-y: visible;
-    padding: 4px 0 8px; /* +4px пространства от подписи/границ, чтобы glow не резался */
+    padding: 12px 0 8px; /* ещё +8px, чтобы кружки были дальше от подписи и краёв */
     scrollbar-width: none;
 }
 
@@ -1042,7 +1042,7 @@ body::after {
 .roadmap-step--current .roadmap-circle::before {
     content: '';
     position: absolute;
-    inset: -6px; /* пульсация на пару пикселей меньше */
+    inset: -2px; /* ещё на 4px меньше радиус пульсации */
     border-radius: 999px;
     border: 1.2px solid rgba(56, 189, 248, 0.42);
     box-shadow:
