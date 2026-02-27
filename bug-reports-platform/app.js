@@ -106,7 +106,7 @@ function initBgChargeCanvas() {
     // Сетка мельче примерно в 2 раза и чуть "помельче" (≈ 6px), плюс неравномерность
     const SPACING_PATTERN = [6, 6, 8, 6, 4, 6, 8, 6];
     const LINE_THICKNESS = 0.2; // 0.2px как просили
-    const EXTRA_TRANSPARENCY = 0.04; // +4% прозрачности линиям
+    const EXTRA_TRANSPARENCY = 0.0; // делаем линии на ~4% ярче (меньше прозрачности)
 
     // Offscreen слой со статической сеткой
     const gridLayer = document.createElement('canvas');
