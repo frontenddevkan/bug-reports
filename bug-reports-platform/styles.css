@@ -842,11 +842,16 @@ body::after {
     margin: 1.4rem auto 0.6rem;
     max-width: none;
     width: 100%;
-    /* вернуть "красивый" синий градиентный фон */
+    /* усиленный синий градиент: темнее уже к середине, глубже в тёмно-синий справа */
     background:
-        radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.16), transparent 55%),
-        radial-gradient(circle at 100% 0%, rgba(30, 64, 175, 0.16), transparent 60%),
-        linear-gradient(135deg, rgba(14, 25, 64, 0.08), rgba(30, 64, 175, 0.06), rgba(15, 23, 42, 0.06));
+        radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.18), transparent 48%),
+        radial-gradient(circle at 100% 0%, rgba(30, 64, 175, 0.2), transparent 52%),
+        linear-gradient(
+            135deg,
+            rgba(14, 25, 64, 0.04),
+            rgba(30, 64, 175, 0.18),
+            rgba(15, 23, 42, 0.92)
+        );
     border-radius: 0;
     box-shadow:
         18px 18px 18px rgba(255, 255, 255, 0.08),
