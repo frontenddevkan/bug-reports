@@ -363,9 +363,9 @@ body::after {
     display: inline-flex;
     align-items: center;
     padding: 0.35rem 0.6rem;
-    border-radius: 999px;
+    border-radius: 0;
     font-size: 0.8rem;
-    border: 1px solid rgba(37, 99, 235, 0.6);
+    border: 0.2px solid rgba(56, 189, 248, 0.18);
     background: rgba(15, 23, 42, 0.96);
     color: #e5e7eb;
 }
@@ -421,9 +421,9 @@ body::after {
     flex: 1;
     text-align: center;
     padding: 0.45rem 0.4rem;
-    border-radius: 999px;
+    border-radius: 0;
     background: rgba(15, 23, 42, 0.9);
-    border: 0.5px solid rgba(59, 130, 246, 0.7);
+    border: 0.2px solid rgba(56, 189, 248, 0.18);
     color: #dbeafe;
     font-size: 0.8rem;
 }
@@ -855,7 +855,7 @@ body::after {
     position: absolute;
     inset: 0;
     border: 0.5px solid rgba(56, 189, 248, 0.38);
-    transform: translate(-1px, -1px);
+    transform: translate(1px, 1px);
     pointer-events: none;
 }
 
@@ -887,6 +887,12 @@ body::after {
 .roadmap-scroll {
     overflow-x: auto;
     padding-bottom: 0.3rem;
+    scrollbar-width: none; /* Firefox */
+}
+
+.roadmap-scroll::-webkit-scrollbar {
+    width: 0;
+    height: 0;
 }
 
 .roadmap-timeline {
@@ -905,9 +911,9 @@ body::after {
     right: 0;
     top: 50%;
     transform: translateY(-50%);
-    height: 2px;
-    border-radius: 999px;
-    background: linear-gradient(90deg, rgba(56, 189, 248, 0.05), rgba(56, 189, 248, 0.6), rgba(129, 140, 248, 0.35));
+    height: 0.2px;
+    border-radius: 0;
+    background: rgba(56, 189, 248, 0.18);
 }
 
 .roadmap-timeline-progress {
@@ -915,9 +921,9 @@ body::after {
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-    height: 2px;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #3b82f6, #0ea5e9);
+    height: 0.2px;
+    border-radius: 0;
+    background: rgba(56, 189, 248, 0.35);
     width: 0;
     transition: width 0.3s ease-out;
 }
@@ -960,7 +966,7 @@ body::after {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    border: 1.5px solid rgba(56, 189, 248, 0.9);
+    border: 0.2px solid rgba(56, 189, 248, 0.22);
     background:
         radial-gradient(circle at 30% 30%, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.3)),
         rgba(15, 23, 42, 1); /* сплошной тёмный фон под градиентом, чтобы линия не просвечивала */
@@ -971,6 +977,20 @@ body::after {
     font-weight: 600;
     font-size: 0.85rem;
     cursor: pointer;
+}
+
+/* Первый кружок (Trainee): бордер как у сетки + двойной бордер */
+.roadmap-step[data-step-id="trainee-theory"] .roadmap-circle {
+    border: 0.2px solid rgba(56, 189, 248, 0.30);
+}
+
+.roadmap-step[data-step-id="trainee-theory"] .roadmap-circle::after {
+    content: '';
+    position: absolute;
+    inset: -1px; /* на 1px "больше радиусом" */
+    border-radius: 999px;
+    border: 0.2px solid rgba(56, 189, 248, 0.26); /* на 4% прозрачней */
+    pointer-events: none;
 }
 
 .roadmap-step--done .roadmap-circle {
@@ -994,9 +1014,9 @@ body::after {
 .roadmap-step--current .roadmap-circle::before {
     content: '';
     position: absolute;
-    inset: -9px;
+    inset: -8px;
     border-radius: 999px;
-    border: 2px solid rgba(56, 189, 248, 0.5);
+    border: 1.2px solid rgba(56, 189, 248, 0.42);
     box-shadow:
         0 0 16px rgba(56, 189, 248, 0.75),
         0 0 32px rgba(56, 189, 248, 0.5);
@@ -1020,6 +1040,9 @@ body::after {
     margin-top: 0.45rem;
     font-size: 0.75rem;
     line-height: 1.25;
+    min-height: 2.4em;
+    display: grid;
+    align-content: start;
 }
 
 .roadmap-step-grade {
