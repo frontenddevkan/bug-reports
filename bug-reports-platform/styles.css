@@ -2334,10 +2334,10 @@ body::after {
 
 .quiz-popup-window {
     /* делаем окно мини-теста ещё менее прозрачным, чтобы совпадало по плотности с формами */
-    background: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.64), rgba(15, 23, 42, 0.98));
+    background: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.68), rgba(15, 23, 42, 0.98));
     border-radius: 22px;
-    max-width: 580px;
-    width: 94%;
+    max-width: 620px;
+    width: 96%;
     box-shadow:
         0 0 0 0.5px rgba(56, 189, 248, 0.65),
         0 0 0 1.5px rgba(255, 255, 255, 0.05),
