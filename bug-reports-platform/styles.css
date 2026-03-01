@@ -535,11 +535,6 @@ body::after {
     display: block;
 }
 
-/* Этап "Требования" всегда развёрнут */
-.sdlc-step[data-sdlc-step="requirements"] .sdlc-step-content {
-    display: block !important;
-}
-
 .sdlc-step-content h3 {
     font-size: 1rem;
     margin-bottom: 0.75rem;
