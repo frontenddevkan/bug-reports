@@ -2150,7 +2150,7 @@ body::after {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    animation: theory-scroll 135s linear infinite;
+    animation: theory-scroll 140.4s linear infinite;
 }
 
 .theory-block-title {
