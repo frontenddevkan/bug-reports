@@ -1294,6 +1294,156 @@ body::after {
         0 26px 80px rgba(15, 23, 42, 0.95);
 }
 
+/* Jira-подобный интерфейс для модального окна баг-репорта */
+.jira-modal {
+    width: 90%;
+    max-width: 90%;
+    height: 90vh;
+    max-height: 90vh;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    border-radius: 0;
+}
+
+/* Верхняя панель навигации (как в Jira) */
+.jira-top-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem 1.5rem;
+    background: rgba(15, 23, 42, 0.95);
+    border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+    flex-shrink: 0;
+}
+
+.jira-nav-item {
+    color: #e5e7eb;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.jira-nav-item:hover {
+    background: rgba(56, 189, 248, 0.15);
+}
+
+.jira-nav-bold {
+    font-weight: 700;
+    color: #e0f2fe;
+}
+
+.jira-top-nav .btn-close {
+    margin-left: auto;
+    color: #e5e7eb;
+    font-size: 1.5rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.jira-top-nav .btn-close:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Обёртка для основного контента */
+.jira-content-wrapper {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Левая боковая панель навигации */
+.jira-sidebar {
+    width: 220px;
+    background: rgba(14, 25, 64, 0.21);
+    border-right: 0.5px solid rgba(56, 189, 248, 0.38);
+    padding: 1.7rem 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    box-shadow:
+        0 0 0 1.5px rgba(56, 189, 248, 0.12),
+        0 26px 80px rgba(15, 23, 42, 0.9);
+    position: relative;
+}
+
+.jira-sidebar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-width: 0.5px 0 0.5px 0.5px;
+    border-style: solid;
+    border-color: rgba(56, 189, 248, 0.38);
+    transform: translate(-1px, -1px);
+    pointer-events: none;
+}
+
+.jira-sidebar-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.52rem 0.78rem;
+    border-radius: 0;
+    border: none;
+    background: rgba(15, 23, 42, 0.2);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    color: #e5e7eb;
+    font-size: 0.82rem;
+    cursor: pointer;
+    margin-bottom: 0;
+    box-shadow:
+        0 0 0 0.5px rgba(56, 189, 248, 0.38),
+        0 8px 24px rgba(15, 23, 42, 0.85);
+    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    position: relative;
+    z-index: 0;
+}
+
+.jira-sidebar-btn:hover {
+    background: rgba(15, 23, 42, 0.24);
+    transform: scale(1.02);
+    box-shadow:
+        0 0 0 0.5px rgba(56, 189, 248, 0.55),
+        0 0 0 1.5px rgba(255, 255, 255, 0.06),
+        0 12px 28px rgba(15, 23, 42, 0.95);
+    z-index: 2;
+}
+
+.jira-sidebar-btn.active {
+    background: rgba(56, 189, 248, 0.25);
+    color: #e0f2fe;
+    font-weight: 600;
+    box-shadow:
+        0 0 0 0.5px rgba(56, 189, 248, 0.7),
+        0 0 0 1.5px rgba(255, 255, 255, 0.08),
+        0 12px 28px rgba(15, 23, 42, 0.95);
+}
+
+/* Область формы */
+.jira-form-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem 2rem;
+    background: rgba(15, 23, 42, 0.5);
+}
+
+.jira-form-area .modal-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.jira-form-area .modal-header h2 {
+    margin: 0;
+    color: #e0f2fe;
+    font-size: 1.5rem;
+}
+
 /* Внутри форм (модалок) делаем кнопки тёмными, как "Скачать TXT / PDF" */
 .modal-content .btn-primary,
 .modal-content .btn-secondary {

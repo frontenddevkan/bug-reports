@@ -314,12 +314,35 @@
     </section>
 
     <div id="bugReportModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Новый багрепорт</h2>
+        <div class="modal-content jira-modal">
+            <!-- Верхняя панель навигации (как в Jira) -->
+            <div class="jira-top-nav">
+                <div class="jira-nav-item jira-nav-bold">Названия</div>
+                <div class="jira-nav-item">Текущая работа</div>
+                <div class="jira-nav-item">Проекты</div>
+                <div class="jira-nav-item">Фильтры</div>
+                <div class="jira-nav-item">Дашборды</div>
+                <div class="jira-nav-item">Люди</div>
+                <div class="jira-nav-item">Эппс</div>
+                <div class="jira-nav-item">Создать баг-репорт</div>
                 <button id="closeModalBtn" class="btn-close">&times;</button>
             </div>
-            <form id="bugReportForm" class="bug-form">
+            
+            <!-- Основной контент: левая панель + форма -->
+            <div class="jira-content-wrapper">
+                <!-- Левая панель навигации -->
+                <div class="jira-sidebar">
+                    <button type="button" class="jira-sidebar-btn active" data-view="create">Создать новый баг-репорт</button>
+                    <button type="button" class="jira-sidebar-btn" data-view="kanban">Канбан</button>
+                    <button type="button" class="jira-sidebar-btn" data-view="list">Список баг-репортов</button>
+                </div>
+                
+                <!-- Правая часть: форма -->
+                <div class="jira-form-area">
+                    <div class="modal-header">
+                        <h2>Новый багрепорт</h2>
+                    </div>
+                    <form id="bugReportForm" class="bug-form">
                 <div class="form-group">
                     <label for="title">Краткое описание (Title) <span class="required">*</span></label>
                     <input
@@ -472,6 +495,8 @@
                     </button>
                 </div>
             </form>
+                </div>
+            </div>
         </div>
     </div>
 
