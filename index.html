@@ -206,6 +206,8 @@
                         <div class="sdlc-step-content" data-step-content="qa">
                             <h3>Тестирование</h3>
                             <p>На этапе тестирования QA проверяет соответствие билда требованиям, ищет дефекты и оценивает качество.</p>
+                            <p><strong>Чек‑лист</strong> обычно создаётся в начале этапа тестирования (планирование), на основе требований и рисков — до активного прогона проверок.</p>
+                            <p class="field-hint">Подсказка: сначала формируем цели → категории → тест‑кейсы → ожидаемые результаты → проверяем полноту.</p>
                             <!-- Здесь будет дополнительный контент тестирования -->
                         </div>
                     </li>
@@ -694,12 +696,12 @@
                     <form id="bugReportForm" class="bug-form">
                 <div class="form-group">
                     <label for="title">Краткое описание (Title) <span class="required">*</span></label>
+                    <small class="field-hint">Например: Кнопка «Отправить» не реагирует на клик</small>
                     <input
                         type="text"
                         id="title"
                         name="title"
                         required
-                        placeholder="Например: Кнопка «Отправить» не реагирует на клик"
                     />
                 </div>
 
@@ -727,23 +729,23 @@
 
                 <div class="form-group">
                     <label for="expected">Ожидаемый результат <span class="required">*</span></label>
+                    <small class="field-hint">Например: Появляется сообщение об успешной отправке.</small>
                     <textarea
                         id="expected"
                         name="expected"
                         required
                         rows="3"
-                        placeholder="Например: Появляется сообщение об успешной отправке."
                     ></textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="actual">Фактический результат <span class="required">*</span></label>
+                    <small class="field-hint">Например: Ничего не происходит, ошибок нет.</small>
                     <textarea
                         id="actual"
                         name="actual"
                         required
                         rows="3"
-                        placeholder="Например: Ничего не происходит, ошибок нет."
                     ></textarea>
                     <button type="button" id="makeScreenshotBtn" class="btn btn-secondary make-screenshot-btn">
                         Сделать скриншот и добавить к описанию
@@ -752,51 +754,51 @@
 
                 <div class="form-group">
                     <label for="browser">Браузер</label>
+                    <small class="field-hint">Например: Chrome 120, Firefox 122...</small>
                     <input
                         type="text"
                         id="browser"
                         name="browser"
-                        placeholder="Например: Chrome 120, Firefox 122..."
                     />
                 </div>
 
                 <div class="form-group">
                     <label for="os">Операционная система</label>
+                    <small class="field-hint">Например: Windows 11, Ubuntu 22.04, Android 14...</small>
                     <input
                         type="text"
                         id="os"
                         name="os"
-                        placeholder="Например: Windows 11, Ubuntu 22.04, Android 14..."
                     />
                 </div>
 
                 <div class="form-group">
                     <label for="resolution">Разрешение экрана</label>
+                    <small class="field-hint">Например: 1920x1080, 1366x768...</small>
                     <input
                         type="text"
                         id="resolution"
                         name="resolution"
-                        placeholder="Например: 1920x1080, 1366x768..."
                     />
                 </div>
 
                 <div class="form-group">
                     <label for="appVersion">Версия приложения / билда</label>
+                    <small class="field-hint">Например: v1.2.3, build 4567...</small>
                     <input
                         type="text"
                         id="appVersion"
                         name="appVersion"
-                        placeholder="Например: v1.2.3, build 4567..."
                     />
                 </div>
 
                 <div class="form-group">
                     <label for="environmentExtra">Дополнительная информация об окружении</label>
+                    <small class="field-hint">Например: VPN включён, медленное соединение, специфические настройки браузера...</small>
                     <textarea
                         id="environmentExtra"
                         name="environmentExtra"
                         rows="2"
-                        placeholder="Например: VPN включён, медленное соединение, специфические настройки браузера..."
                     ></textarea>
                 </div>
 
@@ -886,6 +888,9 @@
             </div>
             <section id="checklistsPanel" class="checklists-panel">
                 <div class="checklists-header">
+                    <button type="button" id="openCreateChecklistBtn" class="btn btn-primary">
+                        Создать чек‑лист
+                    </button>
                 </div>
                 <p class="section-hint">
                     Здесь ты тренируешься работать с чек‑листами как в реальной задаче: можно просто проходить список
@@ -911,6 +916,47 @@
                     <div id="checklistOrderArea" class="checklist-order-area hidden"></div>
                 </div>
             </section>
+        </div>
+    </div>
+
+    <!-- Модальное окно: создание чек‑листа -->
+    <div id="createChecklistModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Новый чек‑лист</h2>
+                <button type="button" id="closeCreateChecklistModalBtn" class="btn-close">&times;</button>
+            </div>
+            <form id="createChecklistForm" class="bug-form">
+                <div class="form-group">
+                    <label for="checklistTitle">Название чек‑листа <span class="required">*</span></label>
+                    <small class="field-hint">Например: Web • Регистрация/Авторизация • Smoke</small>
+                    <input type="text" id="checklistTitle" name="checklistTitle" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="checklistGoals">Цели и задачи</label>
+                    <small class="field-hint">Что и зачем проверяем: функциональность, безопасность, UX, что важно для пользователя.</small>
+                    <textarea id="checklistGoals" name="checklistGoals" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Категории и тест‑кейсы <span class="required">*</span></label>
+                    <small class="field-hint">Разбей продукт на категории (регистрация, авторизация, профиль...). В каждой категории добавляй тест‑кейсы: по одному пункту на строку.</small>
+                    <div id="checklistCategories" class="checklist-categories"></div>
+                    <button type="button" id="addChecklistCategoryBtn" class="btn btn-secondary add-step-btn">Добавить категорию</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="checklistReview">Проверка и актуальность</label>
+                    <small class="field-hint">Проверь полноту: ничего не упущено, пункты соответствуют целям, чек‑лист можно обновлять.</small>
+                    <textarea id="checklistReview" name="checklistReview" rows="2"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Сохранить чек‑лист</button>
+                    <button type="button" id="cancelChecklistFormBtn" class="btn btn-secondary">Отмена</button>
+                </div>
+            </form>
         </div>
     </div>
 

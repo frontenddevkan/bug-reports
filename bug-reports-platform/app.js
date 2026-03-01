@@ -27,6 +27,15 @@ const bugReportsList = document.getElementById('bugReportsList');
 const cancelFormBtn = document.getElementById('cancelFormBtn');
 const makeScreenshotBtn = document.getElementById('makeScreenshotBtn');
 
+// Конструктор чек-листов
+const createChecklistModal = document.getElementById('createChecklistModal');
+const openCreateChecklistBtn = document.getElementById('openCreateChecklistBtn');
+const closeCreateChecklistModalBtn = document.getElementById('closeCreateChecklistModalBtn');
+const createChecklistForm = document.getElementById('createChecklistForm');
+const cancelChecklistFormBtn = document.getElementById('cancelChecklistFormBtn');
+const checklistCategoriesEl = document.getElementById('checklistCategories');
+const addChecklistCategoryBtn = document.getElementById('addChecklistCategoryBtn');
+
 // Локальное хранилище багрепортов (память + localStorage)
 let bugReports = [];
 let bugArtifacts = []; // простая коллекция артефактов (скриншоты) в текущей сессии
@@ -90,6 +99,99 @@ const CHECKLISTS = {
         ]
     }
 };
+
+const CUSTOM_CHECKLISTS_STORAGE_KEY = 'simulator.checklists.custom.v1';
+
+function loadCustomChecklists() {
+    try {
+        const raw = localStorage.getItem(CUSTOM_CHECKLISTS_STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : {};
+        return parsed && typeof parsed === 'object' ? parsed : {};
+    } catch (_) {
+        return {};
+    }
+}
+
+function saveCustomChecklists(custom) {
+    try {
+        localStorage.setItem(CUSTOM_CHECKLISTS_STORAGE_KEY, JSON.stringify(custom));
+    } catch (_) {
+        // ignore
+    }
+}
+
+function ensureCustomChecklistsLoaded() {
+    const custom = loadCustomChecklists();
+    Object.values(custom).forEach((cfg) => {
+        if (!cfg || !cfg.id || !Array.isArray(cfg.items)) return;
+        CHECKLISTS[cfg.id] = cfg;
+    });
+}
+
+function makeChecklistId(title) {
+    const safe = String(title || '')
+        .toLowerCase()
+        .trim()
+        .replace(/[^\p{L}\p{N}]+/gu, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 40);
+    const rnd = Math.random().toString(16).slice(2, 8);
+    return `custom-${safe || 'checklist'}-${rnd}`;
+}
+
+function buildChecklistItemsFromCategories(categories) {
+    const items = [];
+    categories.forEach((cat) => {
+        const catName = String(cat.name || '').trim() || 'Категория';
+        const lines = String(cat.itemsText || '')
+            .split('\n')
+            .map(s => s.trim())
+            .filter(Boolean);
+        lines.forEach((line) => {
+            items.push(`${catName}: ${line}`);
+        });
+    });
+    return items;
+}
+
+function addChecklistCategoryCard(initialName = '', initialItemsText = '') {
+    if (!checklistCategoriesEl) return;
+    const card = document.createElement('div');
+    card.className = 'checklist-category-card';
+
+    const head = document.createElement('div');
+    head.className = 'checklist-category-head';
+
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.className = 'checklist-category-name';
+    nameInput.placeholder = 'Категория (например: Регистрация)';
+    nameInput.value = initialName;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'btn btn-secondary';
+    removeBtn.textContent = 'Удалить';
+    removeBtn.addEventListener('click', () => {
+        card.remove();
+    });
+
+    head.appendChild(nameInput);
+    head.appendChild(removeBtn);
+
+    const hint = document.createElement('small');
+    hint.className = 'field-hint';
+    hint.textContent = 'Тест‑кейсы (по одному пункту на строку). Пример: «Открыть страницу регистрации»';
+
+    const itemsArea = document.createElement('textarea');
+    itemsArea.rows = 5;
+    itemsArea.value = initialItemsText;
+
+    card.appendChild(head);
+    card.appendChild(hint);
+    card.appendChild(itemsArea);
+    checklistCategoriesEl.appendChild(card);
+}
 
 /**
  * Фоновая анимация "ток по сетке" (canvas)
@@ -1084,30 +1186,30 @@ function initQuiz() {
             nextBtn.classList.remove('hidden');
         } else {
             // Обычный вопрос с вариантами ответов
-            questionEl.textContent = item.q;
+        questionEl.textContent = item.q;
 
-            item.options.forEach((opt) => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'btn btn-secondary';
-                btn.textContent = opt.t;
-                btn.addEventListener('click', () => {
-                    if (locked) return;
-                    locked = true;
+        item.options.forEach((opt) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-secondary';
+            btn.textContent = opt.t;
+            btn.addEventListener('click', () => {
+                if (locked) return;
+                locked = true;
 
-                    if (opt.ok) {
-                        feedbackEl.innerHTML = `<div class="ok"><strong>Верно!</strong> ${escapeHtml(opt.why)}</div>`;
-                    } else {
-                        const correct = item.options.find(o => o.ok);
-                        feedbackEl.innerHTML =
-                            `<div class="bad"><strong>Неверно.</strong> ${escapeHtml(opt.why)}</div>` +
-                            `<div class="ok"><strong>Как правильно:</strong> ${escapeHtml(correct ? correct.why : '')}</div>`;
-                    }
+                if (opt.ok) {
+                    feedbackEl.innerHTML = `<div class="ok"><strong>Верно!</strong> ${escapeHtml(opt.why)}</div>`;
+                } else {
+                    const correct = item.options.find(o => o.ok);
+                    feedbackEl.innerHTML =
+                        `<div class="bad"><strong>Неверно.</strong> ${escapeHtml(opt.why)}</div>` +
+                        `<div class="ok"><strong>Как правильно:</strong> ${escapeHtml(correct ? correct.why : '')}</div>`;
+                }
 
-                    nextBtn.classList.remove('hidden');
-                });
-                optionsEl.appendChild(btn);
+                nextBtn.classList.remove('hidden');
             });
+            optionsEl.appendChild(btn);
+        });
         }
     }
 
@@ -1278,30 +1380,30 @@ function initQuizPopup() {
             nextBtn.classList.remove('hidden');
         } else if (item.options) {
             // Обычный вопрос с вариантами ответов
-            questionEl.textContent = item.q;
+        questionEl.textContent = item.q;
 
-            item.options.forEach((opt) => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'btn btn-secondary';
-                btn.textContent = opt.t;
-                btn.addEventListener('click', () => {
-                    if (locked) return;
-                    locked = true;
+        item.options.forEach((opt) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-secondary';
+            btn.textContent = opt.t;
+            btn.addEventListener('click', () => {
+                if (locked) return;
+                locked = true;
 
-                    if (opt.ok) {
-                        feedbackEl.innerHTML = `<div class="ok"><strong>Верно!</strong> ${escapeHtml(opt.why)}</div>`;
-                    } else {
-                        const correct = item.options.find(o => o.ok);
-                        feedbackEl.innerHTML =
-                            `<div class="bad"><strong>Неверно.</strong> ${escapeHtml(opt.why)}</div>` +
-                            `<div class="ok"><strong>Как правильно:</strong> ${escapeHtml(correct ? correct.why : '')}</div>`;
-                    }
+                if (opt.ok) {
+                    feedbackEl.innerHTML = `<div class="ok"><strong>Верно!</strong> ${escapeHtml(opt.why)}</div>`;
+                } else {
+                    const correct = item.options.find(o => o.ok);
+                    feedbackEl.innerHTML =
+                        `<div class="bad"><strong>Неверно.</strong> ${escapeHtml(opt.why)}</div>` +
+                        `<div class="ok"><strong>Как правильно:</strong> ${escapeHtml(correct ? correct.why : '')}</div>`;
+                }
 
-                    nextBtn.classList.remove('hidden');
-                });
-                optionsEl.appendChild(btn);
+                nextBtn.classList.remove('hidden');
             });
+            optionsEl.appendChild(btn);
+        });
         }
     }
 
@@ -1347,12 +1449,30 @@ function initChecklists() {
     const panel = document.getElementById('checklistsPanel');
     if (!panel) return;
 
-    const typeButtons = Array.from(panel.querySelectorAll('.checklists-type-btn'));
+    ensureCustomChecklistsLoaded();
+
+    const typesContainer = panel.querySelector('.checklists-types');
     const modeButtons = Array.from(panel.querySelectorAll('.checklists-mode-btn'));
     const runArea = document.getElementById('checklistRunArea');
     const orderArea = document.getElementById('checklistOrderArea');
 
-    if (!typeButtons.length || !modeButtons.length || !runArea || !orderArea) return;
+    if (!typesContainer || !modeButtons.length || !runArea || !orderArea) return;
+
+    function renderTypeButtons() {
+        typesContainer.innerHTML = '';
+        Object.values(CHECKLISTS).forEach((cfg) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-secondary checklists-type-btn';
+            btn.dataset.checklistId = cfg.id;
+            btn.textContent = cfg.title || cfg.id;
+            typesContainer.appendChild(btn);
+        });
+        return Array.from(typesContainer.querySelectorAll('.checklists-type-btn'));
+    }
+
+    let typeButtons = renderTypeButtons();
+    if (!typeButtons.length) return;
 
     let currentId = typeButtons[0].getAttribute('data-checklist-id');
     let currentMode = 'run';
@@ -1508,6 +1628,122 @@ function initChecklists() {
     typeButtons[0].classList.add('btn-primary');
     modeButtons[0].classList.add('btn-primary');
     applyMode();
+
+    // Открыть модалку конструктора чек-листа
+    if (openCreateChecklistBtn && createChecklistModal) {
+        openCreateChecklistBtn.addEventListener('click', () => {
+            createChecklistModal.classList.remove('hidden');
+            // префилл
+            if (checklistCategoriesEl && !checklistCategoriesEl.children.length) {
+                addChecklistCategoryCard('Регистрация пользователя', [
+                    'Открыть страницу регистрации',
+                    'Заполнить форму регистрации',
+                    'Нажать кнопку "Зарегистрироваться"',
+                    'Проверить сообщение об успешной регистрации',
+                    'Проверить, что пользователь добавлен в базу данных',
+                ].join('\n'));
+                addChecklistCategoryCard('Авторизация пользователя', [
+                    'Открыть страницу авторизации',
+                    'Ввести логин и пароль',
+                    'Нажать кнопку "Войти"',
+                    'Проверить успешную авторизацию',
+                    'Проверить корректность отображаемой информации о пользователе',
+                ].join('\n'));
+            }
+        });
+    }
+
+    if (closeCreateChecklistModalBtn && createChecklistModal) {
+        closeCreateChecklistModalBtn.addEventListener('click', () => {
+            createChecklistModal.classList.add('hidden');
+        });
+    }
+
+    if (cancelChecklistFormBtn && createChecklistModal) {
+        cancelChecklistFormBtn.addEventListener('click', () => {
+            createChecklistModal.classList.add('hidden');
+        });
+    }
+
+    if (addChecklistCategoryBtn) {
+        addChecklistCategoryBtn.addEventListener('click', () => {
+            addChecklistCategoryCard('', '');
+        });
+    }
+
+    if (createChecklistForm) {
+        createChecklistForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const titleEl = document.getElementById('checklistTitle');
+            const goalsEl = document.getElementById('checklistGoals');
+            const reviewEl = document.getElementById('checklistReview');
+            const title = titleEl ? titleEl.value.trim() : '';
+            if (!title) {
+                alert('Введите название чек‑листа.');
+                return;
+            }
+
+            const categories = [];
+            if (checklistCategoriesEl) {
+                Array.from(checklistCategoriesEl.querySelectorAll('.checklist-category-card')).forEach((card) => {
+                    const nameInput = card.querySelector('input');
+                    const textarea = card.querySelector('textarea');
+                    categories.push({
+                        name: nameInput ? nameInput.value : '',
+                        itemsText: textarea ? textarea.value : '',
+                    });
+                });
+            }
+
+            const items = buildChecklistItemsFromCategories(categories);
+            if (!items.length) {
+                alert('Добавьте хотя бы один тест‑кейс в категориях.');
+                return;
+            }
+
+            const id = makeChecklistId(title);
+            const cfg = {
+                id,
+                title,
+                items,
+                meta: {
+                    goals: goalsEl ? goalsEl.value.trim() : '',
+                    review: reviewEl ? reviewEl.value.trim() : '',
+                    categories,
+                    createdAt: new Date().toISOString(),
+                },
+            };
+
+            // сохраняем
+            const custom = loadCustomChecklists();
+            custom[id] = cfg;
+            saveCustomChecklists(custom);
+            CHECKLISTS[id] = cfg;
+
+            // обновляем кнопки типов
+            typeButtons = renderTypeButtons();
+            typeButtons.forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    currentId = btn.getAttribute('data-checklist-id');
+                    typeButtons.forEach(b => b.classList.remove('btn-primary'));
+                    btn.classList.add('btn-primary');
+                    applyMode();
+                });
+            });
+
+            // переключаемся на новый чеклист
+            currentId = id;
+            typeButtons.forEach(b => b.classList.remove('btn-primary'));
+            const activeBtn = typeButtons.find(b => b.getAttribute('data-checklist-id') === id);
+            if (activeBtn) activeBtn.classList.add('btn-primary');
+            applyMode();
+
+            // закрываем модалку и чистим форму
+            if (createChecklistModal) createChecklistModal.classList.add('hidden');
+            createChecklistForm.reset();
+            if (checklistCategoriesEl) checklistCategoriesEl.innerHTML = '';
+        });
+    }
 
     // Открытие модального окна чек‑листов по кнопке слева
     const checklistsModal = document.getElementById('checklistsModal');
