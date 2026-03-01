@@ -321,9 +321,12 @@
 
                         <p class="theory-block-title">Чек‑листы</p>
                         <ul>
-                            <li><strong>Чек‑лист</strong> — это список действий/проверок, которые нужно выполнить во время тестирования, чтобы ничего не забыть.</li>
+                            <li><strong>Чек‑лист тестировщика</strong> — структурированный список проверок, который упорядочивает тестирование ПО. Он содержит перечень элементов, функций или сценариев, которые нужно протестировать для оценки качества.</li>
                             <li><strong>Цель чек‑листа</strong> — структурировать проверку и снизить риск пропустить важные шаги, особенно в рутине (регресс, smoke, базовые проверки форм и т.п.).</li>
-                            <li>Чек‑лист обычно проще и короче, чем формальный тест‑кейс: он не всегда содержит детальные шаги, но охватывает ключевые аспекты, которые нужно пройти.</li>
+                            <li><strong>Отличие от тест‑кейса:</strong> чек‑лист не требует детального описания шагов — он показывает, <em>что</em нужно проверить, а не <em>как</em именно это сделать.</li>
+                            <li><strong>2 основных типа чек‑листов:</strong></li>
+                            <li><strong>Специальные</strong> — создаются под конкретный проект с учётом его особенностей. Обычно не подходят для других проектов из‑за специфики.</li>
+                            <li><strong>Универсальные</strong> — применимы в однотипных проектах и описывают общие сценарии, которые можно использовать многократно (например, smoke/регресс для типового веб‑приложения).</li>
                             <li>В симуляторе чек‑листы используются как:
                                 <ul>
                                     <li>рабочий инструмент (отмечаешь выполненные проверки по фиче или регрессу);</li>
@@ -886,22 +889,31 @@
                 <h2>Чек‑листы</h2>
                 <button type="button" id="closeChecklistsModalBtn" class="btn-close">&times;</button>
             </div>
-            <section id="checklistsPanel" class="checklists-panel">
+            <section id="checklistsStart" class="checklists-panel">
                 <div class="checklists-header">
-                    <button type="button" id="openCreateChecklistBtn" class="btn btn-primary">
-                        Создать чек‑лист
-                    </button>
+                    <div class="checklists-start-actions">
+                        <button type="button" id="openCreateChecklistBtn" class="btn btn-primary">Создать чек‑лист</button>
+                    </div>
                 </div>
                 <p class="section-hint">
-                    Здесь ты тренируешься работать с чек‑листами как в реальной задаче: можно просто проходить список
-                    проверок по фиче или регрессу, а можно отрабатывать правильный порядок шагов в режиме “Тренировка порядка”.
+                    Сначала выбери тип чек‑листа, потом — конкретный чек‑лист. После выбора ты сможешь пройти его или потренировать порядок.
                 </p>
-                <div class="checklists-controls">
-                    <div class="checklists-types">
-                        <button type="button" class="btn btn-secondary checklists-type-btn" data-checklist-id="web-smoke">
-                            Web: Smoke‑чек‑лист
-                        </button>
+                <div class="checklists-start-filters">
+                    <button type="button" class="btn btn-secondary checklist-kind-btn active" data-kind="universal">Универсальные</button>
+                    <button type="button" class="btn btn-secondary checklist-kind-btn" data-kind="special">Специальные</button>
+                </div>
+                <div id="checklistsStartList" class="checklists-start-list"></div>
+            </section>
+
+            <section id="checklistsPanel" class="checklists-panel hidden">
+                <div class="checklists-header">
+                    <div class="checklists-header-row">
+                        <button type="button" id="backToChecklistStartBtn" class="btn btn-secondary">← Назад</button>
+                        <div id="currentChecklistTitle" class="checklists-current-title"></div>
                     </div>
+                </div>
+                <div class="checklists-controls">
+                    <div class="checklists-types"></div>
                     <div class="checklists-modes">
                         <button type="button" class="btn btn-secondary checklists-mode-btn" data-checklist-mode="run">
                             Проходить чек‑лист

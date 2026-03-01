@@ -749,6 +749,66 @@ const QUIZ_QUESTIONS = [
         ],
     },
     {
+        q: 'Что такое чек‑лист тестировщика?',
+        options: [
+            {
+                t: 'Структурированный список проверок (что проверить), который помогает упорядочить тестирование и ничего не забыть',
+                ok: true,
+                why: 'Чек‑лист — список проверок: элементы/функции/сценарии, которые нужно проверить.',
+            },
+            {
+                t: 'Подробная инструкция с шагами, данными и ожидаемым результатом для каждого шага',
+                ok: false,
+                why: 'Это ближе к тест‑кейсу. Чек‑лист обычно не требует детальных шагов.',
+            },
+            {
+                t: 'Список багов, найденных во время тестирования',
+                ok: false,
+                why: 'Баги оформляются в баг‑репорты, а не в чек‑листы.',
+            },
+        ],
+    },
+    {
+        q: 'В чём главное отличие чек‑листа от тест‑кейса?',
+        options: [
+            {
+                t: 'Чек‑лист показывает, что проверять; тест‑кейс детально описывает, как проверять',
+                ok: true,
+                why: 'Чек‑лист — “что”, тест‑кейс — “как” (шаги, данные, ожидаемые результаты).',
+            },
+            {
+                t: 'Чек‑лист нужен только для автоматизации, а тест‑кейс — только для ручного тестирования',
+                ok: false,
+                why: 'Оба инструмента могут использоваться в разных подходах; отличие не в автоматизации.',
+            },
+            {
+                t: 'Тест‑кейс всегда короче чек‑листа',
+                ok: false,
+                why: 'Обычно наоборот: тест‑кейс более детальный.',
+            },
+        ],
+    },
+    {
+        q: 'Какие 2 основных типа чек‑листов выделяют?',
+        options: [
+            {
+                t: 'Специальные (под конкретный проект) и универсальные (для однотипных проектов)',
+                ok: true,
+                why: 'Специальные — проектные, универсальные — переиспользуемые сценарии (smoke/регресс и т.п.).',
+            },
+            {
+                t: 'Только ручные и только автоматизированные',
+                ok: false,
+                why: 'Типы чек‑листов обычно выделяют по применимости (универсальные/специальные), а не по способу прогона.',
+            },
+            {
+                t: 'Только UI и только API',
+                ok: false,
+                why: 'Это скорее область проверки, а не тип чек‑листа как документа.',
+            },
+        ],
+    },
+    {
         q: 'Что означает непротиворечивость требований?',
         options: [
             {
@@ -1451,6 +1511,12 @@ function initChecklists() {
 
     ensureCustomChecklistsLoaded();
 
+    const startScreen = document.getElementById('checklistsStart');
+    const startList = document.getElementById('checklistsStartList');
+    const kindButtons = Array.from(document.querySelectorAll('.checklist-kind-btn'));
+    const backBtn = document.getElementById('backToChecklistStartBtn');
+    const currentTitleEl = document.getElementById('currentChecklistTitle');
+
     const typesContainer = panel.querySelector('.checklists-types');
     const modeButtons = Array.from(panel.querySelectorAll('.checklists-mode-btn'));
     const runArea = document.getElementById('checklistRunArea');
@@ -1606,6 +1672,58 @@ function initChecklists() {
         }
     }
 
+    function isSpecialChecklist(cfg) {
+        return String(cfg.id || '').startsWith('custom-');
+    }
+
+    function showPanel() {
+        if (startScreen) startScreen.classList.add('hidden');
+        panel.classList.remove('hidden');
+        const cfg = CHECKLISTS[currentId];
+        if (currentTitleEl) currentTitleEl.textContent = cfg ? (cfg.title || cfg.id) : '';
+    }
+
+    function showStart() {
+        panel.classList.add('hidden');
+        if (startScreen) startScreen.classList.remove('hidden');
+    }
+
+    function renderStartList(kind) {
+        if (!startList) return;
+        startList.innerHTML = '';
+        const all = Object.values(CHECKLISTS);
+        const list = all.filter((cfg) => (kind === 'special' ? isSpecialChecklist(cfg) : !isSpecialChecklist(cfg)));
+        if (!list.length) {
+            const empty = document.createElement('div');
+            empty.className = 'field-hint';
+            empty.textContent = kind === 'special'
+                ? 'Пока нет специальных чек‑листов. Нажми «Создать чек‑лист» и сделай свой под проект.'
+                : 'Пока нет универсальных чек‑листов.';
+            startList.appendChild(empty);
+            return;
+        }
+        list.forEach((cfg) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-secondary checklist-card-btn';
+            btn.innerHTML = `<div class="checklist-card-title">${escapeHtml(cfg.title || cfg.id)}</div>` +
+                `<div class="checklist-card-meta">${kind === 'special' ? 'Специальный • под проект' : 'Универсальный • переиспользуемый'}</div>`;
+            btn.addEventListener('click', () => {
+                currentId = cfg.id;
+                // подсветка в списке типов
+                typeButtons.forEach(b => b.classList.remove('btn-primary'));
+                const activeBtn = typeButtons.find(b => b.getAttribute('data-checklist-id') === cfg.id);
+                if (activeBtn) activeBtn.classList.add('btn-primary');
+                currentMode = 'run';
+                modeButtons.forEach(b => b.classList.remove('btn-primary'));
+                modeButtons[0].classList.add('btn-primary');
+                applyMode();
+                showPanel();
+            });
+            startList.appendChild(btn);
+        });
+    }
+
     typeButtons.forEach((btn) => {
         btn.addEventListener('click', () => {
             currentId = btn.getAttribute('data-checklist-id');
@@ -1628,6 +1746,31 @@ function initChecklists() {
     typeButtons[0].classList.add('btn-primary');
     modeButtons[0].classList.add('btn-primary');
     applyMode();
+
+    // Стартовый экран: фильтры универсальные/специальные
+    let currentKind = 'universal';
+    if (kindButtons.length) {
+        kindButtons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                currentKind = btn.dataset.kind || 'universal';
+                kindButtons.forEach(b => b.classList.remove('btn-primary', 'active'));
+                btn.classList.add('btn-primary', 'active');
+                renderStartList(currentKind);
+            });
+        });
+        // активный по умолчанию
+        kindButtons.forEach(b => b.classList.remove('btn-primary', 'active'));
+        const def = kindButtons.find(b => (b.dataset.kind || '') === 'universal') || kindButtons[0];
+        def.classList.add('btn-primary', 'active');
+    }
+    renderStartList(currentKind);
+    showStart();
+
+    if (backBtn) {
+        backBtn.addEventListener('click', () => {
+            showStart();
+        });
+    }
 
     // Открыть модалку конструктора чек-листа
     if (openCreateChecklistBtn && createChecklistModal) {
@@ -1738,10 +1881,16 @@ function initChecklists() {
             if (activeBtn) activeBtn.classList.add('btn-primary');
             applyMode();
 
+            // обновляем стартовый список (специальные)
+            renderStartList(currentKind);
+
             // закрываем модалку и чистим форму
             if (createChecklistModal) createChecklistModal.classList.add('hidden');
             createChecklistForm.reset();
             if (checklistCategoriesEl) checklistCategoriesEl.innerHTML = '';
+
+            // сразу открываем панель прохождения созданного чек-листа
+            showPanel();
         });
     }
 
