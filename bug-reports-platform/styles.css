@@ -165,11 +165,6 @@ body::after {
     gap: 0.75rem;
 }
 
-.header-left .header-donate {
-    align-self: flex-start;
-    margin-top: 0.5rem;
-}
-
 .header-actions {
     display: inline-flex;
     align-items: flex-start;
@@ -456,12 +451,49 @@ body::after {
     color: #bbf7d0;
 }
 
+/* Панель требований */
+.requirements-panel {
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    border-radius: 18px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 0.5px solid rgba(56, 189, 248, 0.4);
+    width: 100%;
+}
+
+.requirements-panel h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #e0f2fe;
+}
+
+.requirements-description {
+    color: #e5e7eb;
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+}
+
+.requirements-note {
+    color: #9ca3af;
+    font-size: 0.9rem;
+    font-style: italic;
+    margin-bottom: 1rem;
+}
+
+.requirements-content {
+    min-height: 100px;
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.3);
+    border-radius: 8px;
+    border: 1px dashed rgba(56, 189, 248, 0.2);
+}
+
 .sdlc-visual {
-    margin: 0 0 1.5rem; /* без отступа сверху — сразу после блока рабочего дня */
-    padding: 1rem 1.1rem;
+    margin: 1.5rem 0; /* отступ сверху и снизу */
+    padding: 1.5rem;
     border-radius: 18px;
     border: 0.5px solid rgba(56, 189, 248, 0.6);
-    border-left: none;
+    width: 100%;
     border-right: none; /* убираем вертикальные линии у блока процесса дня */
     background: rgba(15, 23, 42, 0.72);
     /* только нижняя мягкая тень, без контурной обводки */
@@ -478,22 +510,38 @@ body::after {
 
 .sdlc-steps {
     display: flex;
-    justify-content: space-between;
-    gap: 0.35rem;
+    flex-direction: column;
+    gap: 0.5rem;
     padding-left: 0;
     margin-bottom: 0.85rem;
+    width: 100%;
 }
 
 .sdlc-step {
     list-style: none;
-    flex: 1;
-    text-align: center;
-    padding: 0.45rem 0.4rem;
+    width: 100%;
+    text-align: left;
+    padding: 0.75rem 1rem;
     border-radius: 0;
     background: rgba(15, 23, 42, 0.9);
     border: 0.2px solid rgba(56, 189, 248, 0.18);
     color: #dbeafe;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
+    position: relative;
+    padding-left: 2.5rem;
+}
+
+.sdlc-step::before {
+    content: counter(sdlc-counter);
+    counter-increment: sdlc-counter;
+    position: absolute;
+    left: 0.75rem;
+    font-weight: 600;
+    color: rgba(56, 189, 248, 0.8);
+}
+
+.sdlc-steps {
+    counter-reset: sdlc-counter;
 }
 
 .sdlc-step.active {
@@ -581,6 +629,80 @@ body::after {
     margin-top: 0.75rem;
     display: flex;
     justify-content: flex-end;
+}
+
+/* Стили для вопросов с определениями и скрытыми словами */
+.definition-container {
+    margin-top: 1rem;
+}
+
+.definition-words {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    line-height: 2;
+}
+
+.definition-word {
+    display: inline-block;
+    padding: 0.5rem 0.75rem;
+    background: rgba(56, 189, 248, 0.2);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #e0f2fe;
+    font-weight: 500;
+}
+
+.definition-word.hidden {
+    background: rgba(15, 23, 42, 0.6);
+    border-color: rgba(56, 189, 248, 0.2);
+    color: transparent;
+    position: relative;
+    min-width: 60px;
+    text-align: center;
+}
+
+.definition-word.hidden::after {
+    content: '▢';
+    color: rgba(56, 189, 248, 0.5);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2rem;
+}
+
+.definition-word.hidden:hover {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: rgba(56, 189, 248, 0.4);
+}
+
+.definition-word.revealed {
+    background: rgba(56, 189, 248, 0.3);
+    border-color: rgba(56, 189, 248, 0.6);
+    color: #e0f2fe;
+    cursor: default;
+}
+
+.definition-word.revealed:hover {
+    background: rgba(56, 189, 248, 0.35);
+}
+
+.definition-controls {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+.definition-hint {
+    color: #9ca3af;
+    font-size: 0.9rem;
+    font-style: italic;
+    text-align: center;
+    margin: 1rem 0;
 }
 
 .checklists-panel {
@@ -1281,7 +1403,7 @@ body::after {
 
 .modal-content {
     /* ещё менее прозрачный фон для форм багрепорта и чеклистов */
-    background: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.86), rgba(15, 23, 42, 0.98));
+    background: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.90), rgba(15, 23, 42, 0.98));
     padding: 2rem;
     border-radius: 18px;
     max-width: 600px;
@@ -1859,7 +1981,7 @@ body::after {
 
 .quiz-popup-window {
     /* делаем окно мини-теста ещё менее прозрачным, чтобы совпадало по плотности с формами */
-    background: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.60), rgba(15, 23, 42, 0.98));
+    background: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.64), rgba(15, 23, 42, 0.98));
     border-radius: 22px;
     max-width: 520px;
     width: 90%;

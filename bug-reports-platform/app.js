@@ -594,8 +594,13 @@ const QUIZ_QUESTIONS = [
         options: [
             { t: 'Нужно делать горячие фиксы/откаты, подключать поддержку, теряется доверие пользователей и растут бизнес‑потери', ok: true, why: 'Цена включает не только разработку, но и репутацию, SLA, поддержку и простои.' },
             { t: 'Потому что в проде нельзя менять код', ok: false, why: 'Менять можно, но это рискованнее и дороже по последствиям.' },
-            { t: 'Потому что тестировщик уже “закрыл” проект', ok: false, why: 'Причина в последствиях для бизнеса и пользователей, а не в формальностях.' },
+            { t: 'Потому что тестировщик уже "закрыл" проект', ok: false, why: 'Причина в последствиях для бизнеса и пользователей, а не в формальностях.' },
         ],
+    },
+    {
+        type: 'definition',
+        term: 'Требования',
+        words: ['описание', 'того', 'какие', 'функции', 'должно', 'выполнять', 'приложение', 'для', 'решения', 'нужной', 'пользователю', 'задачи', 'и', 'с', 'соблюдением', 'каких', 'условий'],
     },
 ];
 
@@ -623,30 +628,113 @@ function initQuiz() {
         optionsEl.innerHTML = '';
         const item = QUIZ_QUESTIONS[current];
         progressEl.textContent = `Вопрос ${current + 1} из ${QUIZ_QUESTIONS.length}`;
-        questionEl.textContent = item.q;
-
-        item.options.forEach((opt) => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'btn btn-secondary';
-            btn.textContent = opt.t;
-            btn.addEventListener('click', () => {
-                if (locked) return;
-                locked = true;
-
-                if (opt.ok) {
-                    feedbackEl.innerHTML = `<div class="ok"><strong>Верно!</strong> ${escapeHtml(opt.why)}</div>`;
-                } else {
-                    const correct = item.options.find(o => o.ok);
-                    feedbackEl.innerHTML =
-                        `<div class="bad"><strong>Неверно.</strong> ${escapeHtml(opt.why)}</div>` +
-                        `<div class="ok"><strong>Как правильно:</strong> ${escapeHtml(correct ? correct.why : '')}</div>`;
-                }
-
-                nextBtn.classList.remove('hidden');
+        
+        // Проверяем тип вопроса
+        if (item.type === 'definition') {
+            // Вопрос с определением и скрытыми словами
+            questionEl.innerHTML = `<strong>${escapeHtml(item.term)}</strong> — `;
+            
+            const definitionContainer = document.createElement('div');
+            definitionContainer.className = 'definition-container';
+            
+            const wordsContainer = document.createElement('div');
+            wordsContainer.className = 'definition-words';
+            
+            const revealedWords = new Set();
+            let allRevealed = false;
+            
+            item.words.forEach((word, index) => {
+                const wordBlock = document.createElement('span');
+                wordBlock.className = 'definition-word hidden';
+                wordBlock.textContent = word;
+                wordBlock.dataset.index = index;
+                
+                wordBlock.addEventListener('click', () => {
+                    if (allRevealed) return;
+                    if (!revealedWords.has(index)) {
+                        revealedWords.add(index);
+                        wordBlock.classList.remove('hidden');
+                        wordBlock.classList.add('revealed');
+                        
+                        // Проверяем, все ли слова раскрыты
+                        if (revealedWords.size === item.words.length) {
+                            allRevealed = true;
+                            revealBtn.textContent = 'Скрыть определение';
+                        }
+                    }
+                });
+                
+                wordsContainer.appendChild(wordBlock);
             });
-            optionsEl.appendChild(btn);
-        });
+            
+            const controlsContainer = document.createElement('div');
+            controlsContainer.className = 'definition-controls';
+            
+            const revealBtn = document.createElement('button');
+            revealBtn.type = 'button';
+            revealBtn.className = 'btn btn-secondary';
+            revealBtn.textContent = 'Раскрыть определение';
+            
+            revealBtn.addEventListener('click', () => {
+                if (allRevealed) {
+                    // Скрываем все слова
+                    allRevealed = false;
+                    revealedWords.clear();
+                    wordsContainer.querySelectorAll('.definition-word').forEach(block => {
+                        block.classList.add('hidden');
+                        block.classList.remove('revealed');
+                    });
+                    revealBtn.textContent = 'Раскрыть определение';
+                } else {
+                    // Раскрываем все слова
+                    allRevealed = true;
+                    item.words.forEach((_, index) => {
+                        revealedWords.add(index);
+                    });
+                    wordsContainer.querySelectorAll('.definition-word').forEach(block => {
+                        block.classList.remove('hidden');
+                        block.classList.add('revealed');
+                    });
+                    revealBtn.textContent = 'Скрыть определение';
+                }
+            });
+            
+            controlsContainer.appendChild(revealBtn);
+            definitionContainer.appendChild(wordsContainer);
+            definitionContainer.appendChild(controlsContainer);
+            
+            questionEl.appendChild(definitionContainer);
+            optionsEl.innerHTML = '<p class="definition-hint">Нажимайте на скрытые слова, чтобы открыть их. Попробуйте вспомнить определение!</p>';
+            
+            // Показываем кнопку "Следующий вопрос" сразу, так как это не вопрос с вариантами ответов
+            nextBtn.classList.remove('hidden');
+        } else {
+            // Обычный вопрос с вариантами ответов
+            questionEl.textContent = item.q;
+
+            item.options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn btn-secondary';
+                btn.textContent = opt.t;
+                btn.addEventListener('click', () => {
+                    if (locked) return;
+                    locked = true;
+
+                    if (opt.ok) {
+                        feedbackEl.innerHTML = `<div class="ok"><strong>Верно!</strong> ${escapeHtml(opt.why)}</div>`;
+                    } else {
+                        const correct = item.options.find(o => o.ok);
+                        feedbackEl.innerHTML =
+                            `<div class="bad"><strong>Неверно.</strong> ${escapeHtml(opt.why)}</div>` +
+                            `<div class="ok"><strong>Как правильно:</strong> ${escapeHtml(correct ? correct.why : '')}</div>`;
+                    }
+
+                    nextBtn.classList.remove('hidden');
+                });
+                optionsEl.appendChild(btn);
+            });
+        }
     }
 
     startBtn.addEventListener('click', () => {
@@ -734,30 +822,113 @@ function initQuizPopup() {
         const globalIndex = sessionQuestions[currentIndex];
         const item = QUIZ_QUESTIONS[globalIndex];
         progressEl.textContent = `Вопрос ${currentIndex + 1} из ${sessionQuestions.length}`;
-        questionEl.textContent = item.q;
-
-        item.options.forEach((opt) => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'btn btn-secondary';
-            btn.textContent = opt.t;
-            btn.addEventListener('click', () => {
-                if (locked) return;
-                locked = true;
-
-                if (opt.ok) {
-                    feedbackEl.innerHTML = `<div class="ok"><strong>Верно!</strong> ${escapeHtml(opt.why)}</div>`;
-                } else {
-                    const correct = item.options.find(o => o.ok);
-                    feedbackEl.innerHTML =
-                        `<div class="bad"><strong>Неверно.</strong> ${escapeHtml(opt.why)}</div>` +
-                        `<div class="ok"><strong>Как правильно:</strong> ${escapeHtml(correct ? correct.why : '')}</div>`;
-                }
-
-                nextBtn.classList.remove('hidden');
+        
+        // Проверяем тип вопроса
+        if (item.type === 'definition') {
+            // Вопрос с определением и скрытыми словами
+            questionEl.innerHTML = `<strong>${escapeHtml(item.term)}</strong> — `;
+            
+            const definitionContainer = document.createElement('div');
+            definitionContainer.className = 'definition-container';
+            
+            const wordsContainer = document.createElement('div');
+            wordsContainer.className = 'definition-words';
+            
+            const revealedWords = new Set();
+            let allRevealed = false;
+            
+            item.words.forEach((word, index) => {
+                const wordBlock = document.createElement('span');
+                wordBlock.className = 'definition-word hidden';
+                wordBlock.textContent = word;
+                wordBlock.dataset.index = index;
+                
+                wordBlock.addEventListener('click', () => {
+                    if (allRevealed) return;
+                    if (!revealedWords.has(index)) {
+                        revealedWords.add(index);
+                        wordBlock.classList.remove('hidden');
+                        wordBlock.classList.add('revealed');
+                        
+                        // Проверяем, все ли слова раскрыты
+                        if (revealedWords.size === item.words.length) {
+                            allRevealed = true;
+                            revealBtn.textContent = 'Скрыть определение';
+                        }
+                    }
+                });
+                
+                wordsContainer.appendChild(wordBlock);
             });
-            optionsEl.appendChild(btn);
-        });
+            
+            const controlsContainer = document.createElement('div');
+            controlsContainer.className = 'definition-controls';
+            
+            const revealBtn = document.createElement('button');
+            revealBtn.type = 'button';
+            revealBtn.className = 'btn btn-secondary';
+            revealBtn.textContent = 'Раскрыть определение';
+            
+            revealBtn.addEventListener('click', () => {
+                if (allRevealed) {
+                    // Скрываем все слова
+                    allRevealed = false;
+                    revealedWords.clear();
+                    wordsContainer.querySelectorAll('.definition-word').forEach(block => {
+                        block.classList.add('hidden');
+                        block.classList.remove('revealed');
+                    });
+                    revealBtn.textContent = 'Раскрыть определение';
+                } else {
+                    // Раскрываем все слова
+                    allRevealed = true;
+                    item.words.forEach((_, index) => {
+                        revealedWords.add(index);
+                    });
+                    wordsContainer.querySelectorAll('.definition-word').forEach(block => {
+                        block.classList.remove('hidden');
+                        block.classList.add('revealed');
+                    });
+                    revealBtn.textContent = 'Скрыть определение';
+                }
+            });
+            
+            controlsContainer.appendChild(revealBtn);
+            definitionContainer.appendChild(wordsContainer);
+            definitionContainer.appendChild(controlsContainer);
+            
+            questionEl.appendChild(definitionContainer);
+            optionsEl.innerHTML = '<p class="definition-hint">Нажимайте на скрытые слова, чтобы открыть их. Попробуйте вспомнить определение!</p>';
+            
+            // Показываем кнопку "Следующий вопрос" сразу
+            nextBtn.classList.remove('hidden');
+        } else if (item.options) {
+            // Обычный вопрос с вариантами ответов
+            questionEl.textContent = item.q;
+
+            item.options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn btn-secondary';
+                btn.textContent = opt.t;
+                btn.addEventListener('click', () => {
+                    if (locked) return;
+                    locked = true;
+
+                    if (opt.ok) {
+                        feedbackEl.innerHTML = `<div class="ok"><strong>Верно!</strong> ${escapeHtml(opt.why)}</div>`;
+                    } else {
+                        const correct = item.options.find(o => o.ok);
+                        feedbackEl.innerHTML =
+                            `<div class="bad"><strong>Неверно.</strong> ${escapeHtml(opt.why)}</div>` +
+                            `<div class="ok"><strong>Как правильно:</strong> ${escapeHtml(correct ? correct.why : '')}</div>`;
+                    }
+
+                    nextBtn.classList.remove('hidden');
+                });
+                optionsEl.appendChild(btn);
+            });
+        }
     }
 
     function closePopup() {
