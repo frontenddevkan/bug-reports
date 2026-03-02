@@ -2184,6 +2184,28 @@ initGreetingPopup();
     });
 })();
 
+// Открытие модального окна с тест‑кейсами по кнопке "Тест‑кейсы" в навигации
+(function initTestCasesModal() {
+    const testCasesModal = document.getElementById('testCasesModal');
+    const closeBtn = document.getElementById('closeTestCasesModalBtn');
+    const navBtn = document.querySelector('.left-nav-link[data-scroll-target="#testCasesPanel"]');
+    if (!testCasesModal || !closeBtn || !navBtn) return;
+
+    navBtn.addEventListener('click', () => {
+        testCasesModal.classList.remove('hidden');
+    });
+
+    closeBtn.addEventListener('click', () => {
+        testCasesModal.classList.add('hidden');
+    });
+
+    testCasesModal.addEventListener('click', (event) => {
+        if (event.target === testCasesModal) {
+            testCasesModal.classList.add('hidden');
+        }
+    });
+})();
+
 /**
  * Утилита: экранирование HTML, чтобы пользовательский ввод
  * не превратился в HTML/скрипт на странице.
