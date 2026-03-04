@@ -33,6 +33,7 @@ const docModal = document.getElementById('docModal');
 const closeDocModalBtn = document.getElementById('closeDocModalBtn');
 const docForm = document.getElementById('docForm');
 const cancelDocFormBtn = document.getElementById('cancelDocFormBtn');
+const docFormScrollBtn = document.getElementById('docFormScrollBtn');
 const docEmojiBtn = document.getElementById('docEmojiBtn');
 const docTitleInput = document.getElementById('docTitle');
 
@@ -2259,6 +2260,23 @@ if (docEmojiBtn && docTitleInput) {
     });
 }
 
+// Кнопка в описании видов документации внутри модалки: скролл к форме
+if (docFormScrollBtn && docForm) {
+    docFormScrollBtn.addEventListener('click', () => {
+        docForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+}
+
+// Открытие модалки документации по кнопке "Документация" в левом меню
+(function initDocumentationModalFromNav() {
+    if (!docModal) return;
+    const docsNavBtn = document.querySelector('.left-nav-link[data-scroll-target="#documentation"]');
+    if (!docsNavBtn) return;
+    docsNavBtn.addEventListener('click', () => {
+        docModal.classList.remove('hidden');
+    });
+})();
+
 // Закрытие по клавише Escape
 document.addEventListener('keydown', function (event) {
     if (event.key === 'Escape') {
@@ -2318,8 +2336,8 @@ initGreetingPopup();
         const targetSelector = btn.getAttribute('data-scroll-target');
         if (!targetSelector) return;
         btn.addEventListener('click', () => {
-            // Для тестов и чек‑листов используем модальные окна/квизы, а не скролл
-            if (targetSelector === '#testsPanel' || targetSelector === '#checklistsPanel') {
+            // Для тестов, чек‑листов и документации используем модальные окна/квизы, а не скролл
+            if (targetSelector === '#testsPanel' || targetSelector === '#checklistsPanel' || targetSelector === '#documentation') {
                 return;
             }
             const target = document.querySelector(targetSelector);
