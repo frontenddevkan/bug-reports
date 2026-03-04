@@ -27,6 +27,13 @@ const bugReportsList = document.getElementById('bugReportsList');
 const cancelFormBtn = document.getElementById('cancelFormBtn');
 const makeScreenshotBtn = document.getElementById('makeScreenshotBtn');
 
+// Модалка создания документации (требования/фичи)
+const openDocModalBtn = document.getElementById('openDocModalBtn');
+const docModal = document.getElementById('docModal');
+const closeDocModalBtn = document.getElementById('closeDocModalBtn');
+const docForm = document.getElementById('docForm');
+const cancelDocFormBtn = document.getElementById('cancelDocFormBtn');
+
 // Конструктор чек-листов
 const createChecklistModal = document.getElementById('createChecklistModal');
 const openCreateChecklistBtn = document.getElementById('openCreateChecklistBtn');
@@ -520,13 +527,31 @@ function initSdlcHighlight() {
     if (!steps.length) return;
 
     const storageKey = 'simulator.sdlcStepIndex';
+    const pinStorageKey = 'simulator.sdlcPinned';
+    const pinBtn = document.getElementById('sdlcPinToggle');
+
     let idx = 0;
+    let isPinned = false;
+
     try {
         const raw = localStorage.getItem(storageKey);
         const parsed = raw ? Number(raw) : 0;
         if (Number.isFinite(parsed) && parsed >= 0) idx = parsed % steps.length;
     } catch (_) {
         // ignore
+    }
+
+    try {
+        const rawPinned = localStorage.getItem(pinStorageKey);
+        isPinned = rawPinned === '1';
+    } catch (_) {
+        // ignore
+    }
+
+    function applyPinUi() {
+        if (!pinBtn) return;
+        pinBtn.textContent = isPinned ? 'Этап закреплён (открепить)' : 'Закрепить этап';
+        pinBtn.classList.toggle('btn-primary', isPinned);
     }
 
     function render() {
@@ -542,6 +567,7 @@ function initSdlcHighlight() {
     }
 
     function tick() {
+        if (isPinned) return;
         idx = (idx + 1) % steps.length;
         try {
             localStorage.setItem(storageKey, String(idx));
@@ -591,6 +617,19 @@ function initSdlcHighlight() {
             });
         }
     });
+
+    if (pinBtn) {
+        applyPinUi();
+        pinBtn.addEventListener('click', () => {
+            isPinned = !isPinned;
+            try {
+                localStorage.setItem(pinStorageKey, isPinned ? '1' : '0');
+            } catch (_) {
+                // ignore
+            }
+            applyPinUi();
+        });
+    }
 
     render();
     setInterval(tick, 9000);
@@ -2165,6 +2204,42 @@ if (bugReportModal) {
                 logStep('Клик по фону модального окна — пользователь отменил закрытие.');
             }
         }
+    });
+}
+
+// Открытие/закрытие модалки документации
+if (openDocModalBtn && docModal) {
+    openDocModalBtn.addEventListener('click', () => {
+        docModal.classList.remove('hidden');
+    });
+}
+
+if (closeDocModalBtn && docModal) {
+    closeDocModalBtn.addEventListener('click', () => {
+        docModal.classList.add('hidden');
+    });
+}
+
+if (cancelDocFormBtn && docModal) {
+    cancelDocFormBtn.addEventListener('click', () => {
+        docModal.classList.add('hidden');
+    });
+}
+
+if (docModal) {
+    docModal.addEventListener('click', (event) => {
+        if (event.target === docModal) {
+            docModal.classList.add('hidden');
+        }
+    });
+}
+
+if (docForm) {
+    docForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        alert('Документ сохранён (в учебных целях). Используй этот шаблон, чтобы тренироваться описывать фичи и требования.');
+        docModal && docModal.classList.add('hidden');
+        docForm.reset();
     });
 }
 

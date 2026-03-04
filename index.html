@@ -185,6 +185,7 @@
 
             <section id="sdlcSection" class="sdlc-visual">
                 <h2>Процесс дня (SDLC)</h2>
+                <button type="button" id="sdlcPinToggle" class="btn btn-secondary sdlc-pin-btn">Закрепить этап</button>
                 <ol class="sdlc-steps" aria-label="Этапы жизненного цикла ПО">
                     <li class="sdlc-step" data-sdlc-step="idea">
                         <span class="sdlc-step-label">Идея</span>
@@ -347,28 +348,6 @@
                             </li>
                         </ul>
 
-                        <p class="theory-block-title">Виды тестирования: краткая шпаргалка</p>
-                        <ul>
-                            <li><strong>По характеру сценариев:</strong>
-                                <ul>
-                                    <li><strong>Позитивное тестирование</strong> — проверяем, что система работает корректно при ожидаемых, «нормальных» данных и условиях.</li>
-                                    <li><strong>Негативное тестирование</strong> — проверяем, как система ведёт себя при некорректном вводе, нарушении ограничений, ошибках пользователя и окружения.</li>
-                                </ul>
-                            </li>
-                            <li><strong>По критерию запуска программы:</strong>
-                                <ul>
-                                    <li><strong>Статическое тестирование</strong> — анализ требований, документации и/или кода без запуска программы (ревью, инспекции, статический анализ).</li>
-                                    <li><strong>Динамическое тестирование</strong> — проверка системы в работе: запускаем приложение, выполняем сценарии, наблюдаем фактическое поведение.</li>
-                                </ul>
-                            </li>
-                            <li><strong>По степени автоматизации:</strong>
-                                <ul>
-                                    <li><strong>Ручное тестирование</strong> — тест‑кейсы выполняет человек, опираясь на документацию и опыт.</li>
-                                    <li><strong>Автоматизированное тестирование</strong> — тесты исполняются инструментами/скриптами (UI‑, API‑, unit‑тесты и др.).</li>
-                                </ul>
-                            </li>
-                        </ul>
-
                         <p class="theory-block-title">Модель качества ПО: 6 характеристик</p>
                         <ul>
                             <li><strong>Функциональность</strong>, <strong>Надёжность</strong>, <strong>Удобство использования</strong>, <strong>Удобство сопровождения</strong>, <strong>Эффективность</strong>, <strong>Портативность</strong>.</li>
@@ -388,6 +367,10 @@
                         <ul>
                             <li>Документацию можно разделить на два больших вида, которые используются на проектах по разработке ПО:</li>
                         </ul>
+
+                        <button type="button" id="openDocModalBtn" class="btn btn-secondary">
+                            Создать документацию (фичу)
+                        </button>
 
                         <p class="theory-block-title">Проектная документация</p>
                         <ul>
@@ -1166,6 +1149,63 @@ ORDER BY u.surname, u.name;</code></pre>
             </div>
         </div>
     </section>
+
+    <!-- Модальное окно: создание документации (требований/фичи) -->
+    <div id="docModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Новый документ (требования / фича)</h2>
+                <button type="button" id="closeDocModalBtn" class="btn-close">&times;</button>
+            </div>
+            <form id="docForm" class="bug-form">
+                <div class="form-group">
+                    <label for="docTitle">Название фичи / документа <span class="required">*</span></label>
+                    <small class="field-hint">Например: Регистрация пользователя по email</small>
+                    <input
+                        type="text"
+                        id="docTitle"
+                        name="docTitle"
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="docGoal">Цель и ценность фичи</label>
+                    <small class="field-hint">Зачем эта фича, какую проблему пользователя или бизнеса она решает.</small>
+                    <textarea
+                        id="docGoal"
+                        name="docGoal"
+                        rows="3"
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="docRequirements">Основные требования / сценарии</label>
+                    <small class="field-hint">Ключевые сценарии и требования: что должен уметь пользователь, какие ограничения и проверки важны.</small>
+                    <textarea
+                        id="docRequirements"
+                        name="docRequirements"
+                        rows="5"
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="docNotes">Примечания для тестировщика</label>
+                    <small class="field-hint">Риски, спорные моменты, на что обратить особое внимание при тестировании.</small>
+                    <textarea
+                        id="docNotes"
+                        name="docNotes"
+                        rows="3"
+                    ></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Сохранить (для тренировки)</button>
+                    <button type="button" id="cancelDocFormBtn" class="btn btn-secondary">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <div id="bugReportModal" class="modal hidden">
         <div class="modal-content jira-modal">
