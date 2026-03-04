@@ -611,6 +611,11 @@ body::after {
 .quiz-options .btn {
     text-align: left;
     width: 100%;
+    min-height: 3.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    white-space: normal;
 }
 
 .quiz-feedback {
@@ -2150,7 +2155,7 @@ body::after {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    animation: theory-scroll 146s linear infinite;
+    animation: theory-scroll 152s linear infinite;
 }
 
 .theory-block-title {
@@ -2331,13 +2336,57 @@ body::after {
     /* делаем окно мини-теста ещё менее прозрачным, чтобы совпадало по плотности с формами */
     background: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.68), rgba(15, 23, 42, 0.98));
     border-radius: 22px;
-    max-width: 620px;
-    width: 96%;
+    max-width: 720px;
+    width: 98%;
     box-shadow:
         0 0 0 0.5px rgba(56, 189, 248, 0.65),
         0 0 0 1.5px rgba(255, 255, 255, 0.05),
         0 26px 80px rgba(15,23,42,0.98);
-    padding: 1.25rem 1.4rem 1.4rem;
+    padding: 1.4rem 1.6rem 1.6rem;
+}
+
+/* Модалка собеседования: немного шире и с равномерными карточками */
+.interview-modal {
+    max-width: 920px;
+}
+
+.interview-panel {
+    margin-top: 0.75rem;
+}
+
+.interview-qa-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.interview-qa {
+    border-radius: 16px;
+    border: 0.5px solid rgba(148, 163, 184, 0.5);
+    background: radial-gradient(circle at 0% 0%, rgba(30, 64, 175, 0.45), rgba(15, 23, 42, 0.96));
+    padding: 0.85rem 0.95rem;
+}
+
+.interview-question {
+    font-size: 0.98rem;
+    margin-bottom: 0.4rem;
+}
+
+.interview-qa .btn {
+    margin-bottom: 0.5rem;
+}
+
+.interview-answer {
+    font-size: 0.9rem;
+    color: var(--text-main);
+}
+
+.interview-answer ul {
+    padding-left: 1.1rem;
+}
+
+.interview-answer li {
+    margin-bottom: 0.25rem;
 }
 
 .quiz-popup-header {

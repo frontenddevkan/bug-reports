@@ -2224,6 +2224,42 @@ initGreetingPopup();
     });
 })();
 
+// Открытие модального окна "Собеседование" по кнопке в навигации
+(function initInterviewModal() {
+    const interviewModal = document.getElementById('interviewModal');
+    const closeBtn = document.getElementById('closeInterviewModalBtn');
+    const navBtn = document.querySelector('.left-nav-link[data-scroll-target="#interviewPanel"]');
+    if (!interviewModal || !closeBtn || !navBtn) return;
+
+    navBtn.addEventListener('click', () => {
+        interviewModal.classList.remove('hidden');
+    });
+
+    closeBtn.addEventListener('click', () => {
+        interviewModal.classList.add('hidden');
+    });
+
+    interviewModal.addEventListener('click', (event) => {
+        if (event.target === interviewModal) {
+            interviewModal.classList.add('hidden');
+        }
+    });
+
+    // Переключение "Показать ответ" / "Скрыть ответ"
+    const toggles = interviewModal.querySelectorAll('.interview-toggle');
+    toggles.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const qa = btn.closest('.interview-qa');
+            if (!qa) return;
+            const answer = qa.querySelector('.interview-answer');
+            if (!answer) return;
+            const isHidden = answer.classList.contains('hidden');
+            answer.classList.toggle('hidden', !isHidden);
+            btn.textContent = isHidden ? 'Скрыть ответ' : 'Показать ответ';
+        });
+    });
+})();
+
 // Открытие модального окна с тест‑кейсами по кнопке "Тест‑кейсы" в навигации
 (function initTestCasesModal() {
     const testCasesModal = document.getElementById('testCasesModal');
