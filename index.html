@@ -978,6 +978,101 @@
                             <li>Минимальная цена среди всех заявок = 100, она меньше 999 ⇒ в отчёте должно быть <strong>«Да»</strong> (победитель выбрался не с минимальной ценой).</li>
                             <li>Чтобы получить <strong>«Нет»</strong>, нужно, чтобы цена победителя совпадала с минимальной ценой среди всех заявок (даже если были равные значения у других участников).</li>
                         </ul>
+
+                        <p class="theory-block-title">Тестовое задание №6: SQL‑задачи для начинающего QA/аналитика</p>
+                        <ul>
+                            <li><strong>Часть 1. Профсоюзные взносы студентов (Oracle SQL):</strong>
+                                <ul>
+                                    <li><strong>Условие:</strong> каждый студент из таблицы <code>Student(id, name, surname)</code> должен ежемесячно платить 100 ₽, причём можно платить частями. В таблице <code>Payment(student_id, amount, payment_date)</code> хранятся все платежи, которые относим к месяцу по дате платежа. Нужно найти должников и сумму их долга за <em>прошлый месяц</em> (запрос должен работать при любой дате запуска).</li>
+                                    <li><strong>Как думать:</strong>
+                                        <ul>
+                                            <li>Шаг 1: определить прошлый месяц относительно текущей даты: с первого числа прошлого месяца до первого числа текущего месяца (или до <code>LAST_DAY</code> прошлого месяца).</li>
+                                            <li>Шаг 2: посчитать сумму платежей каждого студента за этот интервал (агрегация <code>SUM(amount)</code> с <code>GROUP BY student_id</code>).</li>
+                                            <li>Шаг 3: «должниками» считаем всех, у кого <code>paid &lt; 100</code> или платежей нет вообще (поэтому нужен <code>LEFT JOIN</code> от всех студентов).</li>
+                                            <li>Шаг 4: долг = <code>100 - NVL(paid, 0)</code>, но показываем только случаи, где он &gt; 0.</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>Готовый запрос (Oracle):</strong>
+                                        <pre><code>SELECT
+    s.id,
+    s.name,
+    s.surname,
+    100 - NVL(p.paid, 0) AS debt
+FROM Student s
+LEFT JOIN (
+    SELECT
+        student_id,
+        SUM(amount) AS paid
+    FROM Payment
+    WHERE payment_date &gt;= TRUNC(ADD_MONTHS(SYSDATE, -1), 'MM')
+      AND payment_date &lt;  TRUNC(SYSDATE, 'MM')
+    GROUP BY student_id
+) p ON p.student_id = s.id
+WHERE NVL(p.paid, 0) &lt; 100;</code></pre>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li><strong>Часть 2. Зарплаты и подчинённые (таблица <code>db</code>):</strong>
+                                <ul>
+                                    <li><strong>Структура:</strong> <code>db(user_id INT, boss_id INT NULL, payment DOUBLE)</code>, где <code>boss_id</code> указывает на <code>user_id</code> руководителя.</li>
+                                    <li><strong>Задача 1 — средняя зарплата руководителей:</strong> руководитель — тот, кто хотя бы у одного сотрудника указан как <code>boss_id</code>. Берём всех таких <code>user_id</code> и считаем среднее по их <code>payment</code>.</li>
+                                    <li><strong>Запрос:</strong>
+                                        <pre><code>SELECT AVG(payment) AS avg_boss_salary
+FROM db
+WHERE user_id IN (
+    SELECT DISTINCT boss_id
+    FROM db
+    WHERE boss_id IS NOT NULL
+);</code></pre>
+                                    </li>
+                                    <li><strong>Задача 2 — среднее количество прямых подчинённых:</strong> сначала считаем, сколько сотрудников приходится на каждого <code>boss_id</code>, потом берём среднее по этим счетчикам.</li>
+                                    <li><strong>Запрос:</strong>
+                                        <pre><code>SELECT AVG(sub_cnt) AS avg_direct_subordinates
+FROM (
+    SELECT boss_id, COUNT(*) AS sub_cnt
+    FROM db
+    WHERE boss_id IS NOT NULL
+    GROUP BY boss_id
+);</code></pre>
+                                    </li>
+                                    <li><strong>Задача 3 — сотрудники с зарплатой выше, чем у их руководителей:</strong> нужно соединить сотрудника с его руководителем по <code>boss_id = user_id</code> и сравнить <code>payment</code>.</li>
+                                    <li><strong>Запрос:</strong>
+                                        <pre><code>SELECT e.user_id
+FROM db e
+JOIN db b ON e.boss_id = b.user_id
+WHERE e.payment &gt; b.payment;</code></pre>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li><strong>Часть 3. Пользователи и их питомцы (коты породы Abyssinian):</strong>
+                                <ul>
+                                    <li><strong>Структура таблиц:</strong>
+                                        <ul>
+                                            <li><code>users(user_id, login, name, surname)</code> — данные пользователя.</li>
+                                            <li><code>pets(user_id, pet_id, type, nickname, breed)</code> — питомцы, где <code>user_id</code> — внешний ключ на владельца.</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>Задача:</strong> вернуть фамилию и имя всех владельцев котов породы Abyssinian, отсортировав по алфавиту.</li>
+                                    <li><strong>Как думать:</strong>
+                                        <ul>
+                                            <li>Нужны только те записи из <code>pets</code>, где <code>type</code> соответствует «кот» (обычно <code>cat</code>) и <code>breed = 'Abyssinian'</code>.</li>
+                                            <li>Соединяем <code>users</code> и <code>pets</code> по <code>user_id</code>, берём <code>surname</code> и <code>name</code>, делаем <code>DISTINCT</code> на случай нескольких питомцев.</li>
+                                            <li>Сортируем <code>ORDER BY surname, name</code>.</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>Запрос:</strong>
+                                        <pre><code>SELECT DISTINCT
+    u.surname,
+    u.name
+FROM users u
+JOIN pets p ON p.user_id = u.user_id
+WHERE LOWER(p.type) = 'cat'
+  AND p.breed = 'Abyssinian'
+ORDER BY u.surname, u.name;</code></pre>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -1682,6 +1777,83 @@
                             </ul>
                         </li>
                         <li><strong>Как оформить решение:</strong> чек‑лист можно оформить таблицей (пункт чек‑листа + комментарий/статус), тест‑кейс — в стандартном шаблоне (ID, Название, Предусловия, Шаги, ОР). В этом тренажёре ты можешь использовать готовый чек‑лист «Регистрация: frutonyanya.ru» в разделе чек‑листов и дополнять его своими пунктами.</li>
+                    </ul>
+                </article>
+
+                <article class="card-block">
+                    <h3>Тестовое задание №6: SQL‑задачи для начинающего QA/аналитика</h3>
+                    <ul>
+                        <li><strong>Часть 1. Профсоюзные взносы студентов (Oracle SQL):</strong>
+                            <ul>
+                                <li><strong>Условие:</strong> есть таблица студентов <code>Student(id, name, surname)</code> и таблица платежей <code>Payment(student_id, amount, payment_date)</code>. Каждый студент должен в месяц заплатить 100 ₽, можно частями. Нужно найти должников и сумму их долга за прошлый месяц (относительно даты запуска запроса).</li>
+                                <li><strong>Готовый запрос (Oracle):</strong>
+                                    <pre><code>SELECT
+    s.id,
+    s.name,
+    s.surname,
+    100 - NVL(p.paid, 0) AS debt
+FROM Student s
+LEFT JOIN (
+    SELECT
+        student_id,
+        SUM(amount) AS paid
+    FROM Payment
+    WHERE payment_date &gt;= TRUNC(ADD_MONTHS(SYSDATE, -1), 'MM')
+      AND payment_date &lt;  TRUNC(SYSDATE, 'MM')
+    GROUP BY student_id
+) p ON p.student_id = s.id
+WHERE NVL(p.paid, 0) &lt; 100;</code></pre>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><strong>Часть 2. Зарплаты и подчинённые (таблица <code>db</code>):</strong>
+                            <ul>
+                                <li><strong>Структура:</strong> <code>db(user_id INT, boss_id INT NULL, payment DOUBLE)</code>, где <code>boss_id</code> ссылается на <code>user_id</code> руководителя.</li>
+                                <li><strong>Средняя зарплата руководителей:</strong></li>
+                                <li>
+                                    <pre><code>SELECT AVG(payment) AS avg_boss_salary
+FROM db
+WHERE user_id IN (
+    SELECT DISTINCT boss_id
+    FROM db
+    WHERE boss_id IS NOT NULL
+);</code></pre>
+                                </li>
+                                <li><strong>Среднее количество прямых подчинённых:</strong></li>
+                                <li>
+                                    <pre><code>SELECT AVG(sub_cnt) AS avg_direct_subordinates
+FROM (
+    SELECT boss_id, COUNT(*) AS sub_cnt
+    FROM db
+    WHERE boss_id IS NOT NULL
+    GROUP BY boss_id
+);</code></pre>
+                                </li>
+                                <li><strong>Сотрудники с зарплатой выше, чем у их руководителей:</strong></li>
+                                <li>
+                                    <pre><code>SELECT e.user_id
+FROM db e
+JOIN db b ON e.boss_id = b.user_id
+WHERE e.payment &gt; b.payment;</code></pre>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><strong>Часть 3. Владельцы котов породы Abyssinian:</strong>
+                            <ul>
+                                <li><strong>Таблицы:</strong> <code>users(user_id, login, name, surname)</code> и <code>pets(user_id, pet_id, type, nickname, breed)</code>.</li>
+                                <li><strong>Задача:</strong> получить фамилию и имя владельцев котов породы Abyssinian, отсортированных по алфавиту.</li>
+                                <li><strong>Запрос:</strong>
+                                    <pre><code>SELECT DISTINCT
+    u.surname,
+    u.name
+FROM users u
+JOIN pets p ON p.user_id = u.user_id
+WHERE LOWER(p.type) = 'cat'
+  AND p.breed = 'Abyssinian'
+ORDER BY u.surname, u.name;</code></pre>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
                 </article>
             </section>
