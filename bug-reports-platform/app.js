@@ -2298,6 +2298,28 @@ initGreetingPopup();
     });
 })();
 
+// Открытие модального окна с тестовыми заданиями по кнопке "Тестовые задания" в навигации
+(function initTestAssignmentsModal() {
+    const testAssignmentsModal = document.getElementById('testAssignmentsModal');
+    const closeBtn = document.getElementById('closeTestAssignmentsModalBtn');
+    const navBtn = document.querySelector('.left-nav-link[data-scroll-target="#testAssignmentsPanel"]');
+    if (!testAssignmentsModal || !closeBtn || !navBtn) return;
+
+    navBtn.addEventListener('click', () => {
+        testAssignmentsModal.classList.remove('hidden');
+    });
+
+    closeBtn.addEventListener('click', () => {
+        testAssignmentsModal.classList.add('hidden');
+    });
+
+    testAssignmentsModal.addEventListener('click', (event) => {
+        if (event.target === testAssignmentsModal) {
+            testAssignmentsModal.classList.add('hidden');
+        }
+    });
+})();
+
 /**
  * Утилита: экранирование HTML, чтобы пользовательский ввод
  * не превратился в HTML/скрипт на странице.
