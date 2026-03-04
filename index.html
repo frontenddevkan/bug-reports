@@ -204,6 +204,9 @@
                                 <li><strong>Моделирование сценариев</strong> — мысленно проигрываем путь пользователя по системе, ищем упущенные альтернативные и ошибочные потоки.</li>
                                 <li><strong>Схемы и прототипы</strong> — рисуем флоу, диаграммы, макеты интерфейсов, чтобы увидеть противоречия и пустые места, которые неочевидны в тексте.</li>
                             </ul>
+                            <button type="button" id="openDocFromTechniquesBtn" class="btn btn-secondary">
+                                Создать документацию
+                            </button>
                         </div>
                     </li>
                     <li class="sdlc-step" data-sdlc-step="design">
@@ -1154,7 +1157,7 @@ ORDER BY u.surname, u.name;</code></pre>
     <div id="docModal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Новый документ (требования / фича)</h2>
+                <h2>Создать документацию</h2>
                 <button type="button" id="closeDocModalBtn" class="btn-close">&times;</button>
             </div>
             <form id="docForm" class="bug-form">
@@ -1162,9 +1165,6 @@ ORDER BY u.surname, u.name;</code></pre>
                     Кратко: проектная документация описывает весь проект (требования, ТЗ, пользовательские инструкции, маркетинговые материалы),
                     а продуктная — то, что относится к самому продукту (план проекта, требования к продукту, функциональные требования, макеты, тест‑кейсы).
                 </p>
-                <button type="button" id="docFormScrollBtn" class="btn btn-secondary" style="margin-bottom: 0.75rem;">
-                    Создать документацию (перейти к форме)
-                </button>
                 <div class="form-group">
                     <label for="docTitle">Название фичи / документа <span class="required">*</span></label>
                     <small class="field-hint">Например: Регистрация пользователя по email</small>
