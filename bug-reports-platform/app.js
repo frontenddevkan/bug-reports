@@ -2308,18 +2308,20 @@ function initGreetingPopup() {
 
     setTimeout(hide, 4000);
 
-    // любое нажатие клавиши или любой клик — закрывает приветствие (включая клик по самому окну)
+    // любое нажатие клавиши, клик или скролл — закрывает приветствие (включая клик по самому окну)
     function onAnyInput() {
         hide();
         document.removeEventListener('keydown', onAnyInput, true);
         document.removeEventListener('pointerdown', onAnyInput, true);
         document.removeEventListener('mousedown', onAnyInput, true);
         document.removeEventListener('touchstart', onAnyInput, true);
+        window.removeEventListener('scroll', onAnyInput, true);
     }
     document.addEventListener('keydown', onAnyInput, true);
     document.addEventListener('pointerdown', onAnyInput, true);
     document.addEventListener('mousedown', onAnyInput, true);
     document.addEventListener('touchstart', onAnyInput, true);
+    window.addEventListener('scroll', onAnyInput, true);
 }
 
 initGreetingPopup();
