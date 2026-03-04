@@ -33,6 +33,8 @@ const docModal = document.getElementById('docModal');
 const closeDocModalBtn = document.getElementById('closeDocModalBtn');
 const docForm = document.getElementById('docForm');
 const cancelDocFormBtn = document.getElementById('cancelDocFormBtn');
+const docEmojiBtn = document.getElementById('docEmojiBtn');
+const docTitleInput = document.getElementById('docTitle');
 
 // Конструктор чек-листов
 const createChecklistModal = document.getElementById('createChecklistModal');
@@ -2240,6 +2242,20 @@ if (docForm) {
         alert('Документ сохранён (в учебных целях). Используй этот шаблон, чтобы тренироваться описывать фичи и требования.');
         docModal && docModal.classList.add('hidden');
         docForm.reset();
+    });
+}
+
+// Добавление смайлика к названию документа
+if (docEmojiBtn && docTitleInput) {
+    docEmojiBtn.addEventListener('click', () => {
+        const emojis = ['🙂', '🚀', '✨', '✅', '🐞', '💡'];
+        const current = docTitleInput.value || '';
+        const last = current.slice(-2);
+        // Если в конце уже есть один из наших смайлов — не дублируем, просто оставляем
+        const hasEmoji = emojis.some(e => last.includes(e));
+        const toAdd = hasEmoji ? '' : ' ' + emojis[Math.floor(Math.random() * emojis.length)];
+        docTitleInput.value = current + toAdd;
+        docTitleInput.focus();
     });
 }
 

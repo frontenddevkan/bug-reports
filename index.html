@@ -1161,12 +1161,17 @@ ORDER BY u.surname, u.name;</code></pre>
                 <div class="form-group">
                     <label for="docTitle">Название фичи / документа <span class="required">*</span></label>
                     <small class="field-hint">Например: Регистрация пользователя по email</small>
-                    <input
-                        type="text"
-                        id="docTitle"
-                        name="docTitle"
-                        required
-                    />
+                    <div class="doc-title-row">
+                        <input
+                            type="text"
+                            id="docTitle"
+                            name="docTitle"
+                            required
+                        />
+                        <button type="button" id="docEmojiBtn" class="btn btn-secondary doc-emoji-btn" title="Добавить смайлик к названию">
+                            🙂
+                        </button>
+                    </div>
                 </div>
 
                 <div class="form-group">
