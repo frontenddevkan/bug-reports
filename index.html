@@ -1187,12 +1187,32 @@ ORDER BY u.surname, u.name;</code></pre>
                 </div>
 
                 <div class="form-group">
+                    <label for="docObject">Описание объекта / части системы</label>
+                    <small class="field-hint">Кратко опиши, к какому разделу/модулю относится фича, частью чего она является (например: “ЛК → Профиль пользователя → Блок контактов”).</small>
+                    <textarea
+                        id="docObject"
+                        name="docObject"
+                        rows="2"
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
                     <label for="docRequirements">Основные требования / сценарии</label>
                     <small class="field-hint">Ключевые сценарии и требования: что должен уметь пользователь, какие ограничения и проверки важны.</small>
                     <textarea
                         id="docRequirements"
                         name="docRequirements"
                         rows="5"
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="docLinks">Перекрёстные ссылки</label>
+                    <small class="field-hint">Укажи связанные артефакты: номера багрепортов, тест‑кейсов, требований (например: BR-101, TC-12, REQ-REG-01).</small>
+                    <textarea
+                        id="docLinks"
+                        name="docLinks"
+                        rows="2"
                     ></textarea>
                 </div>
 
