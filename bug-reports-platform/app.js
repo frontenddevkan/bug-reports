@@ -2512,8 +2512,10 @@ function renderBugReport(report) {
 
     const card = document.createElement('article');
     card.className = 'bug-card';
+    // Определяем порядковый номер багрепорта по количеству уже отрисованных карточек
+    const index = bugReportsList.querySelectorAll('.bug-card').length + 1;
     card.innerHTML = `
-        <h3>${escapeHtml(report.title)}</h3>
+        <h3>${index}. ${escapeHtml(report.title)}</h3>
         <p class=\"bug-meta\">
             Приоритет: ${escapeHtml(report.priority)} • 
             Серьёзность: ${escapeHtml(report.severity)} • 
