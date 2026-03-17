@@ -2,7 +2,7 @@
 // чтобы пользователь всегда оказывался в шапке и у роадмапа, а не где-то посередине.
 window.history.scrollRestoration = 'manual';
 window.addEventListener('load', () => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' || 'auto' });
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
 });
 
 /**
@@ -446,7 +446,7 @@ function initBgChargeCanvas() {
             const delay = delayForLine(i);
             const extra = i % 2 === 1 ? 0 : 4;
             const p = phase(tSec, TRAVEL_PERIOD + extra, delay);
-            const len = line.half ? viewportH * 0.5 : viewportH;
+            const len = line.quarter ? viewportH * 0.25 : viewportH;
             const down = i % 2 === 0; // каждая вторая — наоборот
             const y = down ? p * len : (1 - p) * len;
             const x = line.pos;
@@ -476,7 +476,7 @@ function initBgChargeCanvas() {
             const delay = delayForLine(j);
             const extra = j % 2 === 1 ? 0 : 4;
             const p = phase(tSec, TRAVEL_PERIOD + extra, delay);
-            const len = line.half ? viewportW * 0.5 : viewportW;
+            const len = line.quarter ? viewportW * 0.25 : viewportW;
             const right = j % 2 === 0;
             const x = right ? p * len : (1 - p) * len;
             const y = line.pos;
@@ -1360,11 +1360,6 @@ const QUIZ_QUESTIONS = [
                 why: 'Уровень детализации зависит от важности функционала и стадии проекта.',
             },
         ],
-    },
-    {
-        type: 'definition',
-        term: 'Требования',
-        words: ['описание', 'того', 'какие', 'функции', 'должно', 'выполнять', 'приложение', 'для', 'решения', 'нужной', 'пользователю', 'задачи', 'и', 'с', 'соблюдением', 'каких', 'условий'],
     },
 ];
 
