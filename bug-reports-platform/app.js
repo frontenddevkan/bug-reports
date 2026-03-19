@@ -2525,7 +2525,7 @@ function initGreetingPopup() {
     const cols = Math.ceil(W / fontSize);
     const drops = new Array(cols);
     for (let i = 0; i < cols; i++) {
-        drops[i] = -Math.random() * 40;
+        drops[i] = -Math.random() * 15; // ближе к верху — быстрее долетят до низа
     }
 
     const words = ['Тестировщик', 'Тестирование', 'QA', 'AQA', 'QC',
@@ -2559,7 +2559,7 @@ function initGreetingPopup() {
     }
 
     // --- Общие параметры анимации ---
-    const TOTAL_DURATION = 8.0; // вся анимация 8 секунд
+    const TOTAL_DURATION = 9.0; // вся анимация 9 секунд (+1с для долёта строк)
     let raf = 0;
     let t0 = 0;
     let done = false;
@@ -2576,10 +2576,13 @@ function initGreetingPopup() {
         const eased = ease(t);
 
         // === 1. Matrix rain ===
-        const speedMult = 1 + eased * 3; // ускорение капель
+        const speedMult = 1.4 + eased * 3; // быстрее базово + ускорение
         const fadeAlpha = 0.07 - eased * 0.03;
         ctx.fillStyle = `rgba(0, 2, 8, ${Math.max(0.03, fadeAlpha)})`;
         ctx.fillRect(0, 0, W, H);
+
+        // Перспективный сдвиг боковых колонок: крайние раздвигаются наружу
+        const perspShift = eased * 0.35; // сила перспективы нарастает
 
         ctx.font = `${fontSize}px "JetBrains Mono","Fira Code",monospace`;
 
@@ -2587,25 +2590,36 @@ function initGreetingPopup() {
             const y = drops[i] * fontSize;
             const ch = colWord[i][colPos[i] % colWord[i].length];
 
+            // Перспектива: смещение X от центра (боковые уезжают наружу)
+            const centerOffset = (i * fontSize + fontSize / 2 - W / 2) / (W / 2); // -1..1
+            const px = i * fontSize + centerOffset * perspShift * W * 0.15;
+
+            // Масштаб символа: боковые чуть крупнее (ближе к камере)
+            const edgeness = Math.abs(centerOffset); // 0 в центре, 1 по краям
+            const charScale = 1 + edgeness * eased * 0.4;
+
             // Основной символ
             const alpha = 0.12 + eased * 0.12 + Math.random() * 0.15;
             ctx.fillStyle = `rgba(40, 140, 220, ${alpha})`;
-            ctx.fillText(ch, i * fontSize, y);
+            ctx.save();
+            ctx.translate(px, y);
+            ctx.scale(charScale, charScale);
+            ctx.fillText(ch, 0, 0);
 
             // Голова капли — ярче
             if (Math.random() > 0.7) {
                 ctx.fillStyle = `rgba(130, 200, 255, ${0.35 + Math.random() * 0.3})`;
-                ctx.fillText(ch, i * fontSize, y);
+                ctx.fillText(ch, 0, 0);
             }
+            ctx.restore();
 
-            // Движение
-            drops[i] += (0.35 + Math.random() * 0.25) * speedMult;
+            // Движение — боковые чуть быстрее (перспектива)
+            drops[i] += (0.5 + Math.random() * 0.3 + edgeness * 0.2) * speedMult;
 
             // Следующий символ в слове
             colPos[i]++;
             if (colPos[i] >= colWord[i].length) {
                 colPos[i] = 0;
-                // Иногда меняем слово
                 if (Math.random() > 0.6) {
                     colWord[i] = words[Math.floor(Math.random() * words.length)];
                 }
