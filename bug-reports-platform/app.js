@@ -2504,12 +2504,13 @@ initBgChargeCanvas();
 function initGreetingPopup() {
     const popup = document.getElementById('greetingPopup');
     const canvas = document.getElementById('greetingMatrixCanvas');
+    const textEl = document.getElementById('greetingText');
     if (!popup || !canvas) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Размеры
+    // --- Размеры ---
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     const W = window.innerWidth;
     const H = window.innerHeight;
@@ -2519,137 +2520,161 @@ function initGreetingPopup() {
     canvas.style.height = H + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    // Колонки символов
+    // --- Matrix rain: слова из QA-тематики ---
     const fontSize = 14;
     const cols = Math.ceil(W / fontSize);
     const drops = new Array(cols);
     for (let i = 0; i < cols; i++) {
-        drops[i] = -Math.random() * 40; // стартуют выше экрана (рандомно)
+        drops[i] = -Math.random() * 40;
     }
 
-    const chars = '01';
-    let raf = 0;
-    let startTime = 0;
-
-    function drawMatrix(now) {
-        if (!startTime) startTime = now;
-        const elapsed = (now - startTime) / 1000; // секунды
-
-        // Ускорение: от 1x до 4x за 5 секунд (эффект разгона)
-        const speedMult = 1 + elapsed * 0.6;
-
-        // Затемнение — чуть слабее на скорости чтобы хвосты были длиннее
-        const fadeAlpha = Math.max(0.04, 0.08 - elapsed * 0.006);
-        ctx.fillStyle = `rgba(0, 2, 8, ${fadeAlpha})`;
-        ctx.fillRect(0, 0, W, H);
-
-        ctx.font = `${fontSize}px "JetBrains Mono", "Fira Code", monospace`;
-
-        for (let i = 0; i < cols; i++) {
-            const y = drops[i] * fontSize;
-
-            // Основные символы — приглушённый голубой, ярчают на скорости
-            const brightBoost = Math.min(0.15, elapsed * 0.02);
-            const alpha = 0.15 + brightBoost + Math.random() * 0.2;
-            ctx.fillStyle = `rgba(40, 140, 220, ${alpha})`;
-            const ch = chars[Math.floor(Math.random() * chars.length)];
-            ctx.fillText(ch, i * fontSize, y);
-
-            // «Голова» капли — ярче
-            if (Math.random() > 0.65) {
-                ctx.fillStyle = `rgba(130, 200, 255, ${0.4 + Math.random() * 0.35})`;
-                ctx.fillText(ch, i * fontSize, y);
-            }
-
-            // Двигаем каплю вниз — ускоряется со временем
-            drops[i] += (0.4 + Math.random() * 0.3) * speedMult;
-
-            // Сброс
-            if (drops[i] * fontSize > H && Math.random() > 0.97) {
-                drops[i] = -Math.random() * 10;
-            }
-        }
-
-        // Продолжаем анимацию пока попап видим
-        if (!popup.classList.contains('hidden')) {
-            raf = requestAnimationFrame(drawMatrix);
-        }
+    const words = ['Тестировщик', 'Тестирование', 'QA', 'AQA', 'QC',
+                   'Баг', 'Кейс', 'Дефект', 'Релиз', 'Спринт'];
+    // Для каждой колонки — текущее слово и позиция в нём
+    const colWord = new Array(cols);
+    const colPos = new Array(cols);
+    for (let i = 0; i < cols; i++) {
+        colWord[i] = words[Math.floor(Math.random() * words.length)];
+        colPos[i] = Math.floor(Math.random() * colWord[i].length);
     }
 
-    // === Эффект дешифровки текста: кириллица перебирается ===
-    const textEl = document.getElementById('greetingText');
+    // --- Scramble текст ---
     const finalText = textEl ? textEl.textContent.trim() : '';
-    // Перебор только кириллицей
-    const scrambleChars = 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЭЮЯ' +
-                          'абвгдежзиклмнопрстуфхцчшщэюя';
-    const CHAR_DELAY = 50;        // задержка между буквами (мс)
-    const SCRAMBLE_DURATION = 700; // перебор каждой буквы (мс)
-    const SCRAMBLE_START = 0;      // сразу, без паузы
+    const scrambleChars = 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЭЮЯабвгдежзиклмнопрстуфхцчшщэюя';
+    const CHAR_DELAY = 50;
+    const SCRAMBLE_DURATION = 700;
+    let spans = [];
 
     if (textEl && finalText.length) {
         textEl.innerHTML = '';
-        const spans = [];
         for (let i = 0; i < finalText.length; i++) {
             const span = document.createElement('span');
-            span.textContent = finalText[i] === ' ' ? '\u00A0' : scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+            const isSpace = finalText[i] === ' ';
+            span.textContent = isSpace ? '\u00A0' : scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
             span.style.display = 'inline-block';
-            span.style.minWidth = finalText[i] === ' ' ? '0.3em' : '0';
+            if (isSpace) span.style.minWidth = '0.3em';
             textEl.appendChild(span);
-            spans.push({ el: span, final: finalText[i], resolved: finalText[i] === ' ' });
+            spans.push({ el: span, final: finalText[i], resolved: isSpace });
         }
+    }
 
-        let scrambleRaf = 0;
-        const t0 = performance.now();
+    // --- Общие параметры анимации ---
+    const TOTAL_DURATION = 8.0; // вся анимация 8 секунд
+    let raf = 0;
+    let t0 = 0;
+    let done = false;
 
-        function scrambleTick(now) {
-            const elapsed = now - t0 - SCRAMBLE_START;
-            let allDone = true;
+    // Плавный easing: ease-in-out (кубический)
+    function ease(t) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
 
-            for (let i = 0; i < spans.length; i++) {
-                const s = spans[i];
-                if (s.resolved) continue;
+    function tick(now) {
+        if (!t0) t0 = now;
+        const rawT = (now - t0) / 1000; // секунды
+        const t = Math.min(rawT / TOTAL_DURATION, 1); // 0..1 нормализованный прогресс
+        const eased = ease(t);
 
-                const charStart = i * CHAR_DELAY;
-                const charElapsed = elapsed - charStart;
+        // === 1. Matrix rain ===
+        const speedMult = 1 + eased * 3; // ускорение капель
+        const fadeAlpha = 0.07 - eased * 0.03;
+        ctx.fillStyle = `rgba(0, 2, 8, ${Math.max(0.03, fadeAlpha)})`;
+        ctx.fillRect(0, 0, W, H);
 
-                if (charElapsed < 0) {
-                    s.el.textContent = scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
-                    allDone = false;
-                } else if (charElapsed < SCRAMBLE_DURATION) {
-                    const progress = charElapsed / SCRAMBLE_DURATION;
-                    if (Math.random() < progress * progress) {
-                        s.el.textContent = s.final;
-                    } else {
-                        s.el.textContent = scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
-                    }
-                    allDone = false;
-                } else {
-                    s.el.textContent = s.final;
-                    s.resolved = true;
+        ctx.font = `${fontSize}px "JetBrains Mono","Fira Code",monospace`;
+
+        for (let i = 0; i < cols; i++) {
+            const y = drops[i] * fontSize;
+            const ch = colWord[i][colPos[i] % colWord[i].length];
+
+            // Основной символ
+            const alpha = 0.12 + eased * 0.12 + Math.random() * 0.15;
+            ctx.fillStyle = `rgba(40, 140, 220, ${alpha})`;
+            ctx.fillText(ch, i * fontSize, y);
+
+            // Голова капли — ярче
+            if (Math.random() > 0.7) {
+                ctx.fillStyle = `rgba(130, 200, 255, ${0.35 + Math.random() * 0.3})`;
+                ctx.fillText(ch, i * fontSize, y);
+            }
+
+            // Движение
+            drops[i] += (0.35 + Math.random() * 0.25) * speedMult;
+
+            // Следующий символ в слове
+            colPos[i]++;
+            if (colPos[i] >= colWord[i].length) {
+                colPos[i] = 0;
+                // Иногда меняем слово
+                if (Math.random() > 0.6) {
+                    colWord[i] = words[Math.floor(Math.random() * words.length)];
                 }
             }
 
-            if (!allDone && !popup.classList.contains('hidden')) {
-                scrambleRaf = requestAnimationFrame(scrambleTick);
+            // Сброс капли
+            if (drops[i] * fontSize > H && Math.random() > 0.97) {
+                drops[i] = -Math.random() * 8;
             }
         }
-        scrambleRaf = requestAnimationFrame(scrambleTick);
+
+        // === 2. Наезд canvas (scale) — из того же eased ===
+        const canvasScale = 1 + eased * 1.8;
+        canvas.style.transform = `scale(${canvasScale})`;
+
+        // === 3. Текст: scale + opacity — из того же eased ===
+        if (textEl) {
+            const textScale = 0.92 + eased * 2.6;
+            // Opacity: держим 1.0 до 40%, потом плавно в 0
+            const textOpacity = t < 0.4 ? 1 : Math.max(0, 1 - (t - 0.4) / 0.5);
+            textEl.style.transform = `scale(${textScale})`;
+            textEl.style.opacity = textOpacity;
+        }
+
+        // === 4. Фон попапа: opacity ===
+        // Держим плотным до 35%, потом плавно растворяем
+        const bgOpacity = t < 0.35 ? 0.88 : 0.88 * Math.max(0, 1 - (t - 0.35) / 0.55);
+        popup.style.background = `rgba(0, 2, 8, ${bgOpacity})`;
+        popup.style.opacity = t < 0.5 ? 1 : Math.max(0, 1 - (t - 0.5) / 0.45);
+
+        // === 5. Scramble текста ===
+        const elapsedMs = rawT * 1000;
+        for (let i = 0; i < spans.length; i++) {
+            const s = spans[i];
+            if (s.resolved) continue;
+            const charElapsed = elapsedMs - i * CHAR_DELAY;
+            if (charElapsed < 0) {
+                s.el.textContent = scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+            } else if (charElapsed < SCRAMBLE_DURATION) {
+                const p = charElapsed / SCRAMBLE_DURATION;
+                s.el.textContent = Math.random() < p * p
+                    ? s.final
+                    : scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+            } else {
+                s.el.textContent = s.final;
+                s.resolved = true;
+            }
+        }
+
+        // === Продолжаем или завершаем ===
+        if (t < 1 && !done) {
+            raf = requestAnimationFrame(tick);
+        } else if (!done) {
+            done = true;
+            popup.classList.add('hidden');
+        }
     }
 
-    // Показываем попап
+    // --- Старт ---
     popup.classList.remove('hidden');
-    raf = requestAnimationFrame(drawMatrix);
-
-    // Убираем из DOM после окончания анимации (7.5с)
-    function hide() {
-        popup.classList.add('hidden');
-        cancelAnimationFrame(raf);
-    }
-
-    // Анимация длится 7.5с — убираем чуть после
-    setTimeout(hide, 7600);
+    raf = requestAnimationFrame(tick);
 
     // Любой ввод — мгновенно скрывает
+    function hide() {
+        if (done) return;
+        done = true;
+        cancelAnimationFrame(raf);
+        popup.classList.add('hidden');
+    }
     function onAnyInput() {
         hide();
         document.removeEventListener('keydown', onAnyInput, true);
