@@ -265,8 +265,10 @@ function initBgChargeCanvas() {
     const FLASH_PERIOD = 8.0; // каждые 8 секунд вспышка у каждого кружка
     const TRAVEL_PERIOD = 11.0; // замедляем ещё на ~4 секунды
 
-    const HEX_RADIUS = 22; // радиус шестиугольника (от центра до вершины)
+    const HEX_RADIUS = 17; // радиус шестиугольника (уменьшен на 5px)
     const LINE_THICKNESS = 0.7;
+    const PERSPECTIVE_SCALE_Y = 0.55; // сжатие по Y для эффекта наклона плоскости
+    const PERSPECTIVE_SKEW = 0.15;    // лёгкий скос для глубины
 
     // Offscreen слой со статической сеткой
     const gridLayer = document.createElement('canvas');
@@ -275,21 +277,32 @@ function initBgChargeCanvas() {
 
     let viewportW = 0;
     let viewportH = 0;
-    // Для анимации шариков сохраняем «виртуальные» линии-дорожки
-    let vLines = [];
-    let hLines = [];
 
-    // Вершины pointy-top шестиугольника: угол = 60°*i - 30°
+    // Все рёбра и граф смежности для движения огоньков
+    let allEdges = [];       // [{x1,y1,x2,y2}, ...]
+    let adjacency = null;    // Map: "x,y" -> [{x,y}, ...]
+    let dotRoutes = [];      // маршруты для огоньков
+
+    // Вершина гекса с перспективным наклоном
     function hexVertex(cx, cy, r, i) {
         const angle = (Math.PI / 180) * (60 * i - 30);
-        return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+        let vx = cx + r * Math.cos(angle);
+        let vy = cy + r * Math.sin(angle);
+        // Перспективный наклон: сжимаем Y и добавляем скос от X
+        vy = vy * PERSPECTIVE_SCALE_Y + vx * PERSPECTIVE_SKEW;
+        return { x: vx, y: vy };
+    }
+
+    // Ключ вершины для графа (округление до 0.5px для дедупликации)
+    function vKey(x, y) {
+        return `${Math.round(x * 2) / 2},${Math.round(y * 2) / 2}`;
     }
 
     // Диагональный fade: ярче в левом верхнем, тусклее в правом нижнем
     function fadeFactor(x, y) {
         const tx = viewportW > 0 ? x / viewportW : 0;
         const ty = viewportH > 0 ? y / viewportH : 0;
-        const t = (tx + ty) / 2; // диагональная позиция 0..1
+        const t = (tx + ty) / 2;
         if (t <= 0.35) return 1;
         const local = (t - 0.35) / 0.65;
         return 1 - 0.74 * local;
@@ -303,19 +316,112 @@ function initBgChargeCanvas() {
         return `rgba(56,189,248,${a})`;
     }
 
-    function buildVirtualLines(max) {
-        // Простые равномерные дорожки для анимированных шариков
-        const lines = [];
-        let pos = 0;
-        let idx = 0;
-        const spacing = HEX_RADIUS * 1.8;
-        while (pos <= max + 1) {
-            const quarter = idx % 4 === 3;
-            lines.push({ idx, pos, quarter });
-            pos += spacing;
-            idx++;
+    // Строим граф рёбер шестиугольной сетки
+    function buildEdgeGraph() {
+        const r = HEX_RADIUS;
+        const w = Math.sqrt(3) * r;
+        const h = 2 * r;
+        const horizSpacing = w;
+        const vertSpacing = h * 0.75;
+
+        // Рассчитываем на увеличенную область из-за перспективы
+        const margin = viewportH * PERSPECTIVE_SKEW + r * 2;
+        const cols = Math.ceil((viewportW + margin) / horizSpacing) + 3;
+        const rows = Math.ceil((viewportH / PERSPECTIVE_SCALE_Y + margin) / vertSpacing) + 3;
+
+        const edges = [];
+        const adj = new Map();
+
+        function addAdj(k1, v2) {
+            if (!adj.has(k1)) adj.set(k1, []);
+            const list = adj.get(k1);
+            // Избегаем дубликатов
+            if (!list.some(p => Math.abs(p.x - v2.x) < 0.5 && Math.abs(p.y - v2.y) < 0.5)) {
+                list.push(v2);
+            }
         }
-        return lines;
+
+        for (let row = -2; row < rows; row++) {
+            for (let col = -2; col < cols; col++) {
+                const cx = col * horizSpacing + (((row % 2) + 2) % 2 !== 0 ? horizSpacing / 2 : 0);
+                const cy = row * vertSpacing;
+
+                for (let i = 0; i < 6; i++) {
+                    const v1 = hexVertex(cx, cy, r, i);
+                    const v2 = hexVertex(cx, cy, r, (i + 1) % 6);
+
+                    // Пропускаем рёбра далеко за экраном
+                    if (v1.x < -r * 3 && v2.x < -r * 3) continue;
+                    if (v1.x > viewportW + r * 3 && v2.x > viewportW + r * 3) continue;
+                    if (v1.y < -r * 3 && v2.y < -r * 3) continue;
+                    if (v1.y > viewportH + r * 3 && v2.y > viewportH + r * 3) continue;
+
+                    edges.push({ x1: v1.x, y1: v1.y, x2: v2.x, y2: v2.y });
+
+                    const k1 = vKey(v1.x, v1.y);
+                    const k2 = vKey(v2.x, v2.y);
+                    addAdj(k1, { x: v2.x, y: v2.y });
+                    addAdj(k2, { x: v1.x, y: v1.y });
+                }
+            }
+        }
+        allEdges = edges;
+        adjacency = adj;
+    }
+
+    // Строим маршрут для огонька: случайный обход по рёбрам гекса
+    function buildRoute(startX, startY, steps) {
+        const route = [{ x: startX, y: startY }];
+        let cx = startX, cy = startY;
+        let prevX = -Infinity, prevY = -Infinity;
+
+        for (let s = 0; s < steps; s++) {
+            const key = vKey(cx, cy);
+            const neighbors = adjacency ? adjacency.get(key) : null;
+            if (!neighbors || neighbors.length === 0) break;
+
+            // Выбираем следующую вершину: избегаем возврата назад
+            let candidates = neighbors.filter(n =>
+                Math.abs(n.x - prevX) > 0.5 || Math.abs(n.y - prevY) > 0.5
+            );
+            if (candidates.length === 0) candidates = neighbors;
+
+            // Детерминированный выбор на основе позиции и шага
+            const idx = (s * 7 + Math.floor(cx * 3 + cy * 5)) % candidates.length;
+            const next = candidates[Math.abs(idx) % candidates.length];
+
+            route.push({ x: next.x, y: next.y });
+            prevX = cx;
+            prevY = cy;
+            cx = next.x;
+            cy = next.y;
+        }
+        return route;
+    }
+
+    // Создаём маршруты для огоньков
+    function buildDotRoutes() {
+        const routes = [];
+        if (!adjacency || adjacency.size === 0) return routes;
+
+        // Берём стартовые вершины из разных частей экрана
+        const keys = Array.from(adjacency.keys());
+        const NUM_DOTS = 12;
+        const step = Math.max(1, Math.floor(keys.length / (NUM_DOTS + 1)));
+
+        for (let i = 0; i < NUM_DOTS; i++) {
+            const key = keys[(step * (i + 1)) % keys.length];
+            const parts = key.split(',');
+            const sx = parseFloat(parts[0]);
+            const sy = parseFloat(parts[1]);
+
+            // Маршрут из ~60 шагов — затем зацикливается
+            const route = buildRoute(sx, sy, 60);
+            if (route.length > 2) {
+                routes.push(route);
+            }
+        }
+        return routes;
     }
 
     function redrawGrid() {
@@ -324,43 +430,13 @@ function initBgChargeCanvas() {
         gridCtx.lineJoin = 'miter';
         gridCtx.lineWidth = LINE_THICKNESS;
 
-        const r = HEX_RADIUS;
-        const w = Math.sqrt(3) * r; // ширина pointy-top гекса
-        const h = 2 * r;            // высота pointy-top гекса
-        const horizSpacing = w;
-        const vertSpacing = h * 0.75;
-
-        // Количество столбцов и строк с запасом
-        const cols = Math.ceil(viewportW / horizSpacing) + 2;
-        const rows = Math.ceil(viewportH / vertSpacing) + 2;
-
-        // Рисуем рёбра шестиугольников
-        // Чтобы не дублировать рёбра, рисуем только 3 из 6 сторон каждого гекса
-        // (правые верхние три стороны: 0→1, 1→2, 2→3)
-        for (let row = -1; row < rows; row++) {
-            for (let col = -1; col < cols; col++) {
-                const cx = col * horizSpacing + (row % 2 !== 0 ? horizSpacing / 2 : 0);
-                const cy = row * vertSpacing;
-
-                // Рисуем все 6 рёбер; дубликаты не страшны при такой тонкости
-                for (let i = 0; i < 6; i++) {
-                    const v1 = hexVertex(cx, cy, r, i);
-                    const v2 = hexVertex(cx, cy, r, (i + 1) % 6);
-
-                    // Пропускаем рёбра далеко за экраном
-                    if (v1.x < -r && v2.x < -r) continue;
-                    if (v1.x > viewportW + r && v2.x > viewportW + r) continue;
-                    if (v1.y < -r && v2.y < -r) continue;
-                    if (v1.y > viewportH + r && v2.y > viewportH + r) continue;
-
-                    gridCtx.strokeStyle = edgeColor(v1.x, v1.y, v2.x, v2.y);
-                    gridCtx.beginPath();
-                    gridCtx.moveTo(v1.x, v1.y);
-                    gridCtx.lineTo(v2.x, v2.y);
-                    gridCtx.stroke();
-                }
-            }
-        }
+        allEdges.forEach(e => {
+            gridCtx.strokeStyle = edgeColor(e.x1, e.y1, e.x2, e.y2);
+            gridCtx.beginPath();
+            gridCtx.moveTo(e.x1, e.y1);
+            gridCtx.lineTo(e.x2, e.y2);
+            gridCtx.stroke();
+        });
     }
 
     function resize() {
@@ -378,8 +454,8 @@ function initBgChargeCanvas() {
         gridLayer.height = Math.floor(viewportH * dpr);
         gridCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-        vLines = buildVirtualLines(viewportW);
-        hLines = buildVirtualLines(viewportH);
+        buildEdgeGraph();
+        dotRoutes = buildDotRoutes();
         redrawGrid();
     }
 
@@ -387,14 +463,14 @@ function initBgChargeCanvas() {
     window.addEventListener('resize', resize, { passive: true });
 
     function drawDot(x, y, intensity) {
-        // 1.5px шарик + ореол (на вспышке шире на +2px и "размытей")
-        const coreR = 0.75;
-        const glowR = 4 + 2 * intensity; // шире на 2px на вспышке
+        // Увеличенный шарик + широкий ореол
+        const coreR = 1.8;
+        const glowR = 10 + 5 * intensity;
 
         const g = ctx.createRadialGradient(x, y, 0, x, y, glowR);
-        g.addColorStop(0, `rgba(255,255,255,${0.28 + 0.62 * intensity})`);
-        g.addColorStop(0.25, `rgba(255,255,255,${0.10 + 0.28 * intensity})`);
-        g.addColorStop(0.55, `rgba(56,189,248,${0.05 + 0.20 * intensity})`);
+        g.addColorStop(0, `rgba(255,255,255,${0.35 + 0.55 * intensity})`);
+        g.addColorStop(0.2, `rgba(255,255,255,${0.15 + 0.35 * intensity})`);
+        g.addColorStop(0.5, `rgba(56,189,248,${0.08 + 0.25 * intensity})`);
         g.addColorStop(1, 'rgba(30,58,138,0)');
 
         ctx.fillStyle = g;
@@ -402,102 +478,66 @@ function initBgChargeCanvas() {
         ctx.arc(x, y, glowR, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = `rgba(255,255,255,${0.22 + 0.68 * intensity})`;
+        ctx.fillStyle = `rgba(255,255,255,${0.30 + 0.60 * intensity})`;
         ctx.beginPath();
         ctx.arc(x, y, coreR, 0, Math.PI * 2);
         ctx.fill();
     }
 
-    function phase(t, period, delay) {
-        const tt = (t - delay) / period;
-        return ((tt % 1) + 1) % 1;
-    }
-
     function flashIntensity(tSec, delaySec) {
-        // каждые 8 секунд вспышка с затуханием за 1 секунду
-        const local = ((tSec - delaySec) % FLASH_PERIOD + FLASH_PERIOD) % FLASH_PERIOD; // 0..8
+        const local = ((tSec - delaySec) % FLASH_PERIOD + FLASH_PERIOD) % FLASH_PERIOD;
         if (local > 1) return 0;
-        // 1 -> 0 плавно за 1 секунду
         return 0.5 * (1 + Math.cos(Math.PI * local));
     }
 
-    function delayForLine(lineIndex) {
-        // базовое запаздывание + 8s на каждый следующий шарик (ещё более рассинхронено)
-        return lineIndex * 8;
+    // Позиция огонька на маршруте в момент времени
+    function dotPosition(route, tSec, speed, delay) {
+        const totalSegments = route.length - 1;
+        if (totalSegments <= 0) return { x: route[0].x, y: route[0].y };
+
+        // Время на одно ребро
+        const segTime = 1.0 / speed; // секунд на ребро
+        const totalTime = totalSegments * segTime;
+        const t = ((tSec - delay) % totalTime + totalTime) % totalTime;
+        const segIdx = Math.min(Math.floor(t / segTime), totalSegments - 1);
+        const segProgress = (t - segIdx * segTime) / segTime;
+
+        const p1 = route[segIdx];
+        const p2 = route[segIdx + 1];
+        return {
+            x: p1.x + (p2.x - p1.x) * segProgress,
+            y: p1.y + (p2.y - p1.y) * segProgress,
+            // Направление ребра для подсветки
+            ex1: p1.x, ey1: p1.y, ex2: p2.x, ey2: p2.y
+        };
     }
 
-    // Чтобы не перегружать страницу, анимацию делаем только на ограниченном числе линий,
-    // а сама сетка (линии) уже нарисована в gridLayer.
-    const MAX_DOTS = 14;
-
     function render(tSec) {
-        // рисуем сетку одним drawImage (быстро)
         ctx.clearRect(0, 0, viewportW, viewportH);
         ctx.globalCompositeOperation = 'source-over';
         ctx.drawImage(gridLayer, 0, 0, viewportW, viewportH);
 
         ctx.globalCompositeOperation = 'screen';
 
-        // Вертикальные шарики: строго по линиям, направление чередуем.
-        // Все кружки, кроме каждого второго (i % 2 === 1), замедляем ещё на 4 секунды.
-        const vCount = Math.min(MAX_DOTS, vLines.length);
-        for (let i = 0; i < vCount; i++) {
-            // каждый третий вертикальный шарик убираем для ещё более лёгкой анимации
-            if ((i + 1) % 3 === 0) continue;
-            // второй огонёк, который движется снизу вверх (i === 1), сдвигаем правее на ~8 линий
-            const lineIndex = i === 1 ? Math.min(vLines.length - 1, i + 8) : i;
-            const line = vLines[lineIndex];
-            const delay = delayForLine(i);
-            const extra = i % 2 === 1 ? 0 : 4;
-            const p = phase(tSec, TRAVEL_PERIOD + extra, delay);
-            const len = line.quarter ? viewportH * 0.25 : viewportH;
-            const down = i % 2 === 0; // каждая вторая — наоборот
-            const y = down ? p * len : (1 - p) * len;
-            const x = line.pos;
-            // у каждого кружка своя фаза вспышки: шаг 5 секунд, чтобы не совпадали
+        // Огоньки движутся по маршрутам вдоль рёбер гексов
+        for (let i = 0; i < dotRoutes.length; i++) {
+            const route = dotRoutes[i];
+            const speed = 1.2 + (i % 3) * 0.3; // рёбер/сек — разные скорости
+            const delay = i * 4.5;
+            const pos = dotPosition(route, tSec, speed, delay);
             const intensity = flashIntensity(tSec, i * 5.0);
-            drawDot(x, y, intensity);
 
-            // Подсветка участка линии вокруг шарика: 8px до и 8px после по направлению движения
-            const segHalf = 8;
-            const yStart = Math.max(0, y - segHalf);
-            const yEnd = Math.min(len, y + segHalf);
-            ctx.strokeStyle = `rgba(255,255,255,${0.55 * intensity})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(x + 0.5, yStart);
-            ctx.lineTo(x + 0.5, yEnd);
-            ctx.stroke();
-        }
+            drawDot(pos.x, pos.y, intensity);
 
-        // Горизонтальные шарики: строго по линиям, направление чередуем.
-        // Все кружки, кроме каждого второго (j % 2 === 1), замедляем ещё на 4 секунды.
-        const hCount = Math.min(MAX_DOTS, hLines.length);
-        for (let j = 0; j < hCount; j++) {
-            // каждый третий горизонтальный шарик также убираем (индексы 2,5,8,...)
-            if ((j + 1) % 3 === 0) continue;
-            const line = hLines[j];
-            const delay = delayForLine(j);
-            const extra = j % 2 === 1 ? 0 : 4;
-            const p = phase(tSec, TRAVEL_PERIOD + extra, delay);
-            const len = line.quarter ? viewportW * 0.25 : viewportW;
-            const right = j % 2 === 0;
-            const x = right ? p * len : (1 - p) * len;
-            const y = line.pos;
-            // у каждого кружка своя фаза вспышки: шаг 5 секунд, чтобы не совпадали
-            const intensity = flashIntensity(tSec, j * 5.0);
-            drawDot(x, y, intensity);
-
-            // Подсветка участка линии вокруг шарика: 8px до и 8px после по горизонтали
-            const segHalfH = 8;
-            const xStart = Math.max(0, x - segHalfH);
-            const xEnd = Math.min(len, x + segHalfH);
-            ctx.strokeStyle = `rgba(255,255,255,${0.55 * intensity})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(xStart, y + 0.5);
-            ctx.lineTo(xEnd, y + 0.5);
-            ctx.stroke();
+            // Подсветка текущего ребра вокруг шарика
+            if (pos.ex1 !== undefined) {
+                ctx.strokeStyle = `rgba(56,189,248,${0.3 + 0.5 * intensity})`;
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.moveTo(pos.ex1, pos.ey1);
+                ctx.lineTo(pos.ex2, pos.ey2);
+                ctx.stroke();
+            }
         }
 
         ctx.globalCompositeOperation = 'source-over';
