@@ -265,11 +265,8 @@ function initBgChargeCanvas() {
     const FLASH_PERIOD = 8.0; // каждые 8 секунд вспышка у каждого кружка
     const TRAVEL_PERIOD = 11.0; // замедляем ещё на ~4 секунды
 
-    // Сетка мельче примерно в 2 раза; ещё немного увеличиваем шаги примерно на +4px
-    // (было [10,10,12,10,8,10,12,10] -> стало [14,14,16,14,12,14,16,14])
-    const SPACING_PATTERN = [14, 14, 16, 14, 12, 14, 16, 14];
-    const LINE_THICKNESS = 0.7; // на 0.5px толще (0.2px -> 0.7px)
-    const EXTRA_TRANSPARENCY = 0.0; // делаем линии на ~4% ярче (меньше прозрачности)
+    const HEX_RADIUS = 22; // радиус шестиугольника (от центра до вершины)
+    const LINE_THICKNESS = 0.7;
 
     // Offscreen слой со статической сеткой
     const gridLayer = document.createElement('canvas');
@@ -278,31 +275,42 @@ function initBgChargeCanvas() {
 
     let viewportW = 0;
     let viewportH = 0;
+    // Для анимации шариков сохраняем «виртуальные» линии-дорожки
     let vLines = [];
     let hLines = [];
 
-    function makeGradient(isVertical, x, y, len, boost = 1, fade = 1) {
-        const g = isVertical
-            ? gridCtx.createLinearGradient(x, y, x, y + len)
-            : gridCtx.createLinearGradient(x, y, x + len, y);
-        // слабый белый -> более заметный голубой -> глубокий синий
-        const a0 = Math.max(0, 0.08 - EXTRA_TRANSPARENCY);
-        const a1 = Math.max(0, 0.18 - EXTRA_TRANSPARENCY);
-        const a2 = Math.max(0, 0.24 - EXTRA_TRANSPARENCY);
-        const k = Math.max(0.3, Math.min(1, fade)); // от 30% до 100% текущей яркости
-        g.addColorStop(0, `rgba(248,250,252,${Math.min(1, a0 * boost * k)})`);
-        g.addColorStop(0.5, `rgba(56,189,248,${Math.min(1, a1 * boost * k)})`);
-        g.addColorStop(1, `rgba(30,58,138,${Math.min(1, a2 * boost * k)})`);
-        return g;
+    // Вершины pointy-top шестиугольника: угол = 60°*i - 30°
+    function hexVertex(cx, cy, r, i) {
+        const angle = (Math.PI / 180) * (60 * i - 30);
+        return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
     }
 
-    function buildLines(max, isVertical) {
+    // Диагональный fade: ярче в левом верхнем, тусклее в правом нижнем
+    function fadeFactor(x, y) {
+        const tx = viewportW > 0 ? x / viewportW : 0;
+        const ty = viewportH > 0 ? y / viewportH : 0;
+        const t = (tx + ty) / 2; // диагональная позиция 0..1
+        if (t <= 0.35) return 1;
+        const local = (t - 0.35) / 0.65;
+        return 1 - 0.74 * local;
+    }
+
+    function edgeColor(x1, y1, x2, y2) {
+        const mx = (x1 + x2) / 2;
+        const my = (y1 + y2) / 2;
+        const fade = fadeFactor(mx, my);
+        const a = Math.min(1, 0.16 * fade);
+        return `rgba(56,189,248,${a})`;
+    }
+
+    function buildVirtualLines(max) {
+        // Простые равномерные дорожки для анимированных шариков
         const lines = [];
         let pos = 0;
         let idx = 0;
+        const spacing = HEX_RADIUS * 1.8;
         while (pos <= max + 1) {
-            const spacing = SPACING_PATTERN[idx % SPACING_PATTERN.length];
-            const quarter = idx % 4 === 3; // каждая 4-я линия — только 25% длины
+            const quarter = idx % 4 === 3;
             lines.push({ idx, pos, quarter });
             pos += spacing;
             idx++;
@@ -316,47 +324,43 @@ function initBgChargeCanvas() {
         gridCtx.lineJoin = 'miter';
         gridCtx.lineWidth = LINE_THICKNESS;
 
-        // вертикали
-        vLines.forEach((l) => {
-            const len = l.quarter ? viewportH * 0.25 : viewportH;
-            const vBoost = (l.idx + 1) % 8 === 0 ? 1.35 : 1; // каждую 8-ю вертикаль делаем чуть белее
-            // Градиент прозрачности от левого верхнего к правому нижнему: по X.
-            // До ~40% ширины сохраняем полную яркость, затем плавно уходим к 30%.
-            const t = viewportW > 0 ? l.pos / viewportW : 0;
-            let fade;
-            if (t <= 0.4) {
-                fade = 1;
-            } else {
-                const local = (t - 0.4) / 0.6; // 0..1 для правых 60% экрана
-                fade = 1 - 0.74 * local;       // от 1 до 0.26 (~на 4% прозрачнее к правому краю)
-            }
-            gridCtx.strokeStyle = makeGradient(true, l.pos, 0, len, vBoost, fade);
-            gridCtx.beginPath();
-            gridCtx.moveTo(l.pos + 0.5, 0);
-            gridCtx.lineTo(l.pos + 0.5, len);
-            gridCtx.stroke();
-        });
+        const r = HEX_RADIUS;
+        const w = Math.sqrt(3) * r; // ширина pointy-top гекса
+        const h = 2 * r;            // высота pointy-top гекса
+        const horizSpacing = w;
+        const vertSpacing = h * 0.75;
 
-        // горизонтали
-        hLines.forEach((l) => {
-            const len = l.quarter ? viewportW * 0.25 : viewportW;
-            const hBoost = (l.idx + 1) % 4 === 0 ? 1.35 : 1; // каждую 4-ю горизонталь делаем чуть белее
-            // Градиент прозрачности от левого верхнего к правому нижнему: по Y.
-            // До ~40% высоты сохраняем полную яркость, затем плавно уходим к 30%.
-            const t = viewportH > 0 ? l.pos / viewportH : 0;
-            let fade;
-            if (t <= 0.4) {
-                fade = 1;
-            } else {
-                const local = (t - 0.4) / 0.6; // 0..1 для нижних 60% экрана
-                fade = 1 - 0.74 * local;       // от 1 до 0.26 (~на 4% прозрачнее к нижнему краю)
+        // Количество столбцов и строк с запасом
+        const cols = Math.ceil(viewportW / horizSpacing) + 2;
+        const rows = Math.ceil(viewportH / vertSpacing) + 2;
+
+        // Рисуем рёбра шестиугольников
+        // Чтобы не дублировать рёбра, рисуем только 3 из 6 сторон каждого гекса
+        // (правые верхние три стороны: 0→1, 1→2, 2→3)
+        for (let row = -1; row < rows; row++) {
+            for (let col = -1; col < cols; col++) {
+                const cx = col * horizSpacing + (row % 2 !== 0 ? horizSpacing / 2 : 0);
+                const cy = row * vertSpacing;
+
+                // Рисуем все 6 рёбер; дубликаты не страшны при такой тонкости
+                for (let i = 0; i < 6; i++) {
+                    const v1 = hexVertex(cx, cy, r, i);
+                    const v2 = hexVertex(cx, cy, r, (i + 1) % 6);
+
+                    // Пропускаем рёбра далеко за экраном
+                    if (v1.x < -r && v2.x < -r) continue;
+                    if (v1.x > viewportW + r && v2.x > viewportW + r) continue;
+                    if (v1.y < -r && v2.y < -r) continue;
+                    if (v1.y > viewportH + r && v2.y > viewportH + r) continue;
+
+                    gridCtx.strokeStyle = edgeColor(v1.x, v1.y, v2.x, v2.y);
+                    gridCtx.beginPath();
+                    gridCtx.moveTo(v1.x, v1.y);
+                    gridCtx.lineTo(v2.x, v2.y);
+                    gridCtx.stroke();
+                }
             }
-            gridCtx.strokeStyle = makeGradient(false, 0, l.pos, len, hBoost, fade);
-            gridCtx.beginPath();
-            gridCtx.moveTo(0, l.pos + 0.5);
-            gridCtx.lineTo(len, l.pos + 0.5);
-            gridCtx.stroke();
-        });
+        }
     }
 
     function resize() {
@@ -374,8 +378,8 @@ function initBgChargeCanvas() {
         gridLayer.height = Math.floor(viewportH * dpr);
         gridCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-        vLines = buildLines(viewportW, true);
-        hLines = buildLines(viewportH, false);
+        vLines = buildVirtualLines(viewportW);
+        hLines = buildVirtualLines(viewportH);
         redrawGrid();
     }
 
