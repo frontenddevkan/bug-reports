@@ -2454,7 +2454,7 @@ body::after {
     justify-content: flex-end;
 }
 
-/* Приветственный попап с matrix rain */
+/* Приветственный попап с matrix rain + эффект пролёта */
 .greeting-popup {
     position: fixed;
     inset: 0;
@@ -2463,6 +2463,7 @@ body::after {
     align-items: center;
     justify-content: center;
     z-index: 1600;
+    perspective: 600px;
     opacity: 1;
     transition: opacity 2s ease-in-out;
 }
@@ -2482,6 +2483,21 @@ body::after {
     width: 100%;
     height: 100%;
     pointer-events: none;
+    transform-origin: center center;
+    animation: greeting-zoom-canvas 5.5s ease-in forwards;
+}
+
+/* Canvas наезжает — масштаб растёт, создавая иллюзию полёта сквозь дождь */
+@keyframes greeting-zoom-canvas {
+    0% {
+        transform: scale(1) translateZ(0);
+    }
+    60% {
+        transform: scale(1.15) translateZ(0);
+    }
+    100% {
+        transform: scale(2.2) translateZ(0);
+    }
 }
 
 .greeting-popup-text {
@@ -2489,7 +2505,7 @@ body::after {
     z-index: 2;
     font-size: 3.2rem;
     line-height: 1.2;
-    font-weight: 700;
+    font-weight: 400;
     text-align: center;
     color: rgba(140, 210, 255, 0);
     font-family:
@@ -2502,7 +2518,10 @@ body::after {
     text-shadow:
         0 0 20px rgba(40, 150, 220, 0),
         0 0 40px rgba(40, 150, 220, 0);
-    animation: greeting-text-reveal 2s ease-out 0.6s forwards;
+    transform-origin: center center;
+    animation:
+        greeting-text-reveal 1.8s ease-out 0.5s forwards,
+        greeting-text-zoom 5.5s ease-in forwards;
 }
 
 @keyframes greeting-text-reveal {
@@ -2524,6 +2543,26 @@ body::after {
             0 0 16px rgba(40, 150, 220, 0.6),
             0 0 35px rgba(40, 150, 220, 0.25),
             0 2px 6px rgba(0, 2, 8, 0.9);
+    }
+}
+
+/* Текст тоже летит на зрителя — приближается и уходит за «камеру» */
+@keyframes greeting-text-zoom {
+    0% {
+        transform: scale(0.85);
+        opacity: 1;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    75% {
+        transform: scale(1.6);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(3);
+        opacity: 0;
     }
 }
 

@@ -2533,10 +2533,14 @@ function initGreetingPopup() {
 
     function drawMatrix(now) {
         if (!startTime) startTime = now;
-        const elapsed = now - startTime;
+        const elapsed = (now - startTime) / 1000; // секунды
 
-        // Затемнение предыдущего кадра — создаёт «хвосты»
-        ctx.fillStyle = 'rgba(0, 2, 8, 0.08)';
+        // Ускорение: от 1x до 4x за 5 секунд (эффект разгона)
+        const speedMult = 1 + elapsed * 0.6;
+
+        // Затемнение — чуть слабее на скорости чтобы хвосты были длиннее
+        const fadeAlpha = Math.max(0.04, 0.08 - elapsed * 0.006);
+        ctx.fillStyle = `rgba(0, 2, 8, ${fadeAlpha})`;
         ctx.fillRect(0, 0, W, H);
 
         ctx.font = `${fontSize}px "JetBrains Mono", "Fira Code", monospace`;
@@ -2544,29 +2548,30 @@ function initGreetingPopup() {
         for (let i = 0; i < cols; i++) {
             const y = drops[i] * fontSize;
 
-            // Основные символы — приглушённый голубой
-            const alpha = 0.15 + Math.random() * 0.2;
+            // Основные символы — приглушённый голубой, ярчают на скорости
+            const brightBoost = Math.min(0.15, elapsed * 0.02);
+            const alpha = 0.15 + brightBoost + Math.random() * 0.2;
             ctx.fillStyle = `rgba(40, 140, 220, ${alpha})`;
             const ch = chars[Math.floor(Math.random() * chars.length)];
             ctx.fillText(ch, i * fontSize, y);
 
             // «Голова» капли — ярче
-            if (Math.random() > 0.7) {
-                ctx.fillStyle = `rgba(130, 200, 255, ${0.4 + Math.random() * 0.3})`;
+            if (Math.random() > 0.65) {
+                ctx.fillStyle = `rgba(130, 200, 255, ${0.4 + Math.random() * 0.35})`;
                 ctx.fillText(ch, i * fontSize, y);
             }
 
-            // Двигаем каплю вниз
-            drops[i] += 0.4 + Math.random() * 0.3;
+            // Двигаем каплю вниз — ускоряется со временем
+            drops[i] += (0.4 + Math.random() * 0.3) * speedMult;
 
-            // Сброс с небольшой случайностью
-            if (drops[i] * fontSize > H && Math.random() > 0.975) {
+            // Сброс
+            if (drops[i] * fontSize > H && Math.random() > 0.97) {
                 drops[i] = -Math.random() * 10;
             }
         }
 
-        // Останавливаем анимацию после скрытия попапа
-        if (!popup.classList.contains('hidden') && !popup.classList.contains('hiding')) {
+        // Продолжаем анимацию пока попап видим
+        if (!popup.classList.contains('hidden')) {
             raf = requestAnimationFrame(drawMatrix);
         }
     }
@@ -2589,8 +2594,8 @@ function initGreetingPopup() {
         }, 2100);
     }
 
-    // Автоматически через 4 секунды начинаем растворение
-    setTimeout(hide, 4000);
+    // Автоматически через 4.5 секунды начинаем растворение (наезд длится ~5.5с)
+    setTimeout(hide, 4500);
 
     // Любой ввод — скрывает
     function onAnyInput() {
