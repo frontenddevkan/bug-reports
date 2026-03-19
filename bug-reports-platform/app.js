@@ -265,9 +265,9 @@ function initBgChargeCanvas() {
     const FLASH_PERIOD = 8.0; // каждые 8 секунд вспышка у каждого кружка
     const TRAVEL_PERIOD = 11.0; // замедляем ещё на ~4 секунды
 
-    const HEX_RADIUS = 17; // радиус шестиугольника
+    const HEX_RADIUS = 15; // радиус шестиугольника (уменьшен на 2px)
     const LINE_THICKNESS = 0.7;
-    const GLASS_RADIUS = HEX_RADIUS * 0.78; // внутренний glass-слой чуть меньше
+    const GLASS_RADIUS = HEX_RADIUS * 0.88; // glass-слой ближе к основному (меньше зазор)
     const SHADOW_OFFSET = 3; // смещение тени для объёма
     const NUM_DOTS = 30; // количество огоньков
 
@@ -444,34 +444,32 @@ function initBgChargeCanvas() {
         });
         gridCtx.restore();
 
-        // Glass-заливка: белые полупрозрачные внутренние гексы — выпуклый вид
+        // Glass-заливка: чисто белые, очень прозрачные внутренние гексы
         hexCenters.forEach(c => {
             const fade = fadeFactor(c.x, c.y);
-            // Градиент сверху вниз: яркий белый сверху → прозрачный снизу (выпуклость)
             const g = gridCtx.createLinearGradient(c.x, c.y - GLASS_RADIUS, c.x, c.y + GLASS_RADIUS);
-            const a1 = Math.min(1, 0.09 * fade);  // верх — белый блик
-            const a2 = Math.min(1, 0.03 * fade);  // середина
-            const a3 = Math.min(1, 0.01 * fade);  // низ — почти прозрачный
-            g.addColorStop(0, `rgba(220,235,255,${a1})`);
-            g.addColorStop(0.35, `rgba(200,220,255,${a2})`);
-            g.addColorStop(1, `rgba(180,210,255,${a3})`);
+            const a1 = Math.min(1, 0.06 * fade);  // верх — чисто белый блик
+            const a2 = Math.min(1, 0.025 * fade); // середина
+            const a3 = Math.min(1, 0.008 * fade); // низ — почти невидимый
+            g.addColorStop(0, `rgba(255,255,255,${a1})`);
+            g.addColorStop(0.3, `rgba(245,248,255,${a2})`);
+            g.addColorStop(1, `rgba(240,245,255,${a3})`);
             gridCtx.fillStyle = g;
             gridCtx.beginPath();
             hexPath(gridCtx, c.x, c.y, GLASS_RADIUS);
             gridCtx.fill();
         });
 
-        // Блик на верхней грани glass-гекса — усиленный белый для выпуклости
+        // Блик на верхней грани glass-гекса — чисто белый
         hexCenters.forEach(c => {
             const fade = fadeFactor(c.x, c.y);
-            const highlightA = Math.min(1, 0.14 * fade);
+            const highlightA = Math.min(1, 0.10 * fade);
             const gr = GLASS_RADIUS;
-            // Верхние 2 ребра (вершины 5→0→1) — яркий белый блик
             const v0 = hexVertex(c.x, c.y, gr, 0);
             const v1 = hexVertex(c.x, c.y, gr, 1);
             const v5 = hexVertex(c.x, c.y, gr, 5);
-            gridCtx.strokeStyle = `rgba(230,240,255,${highlightA})`;
-            gridCtx.lineWidth = 0.9;
+            gridCtx.strokeStyle = `rgba(255,255,255,${highlightA})`;
+            gridCtx.lineWidth = 0.8;
             gridCtx.beginPath();
             gridCtx.moveTo(v5.x, v5.y);
             gridCtx.lineTo(v0.x, v0.y);
@@ -479,16 +477,16 @@ function initBgChargeCanvas() {
             gridCtx.stroke();
         });
 
-        // Тёмная нижняя грань — усиливает выпуклость (свет сверху, тень снизу)
+        // Тёмная нижняя грань — усиливает выпуклость
         hexCenters.forEach(c => {
             const fade = fadeFactor(c.x, c.y);
-            const shadowA = Math.min(1, 0.08 * fade);
+            const shadowA = Math.min(1, 0.06 * fade);
             const gr = GLASS_RADIUS;
             const v2 = hexVertex(c.x, c.y, gr, 2);
             const v3 = hexVertex(c.x, c.y, gr, 3);
             const v4 = hexVertex(c.x, c.y, gr, 4);
-            gridCtx.strokeStyle = `rgba(5,15,40,${shadowA})`;
-            gridCtx.lineWidth = 0.7;
+            gridCtx.strokeStyle = `rgba(0,5,20,${shadowA})`;
+            gridCtx.lineWidth = 0.6;
             gridCtx.beginPath();
             gridCtx.moveTo(v2.x, v2.y);
             gridCtx.lineTo(v3.x, v3.y);
