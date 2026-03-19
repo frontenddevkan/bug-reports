@@ -2123,11 +2123,9 @@ ORDER BY u.surname, u.name;</code></pre>
 
     <!-- Приветственное всплывающее окно симулятора -->
     <div id="greetingPopup" class="greeting-popup hidden" aria-live="polite">
-        <div class="greeting-popup-window">
-            <div class="greeting-popup-text">
-                Добро пожаловать на борт,<br />
-                миста Тестировщик
-            </div>
+        <canvas id="greetingMatrixCanvas" class="greeting-matrix-canvas"></canvas>
+        <div class="greeting-popup-text" id="greetingText">
+            Добро пожаловать на борт
         </div>
     </div>
 

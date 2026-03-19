@@ -2499,22 +2499,100 @@ initChecklists();
 initQuizPopup();
 initBgChargeCanvas();
 /**
- * Приветственное всплывающее окно при открытии симулятора
+ * Приветственный попап с эффектом matrix rain (0 и 1 падают сверху)
  */
 function initGreetingPopup() {
     const popup = document.getElementById('greetingPopup');
-    if (!popup) return;
+    const canvas = document.getElementById('greetingMatrixCanvas');
+    if (!popup || !canvas) return;
 
-    function hide() {
-        if (popup.classList.contains('hidden')) return;
-        popup.classList.add('hidden');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Размеры
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // Колонки символов
+    const fontSize = 14;
+    const cols = Math.ceil(W / fontSize);
+    const drops = new Array(cols);
+    for (let i = 0; i < cols; i++) {
+        drops[i] = -Math.random() * 40; // стартуют выше экрана (рандомно)
     }
 
+    const chars = '01';
+    let raf = 0;
+    let startTime = 0;
+
+    function drawMatrix(now) {
+        if (!startTime) startTime = now;
+        const elapsed = now - startTime;
+
+        // Затемнение предыдущего кадра — создаёт «хвосты»
+        ctx.fillStyle = 'rgba(0, 2, 8, 0.08)';
+        ctx.fillRect(0, 0, W, H);
+
+        ctx.font = `${fontSize}px "JetBrains Mono", "Fira Code", monospace`;
+
+        for (let i = 0; i < cols; i++) {
+            const y = drops[i] * fontSize;
+
+            // Основные символы — приглушённый голубой
+            const alpha = 0.15 + Math.random() * 0.2;
+            ctx.fillStyle = `rgba(40, 140, 220, ${alpha})`;
+            const ch = chars[Math.floor(Math.random() * chars.length)];
+            ctx.fillText(ch, i * fontSize, y);
+
+            // «Голова» капли — ярче
+            if (Math.random() > 0.7) {
+                ctx.fillStyle = `rgba(130, 200, 255, ${0.4 + Math.random() * 0.3})`;
+                ctx.fillText(ch, i * fontSize, y);
+            }
+
+            // Двигаем каплю вниз
+            drops[i] += 0.4 + Math.random() * 0.3;
+
+            // Сброс с небольшой случайностью
+            if (drops[i] * fontSize > H && Math.random() > 0.975) {
+                drops[i] = -Math.random() * 10;
+            }
+        }
+
+        // Останавливаем анимацию после скрытия попапа
+        if (!popup.classList.contains('hidden') && !popup.classList.contains('hiding')) {
+            raf = requestAnimationFrame(drawMatrix);
+        }
+    }
+
+    // Показываем попап
     popup.classList.remove('hidden');
+    raf = requestAnimationFrame(drawMatrix);
 
-    setTimeout(hide, 4000);
+    // Функция плавного скрытия
+    let hiding = false;
+    function hide() {
+        if (hiding) return;
+        hiding = true;
+        popup.classList.add('hiding');
+        // После завершения CSS transition opacity → убираем совсем
+        setTimeout(() => {
+            popup.classList.add('hidden');
+            popup.classList.remove('hiding');
+            cancelAnimationFrame(raf);
+        }, 900);
+    }
 
-    // любое нажатие клавиши, клик или скролл — закрывает приветствие (включая клик по самому окну)
+    // Автоматически через 4.5 секунды
+    setTimeout(hide, 4500);
+
+    // Любой ввод — скрывает
     function onAnyInput() {
         hide();
         document.removeEventListener('keydown', onAnyInput, true);
