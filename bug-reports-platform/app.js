@@ -2576,16 +2576,17 @@ function initGreetingPopup() {
         }
     }
 
-    // === Эффект дешифровки текста ===
+    // === Эффект дешифровки текста: кириллица перебирается ===
     const textEl = document.getElementById('greetingText');
     const finalText = textEl ? textEl.textContent.trim() : '';
-    const scrambleChars = '01アイウエオカキクケコ░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼';
-    const CHAR_DELAY = 60;      // задержка между стартом декодирования букв (мс)
-    const SCRAMBLE_DURATION = 800; // сколько мс буква перебирается до фиксации
-    const SCRAMBLE_START = 400;    // через сколько мс после старта начать дешифровку
+    // Перебор только кириллицей
+    const scrambleChars = 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЭЮЯ' +
+                          'абвгдежзиклмнопрстуфхцчшщэюя';
+    const CHAR_DELAY = 50;        // задержка между буквами (мс)
+    const SCRAMBLE_DURATION = 700; // перебор каждой буквы (мс)
+    const SCRAMBLE_START = 0;      // сразу, без паузы
 
     if (textEl && finalText.length) {
-        // Оборачиваем каждый символ в <span>
         textEl.innerHTML = '';
         const spans = [];
         for (let i = 0; i < finalText.length; i++) {
@@ -2597,7 +2598,6 @@ function initGreetingPopup() {
             spans.push({ el: span, final: finalText[i], resolved: finalText[i] === ' ' });
         }
 
-        // Перебор символов
         let scrambleRaf = 0;
         const t0 = performance.now();
 
@@ -2609,15 +2609,13 @@ function initGreetingPopup() {
                 const s = spans[i];
                 if (s.resolved) continue;
 
-                const charStart = i * CHAR_DELAY; // когда эта буква начинает декодироваться
+                const charStart = i * CHAR_DELAY;
                 const charElapsed = elapsed - charStart;
 
                 if (charElapsed < 0) {
-                    // Ещё не началась — показываем случайный символ
                     s.el.textContent = scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
                     allDone = false;
                 } else if (charElapsed < SCRAMBLE_DURATION) {
-                    // Перебирается — быстрая смена, ближе к концу чаще показываем правильную
                     const progress = charElapsed / SCRAMBLE_DURATION;
                     if (Math.random() < progress * progress) {
                         s.el.textContent = s.final;
@@ -2626,7 +2624,6 @@ function initGreetingPopup() {
                     }
                     allDone = false;
                 } else {
-                    // Зафиксирована
                     s.el.textContent = s.final;
                     s.resolved = true;
                 }
