@@ -578,12 +578,69 @@ function initBgChargeCanvas() {
         };
     }
 
+    // Находим ближайшие hex-центры к середине ребра (ребро принадлежит 1-2 гексам)
+    function findAdjacentHexCenters(ex1, ey1, ex2, ey2) {
+        const mx = (ex1 + ex2) / 2;
+        const my = (ey1 + ey2) / 2;
+        const threshold = HEX_RADIUS * 1.15; // чуть больше расстояния от центра до ребра
+        const result = [];
+        for (let i = 0; i < hexCenters.length; i++) {
+            const c = hexCenters[i];
+            const dx = c.x - mx;
+            const dy = c.y - my;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < threshold) {
+                result.push(c);
+            }
+        }
+        return result;
+    }
+
+    // Рисуем подсветку ячейки: яркая заливка + размытое белое свечение
+    function drawHexGlow(cx, cy, brightness) {
+        // Размытое белое свечение вокруг ячейки (тень)
+        const glowR = HEX_RADIUS * 2.2;
+        const glow = ctx.createRadialGradient(cx, cy, HEX_RADIUS * 0.3, cx, cy, glowR);
+        glow.addColorStop(0, `rgba(255,255,255,${0.08 * brightness})`);
+        glow.addColorStop(0.4, `rgba(200,220,255,${0.04 * brightness})`);
+        glow.addColorStop(1, 'rgba(200,220,255,0)');
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(cx, cy, glowR, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Яркая заливка самой ячейки (glass-слой ярче)
+        const g = ctx.createLinearGradient(cx, cy - GLASS_RADIUS, cx, cy + GLASS_RADIUS);
+        g.addColorStop(0, `rgba(255,255,255,${0.10 * brightness})`);
+        g.addColorStop(0.35, `rgba(245,250,255,${0.05 * brightness})`);
+        g.addColorStop(1, `rgba(240,248,255,${0.015 * brightness})`);
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        hexPath(ctx, cx, cy, GLASS_RADIUS);
+        ctx.fill();
+
+        // Усиленный блик на верхних гранях
+        const v0 = hexVertex(cx, cy, GLASS_RADIUS, 0);
+        const v1 = hexVertex(cx, cy, GLASS_RADIUS, 1);
+        const v5 = hexVertex(cx, cy, GLASS_RADIUS, 5);
+        ctx.strokeStyle = `rgba(255,255,255,${0.18 * brightness})`;
+        ctx.lineWidth = 1.0;
+        ctx.beginPath();
+        ctx.moveTo(v5.x, v5.y);
+        ctx.lineTo(v0.x, v0.y);
+        ctx.lineTo(v1.x, v1.y);
+        ctx.stroke();
+    }
+
     function render(tSec) {
         ctx.clearRect(0, 0, viewportW, viewportH);
         ctx.globalCompositeOperation = 'source-over';
         ctx.drawImage(gridLayer, 0, 0, viewportW, viewportH);
 
         ctx.globalCompositeOperation = 'screen';
+
+        // Собираем активные ячейки и их яркость
+        const activeHexMap = new Map(); // key "x,y" -> brightness
 
         // Огоньки движутся по рёбрам гексов
         for (let i = 0; i < dotRoutes.length; i++) {
@@ -593,7 +650,33 @@ function initBgChargeCanvas() {
             const pos = dotPosition(route, tSec, speed, delay);
             const intensity = flashIntensity(tSec, i * 3.7);
 
-            drawDot(pos.x, pos.y, intensity);
+            // Находим ячейки, по чьим рёбрам едет кружок
+            if (pos.ex1 !== undefined) {
+                const cells = findAdjacentHexCenters(pos.ex1, pos.ey1, pos.ex2, pos.ey2);
+                cells.forEach(c => {
+                    const key = `${c.x},${c.y}`;
+                    const cur = activeHexMap.get(key) || 0;
+                    // Яркость = базовая + усиление при вспышке
+                    activeHexMap.set(key, Math.min(1, cur + 0.6 + 0.4 * intensity));
+                });
+            }
+        }
+
+        // Рисуем подсвеченные ячейки
+        activeHexMap.forEach((brightness, key) => {
+            const parts = key.split(',');
+            const cx = parseFloat(parts[0]);
+            const cy = parseFloat(parts[1]);
+            drawHexGlow(cx, cy, brightness);
+        });
+
+        // Рисуем сами огоньки и подсветку рёбер поверх
+        for (let i = 0; i < dotRoutes.length; i++) {
+            const route = dotRoutes[i];
+            const speed = 1.0 + (i % 4) * 0.25;
+            const delay = i * 3.2;
+            const pos = dotPosition(route, tSec, speed, delay);
+            const intensity = flashIntensity(tSec, i * 3.7);
 
             // Подсветка текущего ребра
             if (pos.ex1 !== undefined) {
@@ -604,6 +687,8 @@ function initBgChargeCanvas() {
                 ctx.lineTo(pos.ex2, pos.ey2);
                 ctx.stroke();
             }
+
+            drawDot(pos.x, pos.y, intensity);
         }
 
         ctx.globalCompositeOperation = 'source-over';
