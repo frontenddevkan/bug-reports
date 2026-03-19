@@ -322,7 +322,7 @@ function initBgChargeCanvas() {
         const mx = (x1 + x2) / 2;
         const my = (y1 + y2) / 2;
         const fade = fadeFactor(mx, my);
-        const a = Math.min(1, 0.10 * fade);
+        const a = Math.min(1, 0.05 * fade);
         return `rgba(15,50,80,${a})`;
     }
 
@@ -432,11 +432,11 @@ function initBgChargeCanvas() {
         gridCtx.clearRect(0, 0, viewportW, viewportH);
 
         // === Слой 2 (нижний): glass-заливка внутренних гексов ===
-        // Тень для объёма — рисуем сначала тёмные смещённые гексы
+        // Тень для объёма — едва заметные
         gridCtx.save();
         hexCenters.forEach(c => {
             const fade = fadeFactor(c.x, c.y);
-            const shadowA = Math.min(1, 0.12 * fade);
+            const shadowA = Math.min(1, 0.04 * fade);
             gridCtx.fillStyle = `rgba(0,10,30,${shadowA})`;
             gridCtx.beginPath();
             hexPath(gridCtx, c.x + SHADOW_OFFSET, c.y + SHADOW_OFFSET, GLASS_RADIUS);
@@ -444,53 +444,36 @@ function initBgChargeCanvas() {
         });
         gridCtx.restore();
 
-        // Glass-заливка: тёмные внутренние гексы
+        // Glass-заливка: почти невидимые
         hexCenters.forEach(c => {
             const fade = fadeFactor(c.x, c.y);
             const g = gridCtx.createLinearGradient(c.x, c.y - GLASS_RADIUS, c.x, c.y + GLASS_RADIUS);
-            const a1 = Math.min(1, 0.025 * fade);  // верх
-            const a2 = Math.min(1, 0.012 * fade);  // середина
-            const a3 = Math.min(1, 0.004 * fade);  // низ
-            g.addColorStop(0, `rgba(200,220,255,${a1})`);
-            g.addColorStop(0.3, `rgba(180,200,240,${a2})`);
-            g.addColorStop(1, `rgba(160,180,220,${a3})`);
+            const a1 = Math.min(1, 0.012 * fade);
+            const a2 = Math.min(1, 0.006 * fade);
+            const a3 = Math.min(1, 0.002 * fade);
+            g.addColorStop(0, `rgba(150,190,240,${a1})`);
+            g.addColorStop(0.3, `rgba(130,170,220,${a2})`);
+            g.addColorStop(1, `rgba(110,150,200,${a3})`);
             gridCtx.fillStyle = g;
             gridCtx.beginPath();
             hexPath(gridCtx, c.x, c.y, GLASS_RADIUS);
             gridCtx.fill();
         });
 
-        // Блик на верхней грани glass-гекса
+        // Блик на верхней грани — едва заметный
         hexCenters.forEach(c => {
             const fade = fadeFactor(c.x, c.y);
-            const highlightA = Math.min(1, 0.04 * fade);
+            const highlightA = Math.min(1, 0.018 * fade);
             const gr = GLASS_RADIUS;
             const v0 = hexVertex(c.x, c.y, gr, 0);
             const v1 = hexVertex(c.x, c.y, gr, 1);
             const v5 = hexVertex(c.x, c.y, gr, 5);
             gridCtx.strokeStyle = `rgba(255,255,255,${highlightA})`;
-            gridCtx.lineWidth = 0.8;
+            gridCtx.lineWidth = 0.5;
             gridCtx.beginPath();
             gridCtx.moveTo(v5.x, v5.y);
             gridCtx.lineTo(v0.x, v0.y);
             gridCtx.lineTo(v1.x, v1.y);
-            gridCtx.stroke();
-        });
-
-        // Тёмная нижняя грань — усиливает выпуклость
-        hexCenters.forEach(c => {
-            const fade = fadeFactor(c.x, c.y);
-            const shadowA = Math.min(1, 0.06 * fade);
-            const gr = GLASS_RADIUS;
-            const v2 = hexVertex(c.x, c.y, gr, 2);
-            const v3 = hexVertex(c.x, c.y, gr, 3);
-            const v4 = hexVertex(c.x, c.y, gr, 4);
-            gridCtx.strokeStyle = `rgba(0,5,20,${shadowA})`;
-            gridCtx.lineWidth = 0.6;
-            gridCtx.beginPath();
-            gridCtx.moveTo(v2.x, v2.y);
-            gridCtx.lineTo(v3.x, v3.y);
-            gridCtx.lineTo(v4.x, v4.y);
             gridCtx.stroke();
         });
 
@@ -532,21 +515,21 @@ function initBgChargeCanvas() {
     window.addEventListener('resize', resize, { passive: true });
 
     function drawDot(x, y, intensity) {
-        const coreR = 1.8;
-        const glowR = 10 + 4 * intensity;
+        const coreR = 1.5;
+        const glowR = 8 + 3 * intensity;
 
         const g = ctx.createRadialGradient(x, y, 0, x, y, glowR);
-        g.addColorStop(0, `rgba(180,220,255,${0.30 + 0.35 * intensity})`);
-        g.addColorStop(0.2, `rgba(100,180,255,${0.12 + 0.20 * intensity})`);
-        g.addColorStop(0.5, `rgba(40,120,220,${0.06 + 0.15 * intensity})`);
-        g.addColorStop(1, 'rgba(20,60,140,0)');
+        g.addColorStop(0, `rgba(150,200,250,${0.20 + 0.25 * intensity})`);
+        g.addColorStop(0.25, `rgba(80,160,240,${0.08 + 0.14 * intensity})`);
+        g.addColorStop(0.55, `rgba(30,100,200,${0.03 + 0.08 * intensity})`);
+        g.addColorStop(1, 'rgba(15,50,120,0)');
 
         ctx.fillStyle = g;
         ctx.beginPath();
         ctx.arc(x, y, glowR, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = `rgba(200,230,255,${0.25 + 0.40 * intensity})`;
+        ctx.fillStyle = `rgba(170,210,250,${0.18 + 0.30 * intensity})`;
         ctx.beginPath();
         ctx.arc(x, y, coreR, 0, Math.PI * 2);
         ctx.fill();
@@ -578,74 +561,78 @@ function initBgChargeCanvas() {
         };
     }
 
-    // Находим ближайшие hex-центры к середине ребра (ребро принадлежит 1-2 гексам)
-    function findAdjacentHexCenters(ex1, ey1, ex2, ey2) {
-        const mx = (ex1 + ex2) / 2;
-        const my = (ey1 + ey2) / 2;
-        const threshold = HEX_RADIUS * 1.15; // чуть больше расстояния от центра до ребра
+    // Находим ближайшие hex-центры к точке (до заданного радиуса)
+    function findNearbyHexCenters(px, py, radius) {
         const result = [];
         for (let i = 0; i < hexCenters.length; i++) {
             const c = hexCenters[i];
-            const dx = c.x - mx;
-            const dy = c.y - my;
+            const dx = c.x - px;
+            const dy = c.y - py;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < threshold) {
-                result.push(c);
+            if (dist < radius) {
+                result.push({ x: c.x, y: c.y, dist });
             }
         }
         return result;
     }
 
-    // Рисуем подсветку ячейки: все 6 граней с ярким свечением + bloom
+    // Рисуем подсветку ячейки: мягкое свечение всех 6 граней + bloom
     function drawHexGlow(cx, cy, brightness) {
+        if (brightness < 0.005) return;
         const r = HEX_RADIUS;
 
-        // Широкое размытое свечение вокруг ячейки (bloom)
-        const bloomR = r * 2.8;
-        const bloom = ctx.createRadialGradient(cx, cy, r * 0.5, cx, cy, bloomR);
-        bloom.addColorStop(0, `rgba(60,160,255,${0.12 * brightness})`);
-        bloom.addColorStop(0.35, `rgba(40,120,220,${0.08 * brightness})`);
-        bloom.addColorStop(0.7, `rgba(20,80,180,${0.03 * brightness})`);
-        bloom.addColorStop(1, 'rgba(10,40,120,0)');
+        // Мягкое bloom-свечение вокруг
+        const bloomR = r * 2.2;
+        const bloom = ctx.createRadialGradient(cx, cy, r * 0.3, cx, cy, bloomR);
+        bloom.addColorStop(0, `rgba(40,130,220,${0.07 * brightness})`);
+        bloom.addColorStop(0.5, `rgba(25,90,180,${0.03 * brightness})`);
+        bloom.addColorStop(1, 'rgba(15,50,120,0)');
         ctx.fillStyle = bloom;
         ctx.beginPath();
         ctx.arc(cx, cy, bloomR, 0, Math.PI * 2);
         ctx.fill();
 
-        // Лёгкая внутренняя заливка (очень тёмная, чтобы ячейки оставались тёмными)
+        // Лёгкая заливка ячейки
         const g = ctx.createLinearGradient(cx, cy - GLASS_RADIUS, cx, cy + GLASS_RADIUS);
-        g.addColorStop(0, `rgba(40,120,220,${0.06 * brightness})`);
-        g.addColorStop(0.5, `rgba(30,90,180,${0.03 * brightness})`);
-        g.addColorStop(1, `rgba(20,60,140,${0.01 * brightness})`);
+        g.addColorStop(0, `rgba(30,100,200,${0.04 * brightness})`);
+        g.addColorStop(1, `rgba(15,60,140,${0.01 * brightness})`);
         ctx.fillStyle = g;
         ctx.beginPath();
         hexPath(ctx, cx, cy, GLASS_RADIUS);
         ctx.fill();
 
-        // Все 6 граней гекса — яркие неоновые бордеры с bloom
-        // Широкий размытый слой (glow)
-        ctx.strokeStyle = `rgba(40,140,255,${0.35 * brightness})`;
-        ctx.lineWidth = 4.0;
+        // Все 6 граней — 3 слоя для неонового эффекта
+        // Широкий glow
+        ctx.strokeStyle = `rgba(30,120,220,${0.20 * brightness})`;
+        ctx.lineWidth = 3.5;
         ctx.lineJoin = 'round';
         ctx.lineCap = 'round';
         ctx.beginPath();
         hexPath(ctx, cx, cy, r);
         ctx.stroke();
 
-        // Средний слой
-        ctx.strokeStyle = `rgba(80,180,255,${0.50 * brightness})`;
-        ctx.lineWidth = 2.0;
+        // Средний
+        ctx.strokeStyle = `rgba(60,160,240,${0.30 * brightness})`;
+        ctx.lineWidth = 1.8;
         ctx.beginPath();
         hexPath(ctx, cx, cy, r);
         ctx.stroke();
 
-        // Яркое ядро бордера
-        ctx.strokeStyle = `rgba(150,220,255,${0.65 * brightness})`;
-        ctx.lineWidth = 1.0;
+        // Яркое ядро
+        ctx.strokeStyle = `rgba(130,210,255,${0.45 * brightness})`;
+        ctx.lineWidth = 0.8;
         ctx.beginPath();
         hexPath(ctx, cx, cy, r);
         ctx.stroke();
     }
+
+    // Плавное свечение: персистентная карта яркости hex-ов
+    // Каждый hex плавно нарастает/убывает (lerp к целевому значению)
+    const glowMap = new Map(); // key -> { current: 0, target: 0 }
+    const GLOW_RISE = 0.03;   // скорость нарастания за кадр
+    const GLOW_FADE = 0.012;  // скорость затухания за кадр
+    // Радиус распространения свечения на соседние гексы
+    const SPREAD_RADIUS = HEX_RADIUS * 3.5; // ~2 кольца гексов
 
     function render(tSec) {
         ctx.clearRect(0, 0, viewportW, viewportH);
@@ -654,10 +641,10 @@ function initBgChargeCanvas() {
 
         ctx.globalCompositeOperation = 'screen';
 
-        // Собираем активные ячейки и их яркость
-        const activeHexMap = new Map(); // key "x,y" -> brightness
+        // Сбрасываем все target'ы в 0
+        glowMap.forEach(v => { v.target = 0; });
 
-        // Огоньки движутся по рёбрам гексов
+        // Огоньки движутся по рёбрам: задаём target-яркость с распространением
         for (let i = 0; i < dotRoutes.length; i++) {
             const route = dotRoutes[i];
             const speed = 1.0 + (i % 4) * 0.25;
@@ -665,27 +652,42 @@ function initBgChargeCanvas() {
             const pos = dotPosition(route, tSec, speed, delay);
             const intensity = flashIntensity(tSec, i * 3.7);
 
-            // Находим ячейки, по чьим рёбрам едет кружок
             if (pos.ex1 !== undefined) {
-                const cells = findAdjacentHexCenters(pos.ex1, pos.ey1, pos.ex2, pos.ey2);
-                cells.forEach(c => {
+                const mx = (pos.ex1 + pos.ex2) / 2;
+                const my = (pos.ey1 + pos.ey2) / 2;
+
+                // Находим гексы в радиусе распространения
+                const nearby = findNearbyHexCenters(mx, my, SPREAD_RADIUS);
+                nearby.forEach(c => {
                     const key = `${c.x},${c.y}`;
-                    const cur = activeHexMap.get(key) || 0;
-                    // Яркость = базовая + усиление при вспышке (приглушённая)
-                    activeHexMap.set(key, Math.min(1, cur + 0.35 + 0.25 * intensity));
+                    if (!glowMap.has(key)) glowMap.set(key, { current: 0, target: 0 });
+                    const entry = glowMap.get(key);
+                    // Яркость убывает с расстоянием
+                    const distFactor = 1 - c.dist / SPREAD_RADIUS;
+                    const baseBright = 0.25 + 0.15 * intensity;
+                    const contrib = baseBright * distFactor * distFactor; // квадратичное затухание
+                    entry.target = Math.min(1, entry.target + contrib);
                 });
             }
         }
 
-        // Рисуем подсвеченные ячейки
-        activeHexMap.forEach((brightness, key) => {
-            const parts = key.split(',');
-            const cx = parseFloat(parts[0]);
-            const cy = parseFloat(parts[1]);
-            drawHexGlow(cx, cy, brightness);
+        // Плавно интерполируем current → target
+        glowMap.forEach((v, key) => {
+            if (v.current < v.target) {
+                v.current = Math.min(v.target, v.current + GLOW_RISE);
+            } else {
+                v.current = Math.max(v.target, v.current - GLOW_FADE);
+            }
+
+            if (v.current > 0.005) {
+                const parts = key.split(',');
+                const cx = parseFloat(parts[0]);
+                const cy = parseFloat(parts[1]);
+                drawHexGlow(cx, cy, v.current);
+            }
         });
 
-        // Рисуем сами огоньки и подсветку рёбер поверх
+        // Рисуем сами огоньки и подсветку текущего ребра
         for (let i = 0; i < dotRoutes.length; i++) {
             const route = dotRoutes[i];
             const speed = 1.0 + (i % 4) * 0.25;
@@ -693,10 +695,10 @@ function initBgChargeCanvas() {
             const pos = dotPosition(route, tSec, speed, delay);
             const intensity = flashIntensity(tSec, i * 3.7);
 
-            // Подсветка текущего ребра (дополнительно к общему свечению граней)
+            // Подсветка текущего ребра
             if (pos.ex1 !== undefined) {
-                ctx.strokeStyle = `rgba(120,200,255,${0.15 + 0.30 * intensity})`;
-                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = `rgba(80,170,240,${0.10 + 0.18 * intensity})`;
+                ctx.lineWidth = 1.2;
                 ctx.beginPath();
                 ctx.moveTo(pos.ex1, pos.ey1);
                 ctx.lineTo(pos.ex2, pos.ey2);
@@ -2496,172 +2498,6 @@ initQuiz();
 initChecklists();
 initQuizPopup();
 initBgChargeCanvas();
-initCircuitBorders();
-
-/**
- * Circuit-board ломаные бордеры на панелях с тонким световым пикселем.
- * Бордер рисуется SVG path'ом по периметру элемента с ломаными сегментами,
- * раз в ~30 сек тонкий огонёк пробегает по линии.
- */
-function initCircuitBorders() {
-    const selectors = [
-        '.simulator-day',
-        '.sdlc-visual',
-        '.quiz-area',
-        '.bug-list',
-        '.employment-card',
-        '.roadmap-banner',
-        '.sdlc-bank',
-        '.sdlc-targets',
-        '.checklist-run-area',
-        '.checklist-order-area'
-    ];
-
-    const panels = [];
-    selectors.forEach(sel => {
-        document.querySelectorAll(sel).forEach(el => panels.push(el));
-    });
-    if (!panels.length) return;
-
-    // Генерируем ломаную линию по периметру прямоугольника
-    function buildCircuitPath(w, h) {
-        // Обходим по часовой: верх → право → низ → лево
-        // Каждую сторону разбиваем на сегменты со случайными "зубцами" внутрь
-        const points = [];
-        const notch = 4; // высота зубца
-        const segMin = 20;
-        const segMax = 60;
-
-        function addSide(x1, y1, x2, y2, inwardDx, inwardDy, seed) {
-            const len = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-            const dx = (x2 - x1) / len;
-            const dy = (y2 - y1) / len;
-            let pos = 0;
-            let s = seed;
-            while (pos < len) {
-                s = (s * 1103515245 + 12345) & 0x7fffffff;
-                const seg = segMin + (s % (segMax - segMin));
-                const end = Math.min(pos + seg, len);
-                const mid = (pos + end) / 2;
-
-                points.push({
-                    x: x1 + dx * pos,
-                    y: y1 + dy * pos
-                });
-
-                // Через один сегмент делаем зубец
-                if ((s >> 8) % 3 === 0) {
-                    points.push({
-                        x: x1 + dx * mid + inwardDx * notch,
-                        y: y1 + dy * mid + inwardDy * notch
-                    });
-                }
-
-                pos = end;
-            }
-        }
-
-        addSide(0, 0, w, 0, 0, 1, 42);     // верх
-        addSide(w, 0, w, h, -1, 0, 137);    // право
-        addSide(w, h, 0, h, 0, -1, 271);    // низ
-        addSide(0, h, 0, 0, 1, 0, 389);     // лево
-
-        // Строим SVG path
-        if (!points.length) return '';
-        let d = `M${points[0].x.toFixed(1)},${points[0].y.toFixed(1)}`;
-        for (let i = 1; i < points.length; i++) {
-            d += ` L${points[i].x.toFixed(1)},${points[i].y.toFixed(1)}`;
-        }
-        d += ' Z';
-        return d;
-    }
-
-    panels.forEach((el, idx) => {
-        // Добавляем обёртку
-        el.classList.add('circuit-border-wrap');
-        el.style.position = el.style.position || 'relative';
-
-        const rect = el.getBoundingClientRect();
-        const w = rect.width;
-        const h = rect.height;
-        if (w < 10 || h < 10) return;
-
-        const ns = 'http://www.w3.org/2000/svg';
-        const svg = document.createElementNS(ns, 'svg');
-        svg.setAttribute('class', 'circuit-border-svg');
-        svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-        svg.setAttribute('preserveAspectRatio', 'none');
-
-        const pathD = buildCircuitPath(w, h);
-
-        // Статический ломаный бордер (очень тонкий, приглушённый)
-        const pathEl = document.createElementNS(ns, 'path');
-        pathEl.setAttribute('d', pathD);
-        pathEl.setAttribute('fill', 'none');
-        pathEl.setAttribute('stroke', 'rgba(40,140,220,0.18)');
-        pathEl.setAttribute('stroke-width', '0.5');
-        svg.appendChild(pathEl);
-
-        // Светящийся пиксель, бегущий по path
-        const dot = document.createElementNS(ns, 'circle');
-        dot.setAttribute('r', '1.5');
-        dot.setAttribute('fill', 'rgba(120,200,255,0.6)');
-
-        // Фильтр для свечения
-        const filterId = `cir-glow-${idx}`;
-        const defs = document.createElementNS(ns, 'defs');
-        const filter = document.createElementNS(ns, 'filter');
-        filter.setAttribute('id', filterId);
-        filter.setAttribute('x', '-50%');
-        filter.setAttribute('y', '-50%');
-        filter.setAttribute('width', '200%');
-        filter.setAttribute('height', '200%');
-        const blur = document.createElementNS(ns, 'feGaussianBlur');
-        blur.setAttribute('stdDeviation', '2');
-        blur.setAttribute('result', 'glow');
-        filter.appendChild(blur);
-        const merge = document.createElementNS(ns, 'feMerge');
-        const mn1 = document.createElementNS(ns, 'feMergeNode');
-        mn1.setAttribute('in', 'glow');
-        const mn2 = document.createElementNS(ns, 'feMergeNode');
-        mn2.setAttribute('in', 'SourceGraphic');
-        merge.appendChild(mn1);
-        merge.appendChild(mn2);
-        filter.appendChild(merge);
-        defs.appendChild(filter);
-        svg.appendChild(defs);
-
-        dot.setAttribute('filter', `url(#${filterId})`);
-
-        // Анимация по path
-        const anim = document.createElementNS(ns, 'animateMotion');
-        // Каждые 30 секунд один проход, но видим только короткую вспышку
-        const duration = 25 + (idx % 5) * 5; // 25-45 сек, разные для каждой панели
-        anim.setAttribute('dur', `${duration}s`);
-        anim.setAttribute('repeatCount', 'indefinite');
-        anim.setAttribute('begin', `${idx * 7}s`); // сдвиг старта
-
-        const mpath = document.createElementNS(ns, 'mpath');
-        pathEl.setAttribute('id', `circuit-path-${idx}`);
-        mpath.setAttributeNS('http://www.w3.org/1999/xlink', 'href', `#circuit-path-${idx}`);
-        anim.appendChild(mpath);
-        dot.appendChild(anim);
-
-        // Мерцание яркости точки
-        const animOp = document.createElementNS(ns, 'animate');
-        animOp.setAttribute('attributeName', 'opacity');
-        animOp.setAttribute('values', '0;0;0.7;0.9;0.7;0;0');
-        animOp.setAttribute('keyTimes', '0;0.1;0.15;0.5;0.85;0.9;1');
-        animOp.setAttribute('dur', `${duration}s`);
-        animOp.setAttribute('repeatCount', 'indefinite');
-        animOp.setAttribute('begin', `${idx * 7}s`);
-        dot.appendChild(animOp);
-
-        svg.appendChild(dot);
-        el.appendChild(svg);
-    });
-}
-
 /**
  * Приветственное всплывающее окно при открытии симулятора
  */

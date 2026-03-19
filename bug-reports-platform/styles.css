@@ -391,15 +391,16 @@ body::after {
 }
 
 .simulator-day {
-    margin-bottom: 0; /* вплотную к блоку "Процесс дня" */
+    margin-bottom: 0;
     padding: 1rem 1.1rem;
     border-radius: 18px;
-    background: rgba(15, 23, 42, 0.72);
-    border: 0.5px solid rgba(56, 189, 248, 0.6);
+    background: rgba(6, 14, 30, 0.75);
+    border: 0.5px solid rgba(40, 150, 220, 0.25);
     border-left: none;
-    border-right: none; /* только верх/низ, чтобы не давать вертикальные линии в секции second */
-    /* оставляем только мягкую нижнюю тень, без обводки по периметру (чтобы не было вертикальных линий) */
-    box-shadow: 0 22px 70px rgba(15, 23, 42, 0.95);
+    border-right: none;
+    box-shadow:
+        0 0 8px rgba(40, 150, 220, 0.06),
+        0 22px 70px rgba(4, 8, 20, 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
 }
@@ -453,14 +454,15 @@ body::after {
 }
 
 .sdlc-visual {
-    margin: 1.5rem 0; /* отступ сверху и снизу */
+    margin: 1.5rem 0;
     padding: 1.5rem;
     border-radius: 18px;
-    border: 0.5px solid rgba(56, 189, 248, 0.6);
+    border: 0.5px solid rgba(40, 150, 220, 0.25);
     width: 100%;
-    background: rgba(15, 23, 42, 0.72);
-    /* только нижняя мягкая тень, без контурной обводки */
-    box-shadow: 0 22px 70px rgba(15, 23, 42, 0.95);
+    background: rgba(6, 14, 30, 0.75);
+    box-shadow:
+        0 0 8px rgba(40, 150, 220, 0.06),
+        0 22px 70px rgba(4, 8, 20, 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
 }
@@ -582,12 +584,11 @@ body::after {
     margin-top: 0.9rem;
     padding: 1rem 1.1rem;
     border-radius: 18px;
-    border: 0.5px solid rgba(56, 189, 248, 0.6);
-    background: rgba(15, 23, 42, 0.72);
+    border: 0.5px solid rgba(40, 150, 220, 0.25);
+    background: rgba(6, 14, 30, 0.75);
     box-shadow:
-        0 0 0 0.5px rgba(15, 23, 42, 0.95),
-        0 0 0 1.5px rgba(148, 163, 184, 0.35),
-        0 22px 70px rgba(15, 23, 42, 0.95);
+        0 0 8px rgba(40, 150, 220, 0.06),
+        0 22px 70px rgba(4, 8, 20, 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
 }
@@ -764,12 +765,11 @@ body::after {
 .sdlc-bank,
 .sdlc-targets {
     border-radius: 18px;
-    border: 0.5px solid rgba(56, 189, 248, 0.6);
-    background: rgba(15, 23, 42, 0.72);
+    border: 0.5px solid rgba(40, 150, 220, 0.25);
+    background: rgba(6, 14, 30, 0.75);
     box-shadow:
-        0 0 0 0.5px rgba(15, 23, 42, 0.95),
-        0 0 0 1.5px rgba(148, 163, 184, 0.35),
-        0 22px 70px rgba(15, 23, 42, 0.95);
+        0 0 8px rgba(40, 150, 220, 0.06),
+        0 22px 70px rgba(4, 8, 20, 0.95);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
 }
@@ -862,8 +862,9 @@ body::after {
     margin-top: 0.9rem;
     padding: 1rem 1.1rem;
     border-radius: 18px;
-    border: 0.5px solid rgba(56, 189, 248, 0.6);
-    background: rgba(15, 23, 42, 0.72);
+    border: 0.5px solid rgba(40, 150, 220, 0.25);
+    background: rgba(6, 14, 30, 0.75);
+    box-shadow: 0 0 8px rgba(40, 150, 220, 0.06);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
 }
@@ -1665,13 +1666,12 @@ body::after {
 .main {
     flex: 1;
     padding: 2rem;
-    background: rgba(15, 23, 42, 0.78);
+    background: rgba(6, 14, 30, 0.7);
     border-radius: 26px;
     box-shadow:
-        0 0 0 0.5px rgba(56, 189, 248, 0.6),
-        0 0 0 1.5px rgba(255, 255, 255, 0.05),
-        0 30px 90px rgba(15,23,42,0.98);
-    border: 0.5px solid rgba(56, 189, 248, 0.5);
+        0 0 12px rgba(40, 150, 220, 0.05),
+        0 30px 90px rgba(4, 8, 20, 0.98);
+    border: 0.5px solid rgba(40, 150, 220, 0.22);
     backdrop-filter: blur(22px);
     -webkit-backdrop-filter: blur(22px);
 }
@@ -1727,11 +1727,11 @@ body::after {
 .bug-list {
     margin-top: 2rem;
     padding: 1.5rem 1.1rem 0 1.1rem;
-    border-top: 1px solid rgba(56, 189, 248, 0.25);
+    border-top: 0.5px solid rgba(40, 150, 220, 0.2);
     border-left: none;
     border-right: none;
-    background: rgba(15, 23, 42, 0.86); /* делаем блок менее прозрачным на ~14% */
-    box-shadow: 0 22px 70px rgba(15, 23, 42, 0.95);
+    background: rgba(6, 14, 30, 0.8);
+    box-shadow: 0 22px 70px rgba(4, 8, 20, 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
 }
@@ -2025,14 +2025,14 @@ body::after {
 
 /* Карточка багрепорта в списке */
 .bug-card {
-    border: 1px solid rgba(56, 189, 248, 0.6);
+    border: 0.5px solid rgba(40, 150, 220, 0.22);
     border-radius: 16px;
     padding: 1rem 1.25rem;
     margin-top: 1rem;
-    background: rgba(15, 23, 42, 0.96);
+    background: rgba(6, 14, 30, 0.9);
     box-shadow:
-        0 0 0 1px rgba(15, 23, 42, 0.9),
-        0 20px 50px rgba(15, 23, 42, 0.9);
+        0 0 6px rgba(40, 150, 220, 0.04),
+        0 20px 50px rgba(4, 8, 20, 0.9);
 }
 
 .bug-card h3 {
@@ -2192,20 +2192,6 @@ body::after {
     color: rgba(255,255,255,0.7);
 }
 
-/* Circuit-board бордер: SVG-контейнер поверх панелей */
-.circuit-border-wrap {
-    position: relative;
-}
-
-.circuit-border-svg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 2;
-    overflow: visible;
-}
 
 @keyframes greeting-pop {
     0% {
