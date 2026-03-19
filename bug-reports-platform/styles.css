@@ -2464,7 +2464,7 @@ body::after {
     justify-content: center;
     z-index: 1600;
     opacity: 1;
-    transition: opacity 0.8s ease-out;
+    transition: opacity 2s ease-in-out;
 }
 
 .greeting-popup.hiding {

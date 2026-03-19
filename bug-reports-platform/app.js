@@ -2581,16 +2581,16 @@ function initGreetingPopup() {
         if (hiding) return;
         hiding = true;
         popup.classList.add('hiding');
-        // После завершения CSS transition opacity → убираем совсем
+        // После завершения CSS transition (2s) → убираем из DOM полностью
         setTimeout(() => {
             popup.classList.add('hidden');
             popup.classList.remove('hiding');
             cancelAnimationFrame(raf);
-        }, 900);
+        }, 2100);
     }
 
-    // Автоматически через 4.5 секунды
-    setTimeout(hide, 4500);
+    // Автоматически через 4 секунды начинаем растворение
+    setTimeout(hide, 4000);
 
     // Любой ввод — скрывает
     function onAnyInput() {
