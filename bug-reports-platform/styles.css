@@ -2454,27 +2454,28 @@ body::after {
     justify-content: flex-end;
 }
 
-/* Приветственный попап с matrix rain + эффект пролёта */
+/* Приветственный попап с matrix rain + плавный пролёт */
 .greeting-popup {
     position: fixed;
     inset: 0;
-    background: rgba(0, 2, 8, 0.85);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1600;
-    perspective: 600px;
-    opacity: 1;
-    transition: opacity 2s ease-in-out;
-}
-
-.greeting-popup.hiding {
-    opacity: 0;
-    pointer-events: none;
+    /* Одна непрерывная анимация: фон + opacity за 7.5с */
+    animation: greeting-flythrough 7.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
 .greeting-popup.hidden {
     display: none;
+}
+
+@keyframes greeting-flythrough {
+    0%   { background: rgba(0, 2, 8, 0.88); opacity: 1; }
+    55%  { background: rgba(0, 2, 8, 0.75); opacity: 1; }
+    75%  { background: rgba(0, 2, 8, 0.40); opacity: 0.85; }
+    90%  { background: rgba(0, 2, 8, 0.10); opacity: 0.4; }
+    100% { background: rgba(0, 2, 8, 0);    opacity: 0; pointer-events: none; }
 }
 
 .greeting-matrix-canvas {
@@ -2484,20 +2485,14 @@ body::after {
     height: 100%;
     pointer-events: none;
     transform-origin: center center;
-    animation: greeting-zoom-canvas 5.5s ease-in forwards;
+    /* Плавный непрерывный наезд за те же 7.5с */
+    animation: greeting-zoom-canvas 7.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
-/* Canvas наезжает — масштаб растёт, создавая иллюзию полёта сквозь дождь */
 @keyframes greeting-zoom-canvas {
-    0% {
-        transform: scale(1) translateZ(0);
-    }
-    60% {
-        transform: scale(1.15) translateZ(0);
-    }
-    100% {
-        transform: scale(2.2) translateZ(0);
-    }
+    0%   { transform: scale(1); }
+    55%  { transform: scale(1.12); }
+    100% { transform: scale(2.8); }
 }
 
 .greeting-popup-text {
@@ -2507,7 +2502,6 @@ body::after {
     line-height: 1.2;
     font-weight: 400;
     text-align: center;
-    color: rgba(140, 210, 255, 0);
     font-family:
         "JetBrains Mono",
         "Fira Code",
@@ -2521,27 +2515,15 @@ body::after {
         0 0 30px rgba(40, 150, 220, 0.2),
         0 2px 6px rgba(0, 2, 8, 0.9);
     transform-origin: center center;
-    animation: greeting-text-zoom 5.5s ease-in forwards;
+    /* Текст: плавный подлёт к камере, одно движение */
+    animation: greeting-text-zoom 7.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
-/* Текст тоже летит на зрителя — приближается и уходит за «камеру» */
 @keyframes greeting-text-zoom {
-    0% {
-        transform: scale(0.85);
-        opacity: 1;
-    }
-    40% {
-        transform: scale(1);
-        opacity: 1;
-    }
-    75% {
-        transform: scale(1.6);
-        opacity: 0.7;
-    }
-    100% {
-        transform: scale(3);
-        opacity: 0;
-    }
+    0%   { transform: scale(0.9);  opacity: 1; }
+    50%  { transform: scale(1.05); opacity: 1; }
+    75%  { transform: scale(1.5);  opacity: 0.6; }
+    100% { transform: scale(3.5);  opacity: 0; }
 }
 
 @media (max-width: 768px) {

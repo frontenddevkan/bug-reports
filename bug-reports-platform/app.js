@@ -2643,24 +2643,16 @@ function initGreetingPopup() {
     popup.classList.remove('hidden');
     raf = requestAnimationFrame(drawMatrix);
 
-    // Функция плавного скрытия
-    let hiding = false;
+    // Убираем из DOM после окончания анимации (7.5с)
     function hide() {
-        if (hiding) return;
-        hiding = true;
-        popup.classList.add('hiding');
-        // После завершения CSS transition (2s) → убираем из DOM полностью
-        setTimeout(() => {
-            popup.classList.add('hidden');
-            popup.classList.remove('hiding');
-            cancelAnimationFrame(raf);
-        }, 2100);
+        popup.classList.add('hidden');
+        cancelAnimationFrame(raf);
     }
 
-    // Автоматически через 4.5 секунды начинаем растворение (наезд длится ~5.5с)
-    setTimeout(hide, 4500);
+    // Анимация длится 7.5с — убираем чуть после
+    setTimeout(hide, 7600);
 
-    // Любой ввод — скрывает
+    // Любой ввод — мгновенно скрывает
     function onAnyInput() {
         hide();
         document.removeEventListener('keydown', onAnyInput, true);
