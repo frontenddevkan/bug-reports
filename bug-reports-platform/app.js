@@ -2576,6 +2576,69 @@ function initGreetingPopup() {
         }
     }
 
+    // === Эффект дешифровки текста ===
+    const textEl = document.getElementById('greetingText');
+    const finalText = textEl ? textEl.textContent.trim() : '';
+    const scrambleChars = '01アイウエオカキクケコ░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼';
+    const CHAR_DELAY = 60;      // задержка между стартом декодирования букв (мс)
+    const SCRAMBLE_DURATION = 800; // сколько мс буква перебирается до фиксации
+    const SCRAMBLE_START = 400;    // через сколько мс после старта начать дешифровку
+
+    if (textEl && finalText.length) {
+        // Оборачиваем каждый символ в <span>
+        textEl.innerHTML = '';
+        const spans = [];
+        for (let i = 0; i < finalText.length; i++) {
+            const span = document.createElement('span');
+            span.textContent = finalText[i] === ' ' ? '\u00A0' : scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+            span.style.display = 'inline-block';
+            span.style.minWidth = finalText[i] === ' ' ? '0.3em' : '0';
+            textEl.appendChild(span);
+            spans.push({ el: span, final: finalText[i], resolved: finalText[i] === ' ' });
+        }
+
+        // Перебор символов
+        let scrambleRaf = 0;
+        const t0 = performance.now();
+
+        function scrambleTick(now) {
+            const elapsed = now - t0 - SCRAMBLE_START;
+            let allDone = true;
+
+            for (let i = 0; i < spans.length; i++) {
+                const s = spans[i];
+                if (s.resolved) continue;
+
+                const charStart = i * CHAR_DELAY; // когда эта буква начинает декодироваться
+                const charElapsed = elapsed - charStart;
+
+                if (charElapsed < 0) {
+                    // Ещё не началась — показываем случайный символ
+                    s.el.textContent = scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+                    allDone = false;
+                } else if (charElapsed < SCRAMBLE_DURATION) {
+                    // Перебирается — быстрая смена, ближе к концу чаще показываем правильную
+                    const progress = charElapsed / SCRAMBLE_DURATION;
+                    if (Math.random() < progress * progress) {
+                        s.el.textContent = s.final;
+                    } else {
+                        s.el.textContent = scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+                    }
+                    allDone = false;
+                } else {
+                    // Зафиксирована
+                    s.el.textContent = s.final;
+                    s.resolved = true;
+                }
+            }
+
+            if (!allDone && !popup.classList.contains('hidden')) {
+                scrambleRaf = requestAnimationFrame(scrambleTick);
+            }
+        }
+        scrambleRaf = requestAnimationFrame(scrambleTick);
+    }
+
     // Показываем попап
     popup.classList.remove('hidden');
     raf = requestAnimationFrame(drawMatrix);

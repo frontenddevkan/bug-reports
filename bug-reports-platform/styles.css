@@ -2515,35 +2515,13 @@ body::after {
         "Courier New",
         monospace;
     letter-spacing: 0.05em;
+    color: rgba(130, 200, 255, 0.85);
     text-shadow:
-        0 0 20px rgba(40, 150, 220, 0),
-        0 0 40px rgba(40, 150, 220, 0);
+        0 0 14px rgba(40, 150, 220, 0.5),
+        0 0 30px rgba(40, 150, 220, 0.2),
+        0 2px 6px rgba(0, 2, 8, 0.9);
     transform-origin: center center;
-    animation:
-        greeting-text-reveal 1.8s ease-out 0.5s forwards,
-        greeting-text-zoom 5.5s ease-in forwards;
-}
-
-@keyframes greeting-text-reveal {
-    0% {
-        color: rgba(140, 210, 255, 0);
-        text-shadow:
-            0 0 20px rgba(40, 150, 220, 0),
-            0 0 40px rgba(40, 150, 220, 0);
-    }
-    50% {
-        color: rgba(160, 220, 255, 0.9);
-        text-shadow:
-            0 0 24px rgba(40, 150, 220, 0.8),
-            0 0 50px rgba(40, 150, 220, 0.4);
-    }
-    100% {
-        color: rgba(180, 225, 255, 1);
-        text-shadow:
-            0 0 16px rgba(40, 150, 220, 0.6),
-            0 0 35px rgba(40, 150, 220, 0.25),
-            0 2px 6px rgba(0, 2, 8, 0.9);
-    }
+    animation: greeting-text-zoom 5.5s ease-in forwards;
 }
 
 /* Текст тоже летит на зрителя — приближается и уходит за «камеру» */
