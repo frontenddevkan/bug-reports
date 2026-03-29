@@ -2459,6 +2459,42 @@ body::after {
     margin-bottom: 0.25rem;
 }
 
+/* Таблица в ответах собеседования */
+.interview-answer table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.75rem 0;
+    font-size: 0.85rem;
+    background: rgba(6, 14, 30, 0.6);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.interview-answer table thead {
+    background: rgba(40, 100, 180, 0.3);
+}
+
+.interview-answer table th,
+.interview-answer table td {
+    padding: 0.5rem 0.75rem;
+    border: 0.5px solid rgba(40, 140, 220, 0.15);
+    text-align: left;
+}
+
+.interview-answer table th {
+    font-weight: 600;
+    color: #e5e7eb;
+    background: rgba(20, 60, 120, 0.5);
+}
+
+.interview-answer table td {
+    color: #9ca3af;
+}
+
+.interview-answer table tr:hover {
+    background: rgba(40, 100, 180, 0.1);
+}
+
 .quiz-popup-header {
     display: flex;
     align-items: center;
