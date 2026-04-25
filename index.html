@@ -1188,64 +1188,7 @@ ORDER BY u.surname, u.name;</code></pre>
             </div>
         </div>
 
-        <!-- Чёрный и белый ящик -->
-        <p class="theory-block-title">Методы тестирования: Чёрный и Белый ящик</p>
-        <ul>
-            <li><strong>Чёрный ящик (Black-box testing)</strong> — тестирование без знания внутреннего устройства системы:
-                <ul>
-                    <li>Тестировщик не видит код, архитектуру, внутреннюю логику.</li>
-                    <li>Проверяется только вход и выход: «что подали» → «что получили».</li>
-                    <li><strong>Методы:</strong> эквивалентные классы, граничные значения, таблица решений, тестирование по сценариям.</li>
-                    <li><strong>Кто использует:</strong> ручные тестировщики, QA-инженеры, приёмочное тестирование.</li>
-                    <li><strong>Пример:</strong> форма логина — вводим valid/invalid данные, смотрим результат.</li>
-                </ul>
-            </li>
-            <li><strong>Белый ящик (White-box testing)</strong> — тестирование с полным знанием кода:
-                <ul>
-                    <li>Тестировщик знает код, архитектуру, алгоритмы.</li>
-                    <li>Проверяется логика кода: покрытие ветвей, условий, путей выполнения.</li>
-                    <li><strong>Методы:</strong> покрытие операторов, покрытие условий, покрытие путей, статический анализ.</li>
-                    <li><strong>Кто использует:</strong> разработчики (unit-тесты), SDET, автоматизаторы.</li>
-                    <li><strong>Пример:</strong> unit-тест на функцию — проверяем все ветви if/else.</li>
-                </ul>
-            </li>
-            <li><strong>Серый ящик (Grey-box)</strong> — комбинация: частичное знание (например, структура БД или API).</li>
-        </ul>
-        <p><strong>Аналогия:</strong> игрушечная машинка. Чёрный ящик — нажимаешь кнопку, смотришь едет ли. Белый ящик — разобрал, видишь мотор, проверяешь каждую деталь.</p>
-
-        <!-- Таблица переходов -->
-        <p class="theory-block-title">Таблица переходов (State Transition Testing)</p>
-        <ul>
-            <li><strong>Что это:</strong> метод тестирования динамического поведения системы через проверку переходов между состояниями.</li>
-            <li><strong>Состояния:</strong> режимы системы (например: «корзина пуста», «товар добавлен», «оформление заказа», «оплата выполнена»).</li>
-            <li><strong>Переходы:</strong> действия которые переводят систему из одного состояния в другое.</li>
-            <li><strong>Таблица переходов содержит:</strong>
-                <ul>
-                    <li>Текущее состояние (Current State)</li>
-                    <li>Действие/Событие (Action/Event)</li>
-                    <li>Следующее состояние (Next State)</li>
-                    <li>Ожидаемый результат (Expected Result)</li>
-                </ul>
-            </li>
-            <li><strong>Пример для заказа:</strong>
-                <ul>
-                    <li>Корзина пуста → Добавить товар → Товар в корзине</li>
-                    <li>Товар в корзине → Оформить заказ → Оформление заказа</li>
-                    <li>Оформление заказа → Ввести адрес → Адрес введён</li>
-                    <li>Адрес введён → Оплатить → Оплата выполнена</li>
-                </ul>
-            </li>
-            <li><strong>Что тестируем:</strong>
-                <ul>
-                    <li>Все ли переходы работают корректно.</li>
-                    <li>Нет ли недопустимых переходов (например: «оплатить» из «корзина пуста»).</li>
-                    <li>Циклические переходы (добавить → удалить → добавить).</li>
-                    <li>Граничные состояния (максимум товаров в корзине).</li>
-                </ul>
-            </li>
-            <li><strong>Примеры из жизни:</strong> банкомат, заказ еды, личный кабинет, светофор.</li>
-        </ul>
-        <p><strong>Аналогия со светофором:</strong> состояния: красный, жёлтый, зелёный. Переходы: красный → жёлтый → зелёный → жёлтый → красный. Нельзя с красного сразу на зелёный — это недопустимый переход.</p>
+        <!-- Чёрный и белый ящик / Таблица переходов — удалены 25.04.2026 (ломали вёрстку) -->
     </section>
 
     <!-- Модальное окно: создание документации (требований/фичи) -->
@@ -2323,6 +2266,76 @@ ORDER BY u.surname, u.name;</code></pre>
 
     <!-- Скрипт берём из подпапки -->
     <script src="bug-reports-platform/app.js"></script>
+
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-consent" class="cookie-consent" style="display:none;">
+        <div class="cookie-text">
+            Мы используем файлы cookie для работы сайта и аналитики (Яндекс Метрика). Продолжая использование, вы соглашаетесь с Политикой конфиденциальности.
+        </div>
+        <button id="cookie-accept-btn" class="cookie-accept-btn">Принять</button>
+    </div>
+    <style>
+    .cookie-consent {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 24px;
+        background: rgba(6, 14, 30, 0.95);
+        backdrop-filter: blur(12px);
+        border-top: 1px solid rgba(40, 150, 220, 0.25);
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+        font-size: 14px;
+        color: #e5e7eb;
+        line-height: 1.5;
+    }
+    .cookie-text {
+        flex: 1;
+    }
+    .cookie-accept-btn {
+        flex-shrink: 0;
+        padding: 10px 28px;
+        border: 1px solid rgba(40, 150, 220, 0.4);
+        border-radius: 6px;
+        background: rgba(40, 150, 220, 0.15);
+        color: #60a5fa;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .cookie-accept-btn:hover {
+        background: rgba(40, 150, 220, 0.3);
+        border-color: rgba(40, 150, 220, 0.6);
+    }
+    @media (max-width: 640px) {
+        .cookie-consent {
+            flex-direction: column;
+            text-align: center;
+            gap: 12px;
+            padding: 14px 16px;
+        }
+        .cookie-accept-btn {
+            width: 100%;
+        }
+    }
+    </style>
+    <script>
+    (function() {
+        if (!localStorage.getItem('cookie_consent_accepted')) {
+            document.getElementById('cookie-consent').style.display = 'flex';
+        }
+        document.getElementById('cookie-accept-btn').addEventListener('click', function() {
+            localStorage.setItem('cookie_consent_accepted', 'true');
+            document.getElementById('cookie-consent').style.display = 'none';
+        });
+    })();
+    </script>
 </body>
 </html>
 
